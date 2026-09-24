@@ -34,6 +34,21 @@ ask the user, for example as a subagent, return those drafts in your report.
 Do not let review feedback expand the PR beyond the user's original goal.
 Address real shortcomings, but avoid scope creep.
 
+CI on a PR from a fork, or from a first-time contributor, can wait for a
+maintainer to approve its workflow runs. After every push, check for runs that
+wait on approval, and approve them when your account has write access:
+
+```sh
+sha=$(gh pr view PR --repo OWNER/REPO --json headRefOid --jq .headRefOid)
+gh run list --repo OWNER/REPO --commit "$sha" --status action_required \
+  --json databaseId --jq '.[].databaseId' |
+  xargs -I{} gh api -X POST repos/OWNER/REPO/actions/runs/{}/approve
+```
+
+Approve only runs for the PR's latest commit. Before you approve, read that
+commit's diff for changes to workflow files or to scripts CI executes, and ask
+the user first if you find any you did not expect.
+
 If you cannot approve CI runs or merge in the repository, report a PR that
 waits for either as waiting for a maintainer.
 
