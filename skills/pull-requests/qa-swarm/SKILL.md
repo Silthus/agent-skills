@@ -55,8 +55,7 @@ Fetch the base branch, then write down:
   Split a larger or mixed change into a stack before the first round. Each PR builds only on the PRs below it and carries its
   own tests. Run the swarm on each PR, bottom up.
 - **Proofs**: the proofs the PR owes per [`PROOF.md`](PROOF.md), with the
-  persisted inputs and boundary formats the changed path touches. Record them
-  with `fleet proof require` when the CLI is available.
+  persisted inputs and boundary formats the changed path touches.
 
 Done when the goal, base, danger areas, split, and owed proofs are written
 down.
@@ -71,7 +70,9 @@ down.
    and capture the changed journey in the live run. Record a gap for each owed
    proof you cannot run.
 3. Push. When no PR exists, open a draft with `gh pr create --draft`. Write
-   the description with the `pr-description` skill.
+   the description with the `pr-description` skill. Once the PR number exists,
+   register the owed proofs with `fleet proof require` when the CLI is
+   available, then save the evidence and gaps from step 2 under it.
 4. Keep the proof and the ledger in storage that outlives the worktree. When
    the `fleet` CLI is available (on `PATH` or at `~/dev/fleet/fleet`), get the
    commit proof directory with
@@ -123,21 +124,23 @@ The round is clean when it produced no fix or call item. A clean first round
 ends the rounds.
 
 After a first round with fixes, run the second round on the new HEAD. It is
-narrow: its panel runs only the lenses whose findings you fixed, and their
-briefs carry the fix diff, `git diff <round 1 head>...HEAD`, in place of the
-full diff. When every fix only renamed, reworded, or reformatted code, the
-second round skips the panel and waits for the bots and checks only.
+narrow: its panel runs only the lenses whose findings you fixed, plus Systems
+when its trigger in [`PANEL.md`](PANEL.md) holds, and their briefs carry the
+fix diff, `git diff <round 1 head>...HEAD`, in place of the full diff. When
+every fix only renamed, reworded, or reformatted code, the second round skips
+the panel, waits for the bots and checks, and goes straight to the final read.
 
-The second round is the last panel. Fix what it finds and push, then run the
-**final read**: one fresh reviewer from the review lane reads the fixes since
-the last reviewed commit. Its brief is the lens brief of the findings those
-fixes close, with the fix diff in place of the full diff. With the `fleet`
-CLI, reserve it with `fleet proof review-start ... --scope final --base <last reviewed SHA>`;
-it never counts toward the two-round budget. Fix what the final read finds when
-the fix only renames, rewords, or reformats; anything else becomes a decision.
-After a clean first round, or a second round with no fixes, HEAD is already
-reviewed and the final read is skipped. A fix item you cannot close becomes a
-decision, and the handoff is blocked.
+The second round is the last panel. Fix what it finds and push. Every commit
+after the last reviewed one then gets a **final read**: one fresh reviewer
+from the review lane reads the fix diff since that commit, with the lens brief
+of the findings those fixes close. With the `fleet` CLI, reserve it with
+`fleet proof review-start ... --scope final --base <last reviewed SHA>` and
+complete it with `fleet proof review-finish ... --round final <findings file>`;
+it never counts toward the two-round budget. A fix from a final read is a new
+commit, so it gets its own final read; a finding from that second final read
+becomes a decision. When the last panel ends with HEAD as its reviewed commit,
+the final read is skipped. A fix item you cannot close becomes a decision, and
+the handoff is blocked.
 
 Done when every ledger item is fixed, rejected, or a decision, and every
 gating check on HEAD is green. A check that has not reported yet is not green. A repo without CI relies on the
