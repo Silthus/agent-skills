@@ -1,15 +1,16 @@
 ---
 name: babysit-pr
 description: >-
-  Take a PR that is ready for review to merged, fixing real findings on the
-  way. Use when the user asks to monitor, watch, or babysit a PR.
+  Take a PR that is ready for review to merged and watched in production,
+  fixing real findings on the way. Use when the user asks to monitor, watch,
+  or babysit a PR, or to watch a merged PR after its deploy.
 ---
 
 # Babysit PR
 
 Babysitting starts when the user has marked a PR ready for review and asks you
-to babysit it. It ends when the PR is merged. The rollout after the merge is
-not part of it.
+to babysit it. It ends when the post-deploy watch after the merge is reported.
+The rollout of its feature flags stays with the user.
 
 ## Ready
 
@@ -73,6 +74,31 @@ Keep monitoring until the PR is merged, because a ready PR can still get review
 comments, conflicts, or a failed merge queue. Stop earlier only when the user
 says to stop monitoring, or when the PR is closed without a merge; then report
 it. Report the merge commit when the PR is merged.
+
+## Landed
+
+After the merge, run the **post-deploy watch** that `PROOF.md` of the
+`qa-swarm` skill defines:
+
+1. Find when the merge commit reached production: the repo's deploy signal,
+   such as the PostHog `checking-deploy-timing` skill, a deploy workflow run,
+   or a release tag.
+2. Map the touched area to its signals: the services, error groups, log
+   sources, and metrics that carry the changed paths. Record the map in the
+   ledger, so the second check reuses it.
+3. Schedule two checks, one hour and 24 hours after the deploy, with the
+   harness's scheduler when it has one. Otherwise wait for the first check
+   and report the second as pending, with its time.
+4. Each check compares the deploy window with the same length of time before
+   it, in the project the user's agent instructions name. A new error group,
+   or a rate that moves past the baseline's noise, is a finding. Report it
+   with the evidence and a drafted revert PR. The user decides on the revert.
+5. Save each check's queries and results with
+   `fleet proof save ... --kind post-deploy-watch` when the CLI is available,
+   then run `fleet proof gate ... --landed`.
+
+The watch is done when both checks are reported. When the project or the
+deploy signal cannot be reached, report the watch as a gap and stop.
 
 ## Feature flags
 
