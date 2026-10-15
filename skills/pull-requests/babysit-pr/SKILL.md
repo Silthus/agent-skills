@@ -80,25 +80,29 @@ it. Report the merge commit when the PR is merged.
 After the merge, run the **post-deploy watch** that `PROOF.md` of the
 `qa-swarm` skill defines:
 
-1. Find when the merge commit reached production: the repo's deploy signal,
+1. Register the watch as owed before anything else, with
+   `fleet proof require ... --kinds post-deploy-watch` when the CLI is
+   available, or in the ledger. This holds for a PR that never ran the swarm
+   too.
+2. Find when the merge commit reached production: the repo's deploy signal,
    such as the PostHog `checking-deploy-timing` skill, a deploy workflow run,
    or a release tag.
-2. Map the touched area to its signals: the services, error groups, log
+3. Map the touched area to its signals: the services, error groups, log
    sources, and metrics that carry the changed paths. Record the map in the
    ledger, so the second check reuses it.
-3. Schedule two checks, one hour and 24 hours after the deploy, with the
+4. Schedule two checks, one hour and 24 hours after the deploy, with the
    harness's scheduler when it has one. Otherwise wait for the first check
    and report the second as pending, with its time.
-4. Each check compares the deploy window with the same length of time before
+5. Each check compares the deploy window with the same length of time before
    it, in the project the user's agent instructions name. A new error group,
    or a rate that moves past the baseline's noise, is a finding. Report it
    with the evidence and a drafted revert PR. The user decides on the revert.
-5. Save each check's queries and results with
+6. Save each check's queries and results with
    `fleet proof save ... --kind post-deploy-watch` when the CLI is available,
    then run `fleet proof gate ... --landed`.
 
 The watch is done when both checks are reported. When the project or the
-deploy signal cannot be reached, report the watch as a gap and stop.
+deploy signal cannot be reached, record the watch as a gap with `fleet proof gap ... --kind post-deploy-watch`, report it, and stop.
 
 ## Feature flags
 
