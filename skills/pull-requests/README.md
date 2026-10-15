@@ -11,6 +11,7 @@ Skills that take a pull request from a draft to merged, and help you review the 
 - **[review-pr](./review-pr/SKILL.md)**: Get an entry point to someone else's PR or stack: a flow diagram, the change in a few bullets, the merge risk, and a lean. Then ask questions.
 - **[review-pr-setup](./review-pr-setup/SKILL.md)**: Tailor `review-pr` to you from your recent reviews and a short interview.
 - **[audit-prs](./audit-prs/SKILL.md)**: Triage all your open PRs into readiness groups with next actions, merge confidence, and the changes since the last audit. Needs Bun and `gh`.
+- **[review-lens](./review-lens/SKILL.md)**: Distill one teammate's review lens from their review comments and a short interview, and publish it as a PostHog Review perspective that the bot and `qa-swarm` run on every PR. Needs `gh` and the PostHog MCP server.
 - **[slack-pr-update](./slack-pr-update/SKILL.md)**: Format Slack PR updates, PR lists, and review or merge handoffs.
 
 These skills use `gh` (2.100.0 or later for `--attach`), and `writing-voice` from [communication](../communication/README.md) when it is installed. `qa-swarm` uses Matt Pocock's `tdd` and `code-review`.
