@@ -49,10 +49,26 @@ resulting behavior, and the evidence before opening the diff.
    verification command and expected result when they help reproduce the
    behavior. Put lengthy output and process history in a collapsed block or
    durable proof storage.
+6. Record the load-bearing decisions behind the change in a Decisions
+   block: one table with the columns Decision, Who, and Where, then one
+   Involvement line. Who is 👤 Human for an answer the user gave (a grilling
+   round, a prototype acceptance, a review decision) and 🤖 Agent for a call
+   the agent made (a qa-swarm call, a research finding, a worker's recorded
+   call). Where links the ticket comment, thread, or ledger entry. Keep the
+   decisions and calls that [qa-swarm triage](../qa-swarm/TRIAGE.md) defines;
+   mechanical choices stay out. The Involvement line names the grilling
+   rounds answered, the prototypes iterated with their round counts, the
+   reviews run (panel lanes and bots), and whether proof was captured, with
+   no numbers beyond those counts. A PR without any such decision keeps one
+   line: `No load-bearing decisions.` When the `fleet` CLI is available (on `PATH` or at `~/dev/fleet/fleet`),
+   `fleet decisions <map URL>` prints a Wayfinder map's rows and counts.
+   When the repository template has an agent-context section, the block goes
+   under its autonomy line; otherwise it is its own section after Evidence.
 
 Done when the problem and resulting behavior are clear without the diff,
-each consequential claim has supporting evidence or an explicit gap, and
-the description follows the repository's template.
+each consequential claim has supporting evidence or an explicit gap, every
+load-bearing decision names who made it, and the description follows the
+repository's template.
 
 ## Default structure
 
@@ -77,6 +93,15 @@ Use this structure only when the repository has no required template:
 - Test seams: <the public behavior the tests drive>
 - Verify: <command and expected result, when useful>
 - Gaps: <material behavior not verified, when any>
+
+## Decisions
+
+| Decision | Who | Where |
+| --- | --- | --- |
+| <the question and its answer> | 👤 Human | <link to the ticket comment or thread> |
+| <the call and its alternative> | 🤖 Agent | <link to the ledger entry or comment> |
+
+Involvement: <grilling rounds answered, prototypes iterated with their round counts, reviews run, proof captured>
 ```
 
 ## Preserve evidence

@@ -33,7 +33,7 @@ Charting is the sole undispatched act, apart from its **Prior-art sweeps**. With
 
 These rules bind the first chart and every later graduation of fog into tickets:
 
-- **Architecture first.** When the destination changes contracts between modules, the data model, or caching and performance, one of the tickets is an architecture `prototype` that blocks the spec or implementation tickets, so the human shapes the architecture before it is built. Its worker builds the prototype with the `architecture-brief` skill.
+- **Architecture first.** When the destination changes contracts between modules, the data model, or caching and performance, one of the tickets is an architecture `prototype` that blocks the spec or implementation tickets, so the human shapes the architecture before it is built. Its worker shapes it with the `architecture` skill.
 - **Grilling stays the default** for every open decision. The map's **Notes** may waive it only when the human says so for this map: quote their words and the date. A waiver from another map, a memory, or an earlier session does not carry over; ask the human instead.
 
 ## Reading the frontier
@@ -60,7 +60,7 @@ Planning and execution share one tree. A resolved spec publishes its spec child 
 | Type        | Human loop      | Dispatch                                  | Resolution                                  |
 | ----------- | --------------- | ----------------------------------------- | ------------------------------------------- |
 | `grilling`  | live throughout | serial, one at a time                     | `grilling` + `domain-modeling`              |
-| `prototype` | decision at end | parallel AFK stretch, then park           | `prototype`, or `architecture-brief` for an architecture prototype; throwaway |
+| `prototype` | decision at end | parallel AFK stretch, then park           | `prototype`, or `architecture` for an architecture prototype; throwaway |
 | `spec`      | decision at end | parallel AFK stretch, then park           | `to-spec` + `to-tickets`                    |
 | `research`  | none            | parallel                                  | `research`, throwaway                       |
 | `task`      | as required     | parallel when AFK                         | prerequisite work for a decision            |

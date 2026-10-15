@@ -11,7 +11,7 @@ The skills build on [Matt Pocock's skills](https://github.com/mattpocock/skills)
 
 | Theme | Skills |
 | --- | --- |
-| [Orchestration](skills/orchestration/README.md) | `orchestration-wayfinder`, `t3-kickoff`, `architecture-brief` |
+| [Orchestration](skills/orchestration/README.md) | `orchestration-wayfinder`, `t3-kickoff`, `architecture` |
 | [Pull requests](skills/pull-requests/README.md) | `pr-description`, `merge-risk`, `qa-swarm`, `babysit-pr`, `modernize-pr`, `leaving-pr-comments`, `review-pr`, `review-pr-setup`, `audit-prs`, `slack-pr-update` |
 | [Communication](skills/communication/README.md) | `explain-diff`, `share-plan`, `share-preview`, `writing-voice` |
 

@@ -11,6 +11,8 @@ agent instructions, when one exists; otherwise use the runtime defaults:
   a strong model from the author's family: Fresh eyes, and UI when the diff
   changes a user interface, cast with the policy's UI defaults when it has
   them.
+- **Team lane**, the Review lane's model: one lens per PostHog Review
+  perspective of the team, see [Team](#team).
 
 ## Lanes
 
@@ -95,7 +97,7 @@ Lens: <lens name and hunting grounds>
 ## Lenses
 
 Every panel runs every lens. **UI** runs only when the diff changes a user
-interface.
+interface. **Team** runs one lens per team perspective.
 
 ### Fresh eyes
 
@@ -219,3 +221,16 @@ Does the screen behave well for a real user?
 - Overflow and truncation of dynamic text.
 - Copy: clear, consistent wording for the same concept, and a permission
   error that names the missing permission.
+
+### Team
+
+The team's own review perspectives, the `review-hog-perspective-*` skills
+that PostHog Review runs on every PR of a repository
+that uses it. Before dispatch, list them on the PostHog MCP server with the
+`posthog-exec` tool: `call skill-list {"search": "review-hog-perspective-"}`,
+then `skill-get` each one. Run each perspective as its own lens with the
+shared brief, named after the perspective, and use the perspective's body as
+the lens text. The brief already carries the harness rules.
+
+Skip the lane with one gap line when the PostHog MCP server is not
+available or the list is empty because the repository has no PostHog Review.

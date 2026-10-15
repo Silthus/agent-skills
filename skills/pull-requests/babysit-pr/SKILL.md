@@ -11,6 +11,26 @@ Babysitting starts when the user has marked a PR ready for review and asks you
 to babysit it. It ends when the PR is merged. The rollout after the merge is
 not part of it.
 
+## Ready
+
+When the user says the PR is ready, close the review-bot threads before
+anything else:
+
+1. List every unresolved review thread as bot or human, answered or
+   unanswered. When the `fleet` CLI is available (on `PATH` or at `~/dev/fleet/fleet`), run
+   `fleet pr bot-threads --repo <owner/repo> --pr <number>`, which prints that
+   list and exits 1 while an unanswered bot thread remains. Otherwise read the
+   threads with the GitHub GraphQL `reviewThreads` field through `gh api graphql`.
+2. Reply to each unanswered bot thread per the `leaving-pr-comments` skill:
+   the fixing commit, or the reason for a rejection.
+3. Resolve every bot thread whose last comment is yours: run the command
+   again with `--resolve`, or use the `resolveReviewThread` mutation. Leave
+   human threads alone.
+4. Report every human thread that is still open.
+
+The gate is done when no unanswered or unresolved bot thread remains. Only
+then start the monitoring below.
+
 If your harness offers tools to monitor a PR, use them so you can respond when
 comments arrive. Otherwise, poll the PR for new reviews, comments, and checks.
 

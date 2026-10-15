@@ -39,8 +39,12 @@ reply is correct:
   evidence, such as the file and line that prevents the bug, or the pattern the
   fix waits for.
 
-Leave the thread open for the bot or a reviewer to resolve. A bot finding that
-sits in a review body has no thread. Answer those findings in one PR comment
+After the reply, resolve the bot's thread. When the `fleet` CLI is available (on `PATH` or at `~/dev/fleet/fleet`), run
+`fleet pr bot-threads --repo <owner/repo> --pr <number> --resolve`, which
+resolves only bot threads whose last comment is yours. Otherwise resolve it
+with the GitHub GraphQL `resolveReviewThread` mutation through `gh api graphql`.
+Human threads stay open for the person. A bot finding that sits in a review
+body has no thread. Answer those findings in one PR comment
 that mentions the bot, such as `@coderabbitai`. Use the format below. Report
 each reply you posted.
 

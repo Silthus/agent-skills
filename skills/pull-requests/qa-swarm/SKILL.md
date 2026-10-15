@@ -133,11 +133,13 @@ the run is a gap too, not a failure.
 2. A failed proof is a fix item in the ledger. Use the remaining round budget
    from step 3; after it is spent, unresolved proof blocks the handoff.
 3. Update the description with `pr-description` so its evidence describes the final
-   behavior and its merge risk matches the final diff.
+   behavior, its merge risk matches the final diff, and its Decisions block
+   carries the ledger's decisions and calls, the same ones the handoff
+   reports, with the rounds and bots on its Involvement line.
 
 Behaviour that only production can show is a gap for the handoff. Done when
-the description carries the proof and a merge risk that matches the final
-diff.
+the description carries the proof, the decisions, and a merge risk that
+matches the final diff.
 
 ## 5. Hand off
 
