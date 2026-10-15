@@ -4,6 +4,11 @@ description: >-
   Distill one teammate's review lens from their PR review comments and
   publish it as a PostHog Review perspective. Use when someone asks for a
   review lens, persona, or perspective for a teammate, or to refresh one.
+metadata:
+  credits:
+    - skill: paul-reviewer
+      author: Paul D'Ambra
+      url: "https://github.com/pauldambra/dotfiles/tree/main/ai/skills/paul-reviewer"
 ---
 
 # Review lens

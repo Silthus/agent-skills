@@ -6,7 +6,7 @@ agent instructions, when one exists; otherwise use the runtime defaults:
 
 - **Review lane**, the policy's **Review** model for the change's author, or
   without a policy a strong model from the other model family: Correctness,
-  Risk, and Design.
+  Risk, Design, and Systems when the diff changes a shared boundary.
 - **Fresh-eyes lane**, the policy's **fresh-eyes** model, or without a policy
   a strong model from the author's family: Fresh eyes, and UI when the diff
   changes a user interface, cast with the policy's UI defaults when it has
@@ -53,6 +53,17 @@ swarm, both rounds. Run one lane on the strongest model you have, carrying
 every lens of the missing family in one brief, and report the outage as a
 gap.
 
+## Repo knowledge
+
+Before dispatch, collect the repository's own review material: review skills
+such as `qa-team` with its incident patterns and personas, or
+`security-audit`, and the security or review docs that the repo's agent docs
+point to. This is the repo's memory of how it broke before. Each lens brief
+carries the material for its hunting grounds, after the lens text: incident
+patterns to Correctness and Risk, the security audit and security docs to
+Risk, personas to Fresh eyes. The hunting grounds below stay the floor. Name
+the material each lens received in the ledger.
+
 ## Brief
 
 Every brief carries the same text and the full diff before its lens, so the
@@ -92,12 +103,18 @@ hunting ground of your lens.
 <output of git diff origin/<base>...<sha>>
 
 Lens: <lens name and hunting grounds>
+
+<the repo knowledge for this lens, or nothing>
 ```
 
 ## Lenses
 
 Every panel runs every lens. **UI** runs only when the diff changes a user
-interface. **Team** runs one lens per perspective of the area's owners and the author.
+interface. **Systems** runs only when the diff changes a boundary that many
+callers pass through: a shared helper, an executor, a serializer, a default
+resolved in one place. In round two it runs when a round-one finding named the
+same cause at more than one site. **Team** runs one lens per perspective of the
+area's owners and the author.
 
 ### Fresh eyes
 
@@ -176,6 +193,15 @@ Production:
 - Observability: logs or metrics where data is dropped or limited, and enough
   signal to see the change fail in production.
 
+Grade:
+
+- Grade the diff with the `merge-risk` rubric from the hunks alone, before you
+  read the description's callout. End with a `GRADE: <low|medium|high> | <the
+  hunk that sets it>` line after `COVERED`. A grade above the callout's is a
+  finding, and the higher grade wins.
+- Check the owed proofs against [`PROOF.md`](PROOF.md). A persisted input, a
+  boundary format, or a high grade with no owed proof is a finding.
+
 ### Design
 
 Is this the simplest code that meets the goal, and do the tests prove it?
@@ -208,6 +234,26 @@ Tests:
   tests.
 - Repeated test bodies that want one parameterized test.
 
+### Systems
+
+Does the change hold on every path through the boundary it touches, and does
+the fix sit at the boundary or at one caller?
+
+- Entry paths: list every way a call reaches the boundary, such as the UI, the
+  API, MCP or other tools, imports, background jobs, retries, reruns, and
+  resumed runs. Trace the change through each one. A path where the change does
+  not hold is a finding.
+- Shared cause: findings or bugs at more than one site that share one cause.
+  Name the cause and the boundary it lives in, and test it against an
+  alternative explanation.
+- Fix placement: compare the local fix with the narrowest safe fix at the
+  boundary. A local fix that leaves sibling callers broken is a finding.
+- Callers the diff leaves unchanged: each one that now behaves differently
+  through the boundary.
+
+A finding here needs evidence in the code for the shared cause. Similar diffs
+alone are not one.
+
 ### UI
 
 Does the screen behave well for a real user?
@@ -235,7 +281,9 @@ team's PostHog project. Select them before dispatch:
    `git log --since=1.year --format=%aN -- <dirs> | sort | uniq -c | sort -rn | head -5`.
 2. List the perspectives on the PostHog MCP server with the `posthog-exec`
    tool: `call skill-list {"search": "review-hog-perspective-"}`. Switch to
-   the team's project first when the active project differs.
+   the team's project first, the one the user's agent instructions name, when
+   the active project differs. An empty list from another project is not an
+   empty lane.
 3. Keep a perspective when one of its `owners` is the author, has a GitHub
    login in the owner set per `org-member-get-github-login`, or has a name in
    the maintainer set. A perspective with no owners is a canonical one and
@@ -245,5 +293,6 @@ team's PostHog project. Select them before dispatch:
    the lens text. The brief already carries the harness rules.
 
 Name the kept perspectives and the owners they matched in the panel brief.
-Skip the lane with one gap line when the PostHog MCP server is not
-available or nothing is kept.
+When the PostHog MCP server is not available or nothing is kept, skip the
+lane and write its gap line to the ledger before dispatch, naming the owners
+it searched for.
