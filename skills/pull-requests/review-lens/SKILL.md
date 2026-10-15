@@ -10,8 +10,8 @@ description: >-
 
 One teammate, one PostHog Review perspective named
 `review-hog-perspective-<firstname-or-handle>`. PostHog Review runs it on
-every PR of each teammate who enables it, and the `qa-swarm` panel runs every
-team perspective before a PR opens. The PostHog team skill is the single
+every PR of each teammate who enables it, and the `qa-swarm` panel runs it
+before a PR opens when the person owns the touched code or wrote the PR. The PostHog team skill is the single
 source of truth; nothing is stored in a repository.
 
 Before you write, read the PostHog MCP skills `review-hog-authoring` (its

@@ -12,7 +12,7 @@ agent instructions, when one exists; otherwise use the runtime defaults:
   changes a user interface, cast with the policy's UI defaults when it has
   them.
 - **Team lane**, the Review lane's model: one lens per PostHog Review
-  perspective of the team, see [Team](#team).
+  perspective of the area's owners and the author, see [Team](#team).
 
 ## Lanes
 
@@ -97,7 +97,7 @@ Lens: <lens name and hunting grounds>
 ## Lenses
 
 Every panel runs every lens. **UI** runs only when the diff changes a user
-interface. **Team** runs one lens per team perspective.
+interface. **Team** runs one lens per perspective of the area's owners and the author.
 
 ### Fresh eyes
 
@@ -224,13 +224,26 @@ Does the screen behave well for a real user?
 
 ### Team
 
-The team's own review perspectives, the `review-hog-perspective-*` skills
-that PostHog Review runs on every PR of a repository
-that uses it. Before dispatch, list them on the PostHog MCP server with the
-`posthog-exec` tool: `call skill-list {"search": "review-hog-perspective-"}`,
-then `skill-get` each one. Run each perspective as its own lens with the
-shared brief, named after the perspective, and use the perspective's body as
-the lens text. The brief already carries the harness rules.
+The review perspectives of the people who own the code the PR touches, plus
+the author's own. These are the `review-hog-perspective-*` skills in the
+team's PostHog project. Select them before dispatch:
 
+1. Collect the owners of the touched area. Match the changed paths against
+   the repository's `CODEOWNERS` and expand each team with
+   `gh api orgs/<org>/teams/<slug>/members --jq '.[].login'`. Add the
+   maintainers: the five most frequent authors of the touched directories,
+   `git log --since=1.year --format=%aN -- <dirs> | sort | uniq -c | sort -rn | head -5`.
+2. List the perspectives on the PostHog MCP server with the `posthog-exec`
+   tool: `call skill-list {"search": "review-hog-perspective-"}`. Switch to
+   the team's project first when the active project differs.
+3. Keep a perspective when one of its `owners` is the author, has a GitHub
+   login in the owner set per `org-member-get-github-login`, or has a name in
+   the maintainer set. A perspective with no owners is a canonical one and
+   stays out: the other lanes already cover its ground.
+4. `skill-get` each kept perspective and run it as its own lens with the
+   shared brief, named after the perspective, with the perspective's body as
+   the lens text. The brief already carries the harness rules.
+
+Name the kept perspectives and the owners they matched in the panel brief.
 Skip the lane with one gap line when the PostHog MCP server is not
-available or the list is empty because the repository has no PostHog Review.
+available or nothing is kept.
