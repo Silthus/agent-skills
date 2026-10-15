@@ -79,7 +79,8 @@ Write the perspective body in the authoring guide's shape:
 Keep it a focused instruction set for one pass over one chunk. The review
 harness carries the pipeline mechanics, so the body carries only the lens.
 
-Publish it through the PostHog MCP skill tools:
+Publish it through the PostHog MCP skill tools, in the team's PostHog
+project: `switch-project` to it first when the active project differs.
 
 1. `skill-list` with the search `review-hog-perspective-` tells you whether
    the person's perspective exists. Skim the descriptions of the others so
