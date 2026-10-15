@@ -76,7 +76,8 @@ files, commit, push, or post to GitHub.
 Goal: <goal>
 Base: origin/<base>. Head: <sha>. The diff is below.
 Danger areas: <hunks>
-PR description: <current body>
+PR description: <current body, without its merge-risk callout>
+Owed proofs: <the owed kinds>
 Evidence: <accessible capture links or proof paths, tested commits, and gaps>
 Settled: <ledger entries that are fixed, rejected, or decided>. Raise one
 again only when the code under it changed.
@@ -195,10 +196,11 @@ Production:
 
 Grade:
 
-- Grade the diff with the `merge-risk` rubric from the hunks alone, before you
-  read the description's callout. End with a `GRADE: <low|medium|high> | <the
-  hunk that sets it>` line after `COVERED`. A grade above the callout's is a
-  finding, and the higher grade wins.
+- Grade the diff with the `merge-risk` rubric from the hunks alone. End with a
+  `GRADE: <low|medium|high> | <the hunk that sets it>` line after `COVERED`.
+  The brief leaves out the author's callout, so the grade stays independent.
+  In triage, a Risk grade above the callout's is a fix item, and the higher
+  grade wins.
 - Check the owed proofs against [`PROOF.md`](PROOF.md). A persisted input, a
   boundary format, or a high grade with no owed proof is a finding.
 

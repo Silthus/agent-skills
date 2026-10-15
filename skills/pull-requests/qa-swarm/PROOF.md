@@ -30,9 +30,10 @@ customer-written code or config, queued jobs, cached values.
 List each persisted input. For each one, measure in production which share of
 the stored records takes each branch the change touches, through read-only
 access such as PostHog's `querying-production-databases-via-metabase` skill.
-Raw rows and absolute numbers stay in the private proof storage; the PR carries
-shares and ratios. Write test fixtures from the list of properties the shape
-needs, with invented values.
+The measurements stay in the private proof storage. The PR carries only the
+conclusion, such as "every stored config takes the new branch", unless the
+numbers are already public. Write test fixtures from the list of properties
+the shape needs, with invented values.
 
 Done when every persisted input has its measured branch shares, or a gap.
 
