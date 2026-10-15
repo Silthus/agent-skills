@@ -1,0 +1,34 @@
+{
+  "name": "silthus",
+  "owner": {
+    "name": "Michael Reichenbach",
+    "url": "https://github.com/Silthus"
+  },
+  "description": "Michael Reichenbach's agent skills: Wayfinder orchestration, pull request workflows, and communication.",
+  "plugins": [
+    {
+      "name": "orchestration",
+      "source": "./skills/orchestration",
+      "skills": ["./"],
+      "description": "Drive a whole Wayfinder map with one worker per ticket, start and hand off T3 Code threads, and shape a larger change with an architecture brief.",
+      "category": "engineering",
+      "keywords": ["wayfinder", "orchestration", "t3-code", "architecture"]
+    },
+    {
+      "name": "pull-requests",
+      "source": "./skills/pull-requests",
+      "skills": ["./"],
+      "description": "Take a pull request from draft to merged: description with proof, merge risk, QA swarm review, babysitting, reviews, and PR audits.",
+      "category": "engineering",
+      "keywords": ["pull-requests", "code-review", "qa", "github"]
+    },
+    {
+      "name": "communication",
+      "source": "./skills/communication",
+      "skills": ["./"],
+      "description": "Explain diffs, share plans and previews, and write in a consistent personal voice.",
+      "category": "productivity",
+      "keywords": ["writing", "sharing", "preview", "explain"]
+    }
+  ]
+}

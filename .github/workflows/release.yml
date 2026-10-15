@@ -1,0 +1,15 @@
+name: Release
+# release-please keeps a release PR open with the next version and its changelog.
+# Merging that PR tags vX.Y.Z and publishes the GitHub release.
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: googleapis/release-please-action@v5
