@@ -24,7 +24,9 @@ never a nit.
   load-bearing when it changes behaviour users see, a public contract, stored
   data, cost, or the PR's scope, or when the fix needs a migration, a new
   dependency, a new abstraction, or a new configuration option. Record your
-  recommended answer.
+  recommended answer. A decision to accept a risk carries the run that shows
+  the failure: the input, what broke, and the saved evidence, so the user
+  weighs an observed failure, not a predicted one.
 - **Follow-up**: the problem is real but outside the goal or in code the PR
   does not touch. Record it for the handoff.
 - **Reject**: the premise is wrong; the code, a caller, or the framework
