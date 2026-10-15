@@ -4,6 +4,14 @@ description: >-
   Bring a PR to review-ready: a cross-model reviewer panel, a fix for every
   verified finding and bot thread, in at most two rounds. Use when the user
   asks for a QA swarm, or when the diff touches a merge-risk danger area.
+metadata:
+  credits:
+    - skill: qa-swarm and review-triage
+      author: Paul D'Ambra
+      url: "https://github.com/pauldambra/dotfiles/tree/main/ai/skills"
+    - skill: verify by observation, small stacked PRs
+      author: Daniel Visca
+      url: "https://posthog.com/newsletter/code-review-tips"
 ---
 
 # QA swarm
@@ -25,7 +33,8 @@ budget: a third panel costs as much as the first and mostly finds churn.
 - **Claims are hypotheses.** Check every finding against the code at HEAD
   before you act on it, whoever raised it.
 - **Observe.** Proof is something you ran and watched, never an argument that
-  the code works.
+  the code works. A green test suite is test evidence; the proofs in
+  [`PROOF.md`](PROOF.md) show the change in the running system.
 - **Scope.** The PR's goal is the scope. A real problem outside it is a
   follow-up for the handoff.
 - **Draft.** The user marks the PR ready for review. Leave the draft state to
@@ -45,20 +54,25 @@ Fetch the base branch, then write down:
 - **Split**: one concern per PR, at most about 400 changed production lines.
   Split a larger or mixed change into a stack before the first round. Each PR builds only on the PRs below it and carries its
   own tests. Run the swarm on each PR, bottom up.
+- **Proofs**: the proofs the PR owes per [`PROOF.md`](PROOF.md), with the
+  persisted inputs and boundary formats the changed path touches.
 
-Done when the goal, base, danger areas, and split are written down.
+Done when the goal, base, danger areas, split, and owed proofs are written
+down.
 
 ## 2. Open the draft
 
 1. Run the repo's local gate: its formatter, lint, typecheck, and tests. Find
    them in the repo's agent docs, scripts, and CI configuration. Done when the
    gate is green.
-2. Run the change and watch it work before review. Keep the verification
-   command's real output and send a real request to a changed API. For UI
-   changes, follow [UI evidence](../pr-description/references/ui-evidence.md) and capture
-   the changed journey in that session. Record verification gaps explicitly.
+2. Run every owed proof before review, the live run first, and save its
+   evidence. For UI changes, follow [UI evidence](../pr-description/references/ui-evidence.md)
+   and capture the changed journey in the live run. Record a gap for each owed
+   proof you cannot run.
 3. Push. When no PR exists, open a draft with `gh pr create --draft`. Write
-   the description with the `pr-description` skill.
+   the description with the `pr-description` skill. Once the PR number exists,
+   register the owed proofs with `fleet proof require` when the CLI is
+   available, then save the evidence and gaps from step 2 under it.
 4. Keep the proof and the ledger in storage that outlives the worktree. When
    the `fleet` CLI is available (on `PATH` or at `~/dev/fleet/fleet`), get the
    commit proof directory with
@@ -110,14 +124,23 @@ The round is clean when it produced no fix or call item. A clean first round
 ends the rounds.
 
 After a first round with fixes, run the second round on the new HEAD. It is
-narrow: its panel runs only the lenses whose findings you fixed, and their
-briefs carry the fix diff, `git diff <round 1 head>...HEAD`, in place of the
-full diff. When every fix only renamed, reworded, or reformatted code, the
-second round skips the panel and waits for the bots and checks only.
+narrow: its panel runs only the lenses whose findings you fixed, plus Systems
+when its trigger in [`PANEL.md`](PANEL.md) holds, and their briefs carry the
+fix diff, `git diff <round 1 head>...HEAD`, in place of the full diff. When
+every fix only renamed, reworded, or reformatted code, the second round skips
+the panel, waits for the bots and checks, and goes straight to the final read.
 
-The second round is the last. Fix what it finds and push without another
-panel; the bots and checks on that HEAD review the fix. A fix item you cannot
-close becomes a decision, and the handoff is blocked.
+The second round is the last panel. Fix what it finds and push. Every commit
+after the last reviewed one then gets a **final read**: one fresh reviewer
+from the review lane reads the fix diff since that commit, with the lens brief
+of the findings those fixes close. With the `fleet` CLI, reserve it with
+`fleet proof review-start ... --scope final --base <last reviewed SHA>` and
+complete it with `fleet proof review-finish ... --round final <findings file>`;
+it never counts toward the two-round budget. A fix from a final read is a new
+commit, so it gets its own final read; a finding from that second final read
+becomes a decision. When the last panel ends with HEAD as its reviewed commit,
+the final read is skipped. A fix item you cannot close becomes a decision, and
+the handoff is blocked.
 
 Done when every ledger item is fixed, rejected, or a decision, and every
 gating check on HEAD is green. A check that has not reported yet is not green. A repo without CI relies on the
@@ -126,10 +149,10 @@ the run is a gap too, not a failure.
 
 ## 4. Refresh proof
 
-1. Recheck behavior changed since the last verification. For UI changes, use
-   the refresh rules in [UI evidence](../pr-description/references/ui-evidence.md). Preserve the run
-   output and applicable captures for the final reviewed commit through the
-   proof storage from step 2, recording any reused evidence's original run.
+1. Rerun every owed proof whose behavior changed since its last run. For UI
+   changes, use the refresh rules in [UI evidence](../pr-description/references/ui-evidence.md).
+   Preserve the evidence for the final reviewed commit through the proof
+   storage from step 2, recording any reused evidence's original run.
 2. A failed proof is a fix item in the ledger. Use the remaining round budget
    from step 3; after it is spent, unresolved proof blocks the handoff.
 3. Update the description with `pr-description` so its evidence describes the final
@@ -137,18 +160,20 @@ the run is a gap too, not a failure.
    carries the ledger's decisions and calls, the same ones the handoff
    reports, with the rounds and bots on its Involvement line.
 
-Behaviour that only production can show is a gap for the handoff. Done when
-the description carries the proof, the decisions, and a merge risk that
-matches the final diff.
+Behaviour that only production can show belongs to the post-deploy watch,
+which the handoff names. Done when the description carries the proof, the
+gaps, the decisions, and a merge risk that matches the final diff, and
+`fleet proof gate` exits 0 or 3 when the CLI is available.
 
 ## 5. Hand off
 
 Report to the user, then stop:
 
 - The PR link and its outcome. **Ready**: every ledger item is fixed or
-  rejected on `<short sha>`, the gating checks are green, and no decision is
-  open. **Blocked**: anything else, with what blocks it: the open decisions or
-  a red check.
+  rejected on `<short sha>`, the gating checks are green, every owed proof has
+  evidence or an accepted gap (`fleet proof gate` exits 0), and no decision is
+  open. **Blocked**: anything else, with what blocks it: the open decisions,
+  the unaccepted gaps, or a red check.
 - The merge risk and its first bullet.
 - The rounds, and the number of fixed and rejected items per source.
 - **Decisions**: each load-bearing question with your recommended answer.
@@ -157,8 +182,8 @@ Report to the user, then stop:
 - **Drafts**: each reply that needs the user's approval, with its thread URL.
 - **Read first**: the danger hunks.
 - **Follow-ups**: real problems outside the goal.
-- **Gaps**: a lane that failed and its substitute, a silent bot, a proof you
-  could not run.
+- **Gaps**: each owed proof that could not run, as a decision for the user;
+  a lane that failed and its substitute; a skipped Team lane; a silent bot.
 
 When the user's agent instructions ask for a Slack message at the end of a
 PR, end with it; the `slack-pr-update` skill formats it. The user reads the
