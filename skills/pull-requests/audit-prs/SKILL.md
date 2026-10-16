@@ -115,21 +115,23 @@ mkdir -p -m 700 ~/.config/audit-prs
    `leaving-pr-comments` skill says. Collect one
    summary per PR. Done when each dispatched PR has a summary.
 8. **Wait.** Do this step only in a watch. As your last action, start the
-   timer: a Bash command with `run_in_background` that runs
-   `sleep <interval in seconds>`. Done when the timer runs.
+   timer: a Monitor task that runs `sleep <interval in seconds>`, with
+   `timeout_ms` set to the interval. Done when the timer runs.
 
 ## Watch
 
 Start a watch with `/audit-prs watch [interval]`, for example
-`/audit-prs watch 15m`. The default interval is 30 minutes. A watch runs the
-steps, then waits for the interval in a background shell. When the shell
-exits, the harness wakes you. Then run the steps again. The notification that
-the timer ended is your signal for the next run. It is not input from the
-author.
+`/audit-prs watch 15m`. The default interval is 30 minutes, which is also the
+longest interval a Monitor task can run. A watch runs the steps, then waits
+for the interval in a Monitor task. When the task ends, the harness wakes you.
+Then run the steps again. The notification that the timer ended is your
+signal for the next run. It is not input from the author.
 
-- Use a background shell as the timer. Do not use `/loop`, cron jobs, or
-  scheduled wakeups. T3 Code shows the thread as "Monitoring" while a
-  background shell or a Monitor task runs. It does not track cron jobs.
+- Use a Monitor task as the timer. Do not use a Bash command with
+  `run_in_background`, `/loop`, cron jobs, or scheduled wakeups. T3 Code
+  keeps the thread on the Working shelf while a Monitor task runs. It returns
+  the thread to the inbox for a background shell and does not track cron
+  jobs.
 - Keep one timer. Before you start a timer, stop the earlier timer of this
   watch with TaskStop if it still runs.
 - When the author tells you to stop the watch, stop the timer with TaskStop
