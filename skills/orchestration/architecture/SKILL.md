@@ -17,16 +17,27 @@ Done when every module and every contract you will draw is linked to a real `pat
 
 ## Rounds
 
-A round is one diagram plus the frontier questions, nothing else. Draw the diagram, then ask every question whose prerequisites are settled, in the exact `grilling` format: numbered ❓ questions, each with a ➡️ recommended answer. End the turn with the round in full as the final reply, and close by asking the user to accept all recommendations, accept with changes, or discuss first.
+A round is the rung's diagram plus the frontier questions, nothing else. From a diagram's second round on, open with one line that names what the last answers changed in it. Draw the diagram, then ask every question whose prerequisites are settled, in the exact `grilling` format: numbered ❓ questions, each with a ➡️ recommended answer. The round in full is the turn's final reply: put links to the ticket or branch in one closing line, and close by asking the user to accept all recommendations, accept with changes, or discuss first.
 
 Descend the ladder one rung per round:
 
-1. **Context**: a change map. The actors, the external systems, and the modules the change touches, coloured **new**, **changed**, or **untouched**, with a legend. Ask about scope: which modules are in, which actors drive the change.
-2. **Modules and seams**: the modules and the dependencies between them. Draw each open fork as alternatives in the same diagram, for example two arrows labelled A and B. Ask who owns what, which way each dependency points, and where each seam goes. When a seam stays contested after its round, design it twice: dispatch the subagents from `DESIGN-IT-TWICE.md` in the `codebase-design` skill and draw their interfaces as the alternatives in the next round's diagram.
+1. **Context**: a change map. The actors, the external systems, and the modules the change touches. Ask about scope: which modules are in, which actors drive the change.
+2. **Modules and seams**: the same flowchart, zoomed in to the modules and the dependencies between them. Draw each open fork as alternatives in the same diagram, marked as **The living diagram** describes. Ask who owns what, which way each dependency points, and where each seam goes. When a seam stays contested after its round, design it twice: dispatch the subagents from `DESIGN-IT-TWICE.md` in the `codebase-design` skill and draw their interfaces as the alternatives in the next round's diagram.
 3. **Call paths**: one sequence diagram per key path: the main read, the main write, and the most important failure. Ask what each participant knows, where a step can fail, and what happens when it does.
 4. **Contracts**: the interface at each locked seam as code in the repo's language, with its invariants, error modes, and performance characteristics. Ask what each caller must know and what stays behind the seam.
 
-Each answer reshapes the design tree. Redraw only the diagrams the answers changed, and draw a locked fork plain, without alternatives. Lock a fork yourself only when the code or an ADR settles it, and say so in the recommendation; the user can reopen it.
+Each answer reshapes the design tree. Lock a fork yourself only when the code or an ADR settles it, and say so in the recommendation; the user can reopen it.
+
+## The living diagram
+
+Each diagram lives across its rounds: one flowchart for rungs 1 and 2, and one sequence diagram per key path in rung 3. Every round redraws the diagram with the answers applied. An accepted suggestion or fork alternative turns solid and drops its `Qn` tag, the rejected ones go away, and the frontier's new guesses appear.
+
+A flowchart marks two things, and its legend explains both:
+
+- **Fill** is the change: **new**, **changed**, **untouched**, or **external**.
+- **Border** is the decision: solid for **locked**; dashed for a **suggestion**, with its question number in the label, such as `Q2 Selection API`; dotted for an **open fork**, its alternatives labelled `Q3 A` and `Q3 B`. Every suggestion and every fork has its question in the round.
+
+Take the class definitions and the legend from the worked example. Give a node its fill and its border in two statements, `class Api new` and `class Api suggested`: Mermaid reads `class Api new,suggested` as one class name and styles nothing. Draw a suggested or alternative edge as `-. "Q3 A: calls" .->`. In a sequence diagram, put the question number in the label of each suggested message.
 
 Facts are yours to find: dispatch a subagent for anything the environment can answer. Decisions are the user's.
 
@@ -36,7 +47,7 @@ Done when the frontier is empty: every seam locked, every key path drawn, every 
 
 Diagrams are Mermaid. Where the round appears decides how the diagram renders:
 
-- **T3 Code** (`T3CODE_HOME` is set): before the final reply, render the round's diagram inline with `html_render`, as one small self-contained page that holds only that diagram. Preview it with `html_preview` first to get its height. The page is a `<pre class="mermaid">` block plus one module script that imports Mermaid from `https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs` and calls `mermaid.initialize({ startOnLoad: true })`; the tool's own description covers the page style. The final reply then carries the questions.
+- **T3 Code** (`T3CODE_HOME` is set): before the final reply, render the round's diagram inline with `html_render`, as one small self-contained page that holds only that diagram. Preview it with `html_preview` first to get its height. The page is a `<pre class="mermaid">` block plus one module script that imports Mermaid from `https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs` and calls `mermaid.initialize({ startOnLoad: true })`; the tool's own description covers the page style. The final reply then holds the rest of the round: the change line, the questions, and the links line.
 - **GitHub ticket**: post the round as a comment with the diagram in a fenced `mermaid` code block, which GitHub renders.
 - **Elsewhere**: put the fenced `mermaid` block at the top of the round.
 
@@ -46,12 +57,30 @@ A rung 2 round with one open fork, drawn as two alternatives:
 
 ```mermaid
 flowchart LR
+  subgraph Legend
+    direction LR
+    LNew[new]:::new
+    LChanged[changed]:::changed
+    LUntouched[untouched]:::untouched
+    LExternal[external]:::external
+    LSuggested[suggestion]:::suggested
+    LFork[open fork]:::fork
+  end
   Engine[Game engine]
   Progression[Progression]
-  Bus[(Event bus)]
-  Engine -- "A: calls" --> Progression
-  Engine -. "B: publishes" .-> Bus
-  Bus -. "B: delivers" .-> Progression
+  Bus[("Q1 B: Event bus")]
+  Engine -. "Q1 A: calls" .-> Progression
+  Engine -. "Q1 B: publishes" .-> Bus
+  Bus -. "Q1 B: delivers" .-> Progression
+  classDef new fill:#dcfce7
+  classDef changed fill:#fef9c3
+  classDef untouched fill:#f1f5f9
+  classDef external fill:#dbeafe
+  classDef suggested stroke-dasharray:6 4,stroke-width:2px
+  classDef fork stroke-dasharray:2 3,stroke-width:2px
+  class Engine,Progression changed
+  class Bus new
+  class Bus fork
 ```
 
 ❓ **Q1** - **Engine to progression dependency**: A has the engine call progression directly, so the engine knows progression exists. B has the engine publish events on a bus that progression subscribes to. Which way should this dependency point?
@@ -60,7 +89,7 @@ flowchart LR
 
 ## Capture
 
-Write `docs/architecture/<name>.md`: the question, the final diagram of each rung, and the locked contracts with their invariants, error modes, and performance characteristics. Then record one ADR per locked seam that passes `domain-modeling`'s three-part bar (hard to reverse, surprising without context, a real trade-off), in the format of `ADR-FORMAT.md` in the `domain-modeling` skill. The file becomes the interface section of the spec or implementation ticket that follows.
+Write `docs/architecture/<name>.md` once, at capture; during the rounds the thread and the ticket comments hold the design. The file holds the question, the final diagram of each rung, and the locked contracts with their invariants, error modes, and performance characteristics. Then record one ADR per locked seam that passes `domain-modeling`'s three-part bar (hard to reverse, surprising without context, a real trade-off), in the format of `ADR-FORMAT.md` in the `domain-modeling` skill. The file becomes the interface section of the spec or implementation ticket that follows.
 
 For a Wayfinder ticket, the resolution comment links the file and lists every locked decision.
 
