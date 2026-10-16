@@ -17,7 +17,7 @@ Done when every module and every contract you will draw is linked to a real `pat
 
 ## Rounds
 
-A round is the rung's diagram plus the frontier questions, nothing else. Open with one line that names what the last answers changed in the diagram. Draw the diagram, then ask every question whose prerequisites are settled, in the exact `grilling` format: numbered ❓ questions, each with a ➡️ recommended answer. The round in full is the turn's final reply: put links to the ticket or branch in one closing line, and close by asking the user to accept all recommendations, accept with changes, or discuss first.
+A round is the rung's diagram plus the frontier questions, nothing else. From a diagram's second round on, open with one line that names what the last answers changed in it. Draw the diagram, then ask every question whose prerequisites are settled, in the exact `grilling` format: numbered ❓ questions, each with a ➡️ recommended answer. The round in full is the turn's final reply: put links to the ticket or branch in one closing line, and close by asking the user to accept all recommendations, accept with changes, or discuss first.
 
 Descend the ladder one rung per round:
 
@@ -30,14 +30,14 @@ Each answer reshapes the design tree. Lock a fork yourself only when the code or
 
 ## The living diagram
 
-Each rung has one diagram that lives across its rounds: rungs 1 and 2 share one flowchart, and each key path of rung 3 keeps its own sequence diagram. Every round redraws that diagram with the answers applied. An accepted suggestion turns locked, a rejected one goes away, and the frontier's new guesses appear.
+Each diagram lives across its rounds: one flowchart for rungs 1 and 2, and one sequence diagram per key path in rung 3. Every round redraws the diagram with the answers applied. An accepted suggestion or fork alternative turns solid and drops its `Qn` tag, the rejected ones go away, and the frontier's new guesses appear.
 
 A flowchart marks two things, and its legend explains both:
 
 - **Fill** is the change: **new**, **changed**, **untouched**, or **external**.
 - **Border** is the decision: solid for **locked**; dashed for a **suggestion**, with its question number in the label, such as `Q2 Selection API`; dotted for an **open fork**, its alternatives labelled `Q3 A` and `Q3 B`. Every suggestion and every fork has its question in the round.
 
-Define the borders as `classDef suggested stroke-dasharray:6 4` and `classDef fork stroke-dasharray:2 3`, and give a node both marks with `class Api new,suggested`. Draw a suggested or alternative edge as `-. "Q3 A: calls" .->`. In a sequence diagram, put the question number in the label of each suggested message.
+Take the class definitions and the legend from the worked example. Give a node its fill and its border in two statements, `class Api new` and `class Api suggested`: Mermaid reads `class Api new,suggested` as one class name and styles nothing. Draw a suggested or alternative edge as `-. "Q3 A: calls" .->`. In a sequence diagram, put the question number in the label of each suggested message.
 
 Facts are yours to find: dispatch a subagent for anything the environment can answer. Decisions are the user's.
 
@@ -47,7 +47,7 @@ Done when the frontier is empty: every seam locked, every key path drawn, every 
 
 Diagrams are Mermaid. Where the round appears decides how the diagram renders:
 
-- **T3 Code** (`T3CODE_HOME` is set): before the final reply, render the round's diagram inline with `html_render`, as one small self-contained page that holds only that diagram. Preview it with `html_preview` first to get its height. The page is a `<pre class="mermaid">` block plus one module script that imports Mermaid from `https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs` and calls `mermaid.initialize({ startOnLoad: true })`; the tool's own description covers the page style. The final reply then carries the questions.
+- **T3 Code** (`T3CODE_HOME` is set): before the final reply, render the round's diagram inline with `html_render`, as one small self-contained page that holds only that diagram. Preview it with `html_preview` first to get its height. The page is a `<pre class="mermaid">` block plus one module script that imports Mermaid from `https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs` and calls `mermaid.initialize({ startOnLoad: true })`; the tool's own description covers the page style. The final reply then holds the rest of the round: the change line, the questions, and the links line.
 - **GitHub ticket**: post the round as a comment with the diagram in a fenced `mermaid` code block, which GitHub renders.
 - **Elsewhere**: put the fenced `mermaid` block at the top of the round.
 
@@ -57,17 +57,30 @@ A rung 2 round with one open fork, drawn as two alternatives:
 
 ```mermaid
 flowchart LR
+  subgraph Legend
+    direction LR
+    LNew[new]:::new
+    LChanged[changed]:::changed
+    LUntouched[untouched]:::untouched
+    LExternal[external]:::external
+    LSuggested[suggestion]:::suggested
+    LFork[open fork]:::fork
+  end
   Engine[Game engine]
   Progression[Progression]
   Bus[("Q1 B: Event bus")]
   Engine -. "Q1 A: calls" .-> Progression
   Engine -. "Q1 B: publishes" .-> Bus
   Bus -. "Q1 B: delivers" .-> Progression
-  classDef changed fill:#fef9c3
   classDef new fill:#dcfce7
-  classDef fork stroke-dasharray:2 3
+  classDef changed fill:#fef9c3
+  classDef untouched fill:#f1f5f9
+  classDef external fill:#dbeafe
+  classDef suggested stroke-dasharray:6 4,stroke-width:2px
+  classDef fork stroke-dasharray:2 3,stroke-width:2px
   class Engine,Progression changed
-  class Bus new,fork
+  class Bus new
+  class Bus fork
 ```
 
 ❓ **Q1** - **Engine to progression dependency**: A has the engine call progression directly, so the engine knows progression exists. B has the engine publish events on a bus that progression subscribes to. Which way should this dependency point?
