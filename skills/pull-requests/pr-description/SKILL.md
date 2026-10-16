@@ -39,9 +39,9 @@ metadata:
    For UI changes, capture and refresh media with
    [UI evidence](references/ui-evidence.md). For a flow diagram, read
    [implementation views](references/implementation-views.md).
-5. Name the test seams, the checks you ran, and the material gaps. The
-   proofs a PR owes and the shape of a gap come from
-   [`PROOF.md`](../qa-swarm/PROOF.md) of the `qa-swarm` skill. Add a
+5. Name the test seams, the checks you ran, and the material gaps. When the
+   work ran proofs per [`PROOF.md`](../qa-swarm/PROOF.md) of the `qa-swarm`
+   skill, list each owed proof with its evidence or its gap. Add a
    verification command and its expected result when it helps a reviewer
    reproduce the behavior. Put long output and process history in a
    collapsed block or in proof storage.
