@@ -48,9 +48,10 @@ Use the harness's PR-monitoring tools when it has them. Otherwise, poll the
 PR for new reviews, comments, and checks.
 
 Act on reviews, comments, and checks newer than the latest push, and triage
-each one per `TRIAGE.md`. After you push a fix that changes behavior, get one
-review of the fix diff from the other model family. Record it as a final
-read: start it with
+each one per `TRIAGE.md`. Every push you make gets a final read of its
+diff: one review from the other model family for a fix that changes
+behavior, and your own `git range-diff` check for a rebase or a reworded
+fix. Record it: start it with
 `fleet proof review-start ... --scope final --base <last reviewed SHA>` and
 finish it with `fleet proof review-finish ... --round final <findings file>`
 when the CLI is available, else in the ledger. Follow the PR workflow and
@@ -110,25 +111,28 @@ head, from `gh pr view <number> --json headRefOid`, never the merge commit.
 4. Save each check's queries and results with
    `fleet proof save ... --kind post-deploy-watch` when the CLI is
    available, else in the ledger.
-5. Park the 24-hour check as one entry with its due time, the repo, the PR,
-   the head SHA, and the ledger path. When a parked to-do skill exists, such
-   as `parked-todos`, keep the entry in the `## Pending flags and rollouts`
+5. Schedule the 24-hour check with the harness's scheduler when it has one.
+   Otherwise park it as one entry with its due time, the repo, the PR, the
+   head SHA, and the ledger path. When a parked to-do skill exists, such as
+   `parked-todos`, keep the entry in the `## Pending flags and rollouts`
    section that Feature flags uses; otherwise put it in the report.
    Babysitting then ends with the watch open, and the report says so.
-6. After the 24-hour check is saved, run `fleet proof gate ... --landed`.
-   Exit 0 means the watch is done. Exit 3 means gaps wait for acceptance: ask
-   the user to accept them. Exit 1 means a proof is missing or the head is
-   unreviewed: fix that before you report the watch as done.
+6. Run `fleet proof gate ... --landed` after the 24-hour check is saved, or
+   once a gap or a revert ends the watch early. Exit 0 means the watch is
+   done. Exit 3 means gaps wait for acceptance: ask the user to accept them.
+   Exit 1 means a proof is missing or the head is unreviewed. Fix a missing
+   proof; record an unreviewed head on a merged PR as a gap for the user.
 
-The watch is done when both checks are saved and `gate --landed` exits 0, or
-exits 3 with the gaps put to the user.
+The watch is done when `gate --landed` exits 0, or exits 3 with the gaps put
+to the user. Then close its scheduled or parked entry.
 
 For a finding, prepare the revert locally: a `git revert` of the merge
 commit on its own branch, and the revert PR's body text in your report. Open
 the revert PR only when the user says so. Its body carries the conclusion
 only. Error rates and other numbers stay in the private proof storage, as
 Prod shape in `PROOF.md` keeps its measurements. After a one-hour finding,
-the 24-hour check still runs unless the user reverts.
+the 24-hour check still runs unless the user reverts. A revert ends the
+watch at step 6.
 
 Record a gap for the watch when the deploy signal or the project is
 unreachable, when the user's agent instructions name no project, or when no
