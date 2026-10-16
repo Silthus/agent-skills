@@ -1,17 +1,16 @@
 # QA swarm panel
 
 The panel is one brief per lens. Each reviewer works alone and never learns of
-the others. Cast every lens with the model selection policy in the user's
-agent instructions, when one exists; otherwise use the runtime defaults:
+the others. Cast each lane with the model selection policy in the user's
+agent instructions, or with the runtime defaults when there is no policy:
 
-- **Review lane**, the policy's **Review** model for the change's author, or
-  without a policy a strong model from the other model family: Correctness,
-  Risk, Design, and Systems when the diff changes a shared boundary.
-- **Fresh-eyes lane**, the policy's **fresh-eyes** model, or without a policy
-  a strong model from the author's family: Fresh eyes, and UI when the diff
-  changes a user interface, cast with the policy's UI defaults when it has
-  them.
-- **Team lane**, the Review lane's model: one lens per PostHog Review
+- **Review lane**: the policy's **Review** model for the change's author, or
+  a strong model from the other family. It runs Correctness, Risk, Design,
+  and Systems.
+- **Fresh-eyes lane**: the policy's **fresh-eyes** model, or a strong model
+  from the author's family. It runs Fresh eyes and UI, with UI cast by the
+  policy's UI defaults when it has them.
+- **Team lane**: the Review lane's model. It runs one lens per PostHog Review
   perspective of the area's owners and the author, see [Team](#team).
 
 ## Lanes
@@ -25,7 +24,7 @@ column for its model's family.
 | Codex       | One native subagent per lens                              | One `claude -p` per lens, in parallel, when the `claude` CLI is installed |
 
 When the runtime cannot reach the other family, treat that family as an
-outage, as described below.
+outage.
 
 Write each brief to a file next to the ledger. From Claude Code, dispatch
 every lens of both lanes in one message. The `codex:codex-rescue` agent only
@@ -43,26 +42,25 @@ claude -p --model "$claude_review_model" --allowedTools "Read,Grep,Glob" < <brie
 
 A lane fails when it ends without a `FINDINGS` block, when its `COVERED`
 list misses a changed file, or when it runs longer than 30 minutes. Stop an
-overdue lane before you go on. Rerun it once for the missing files. When it fails
-again, run that brief on the strongest model you have and report the
-substitution as a gap.
+overdue lane, then rerun it once for the missing files. When it fails again,
+run that brief on the strongest model you have and report the substitution as
+a gap.
 
-A 429 or a usage-limit error is an **outage**, not a lane failure: a rerun
-hits the same limit. Skip that model family's lanes for the rest of the
-swarm, both rounds. Run one lane on the strongest model you have, carrying
-every lens of the missing family in one brief, and report the outage as a
-gap.
+A 429 or a usage-limit error is an **outage**, not a lane failure, because a
+rerun hits the same limit. Skip that family's lanes for the rest of the swarm,
+both rounds. Run one lane on the strongest model you have, with every lens of
+the missing family in one brief, and report the outage as a gap.
 
 ## Repo knowledge
 
-Before dispatch, collect the repository's own review material: review skills
-such as `qa-team` with its incident patterns and personas, or
-`security-audit`, and the security or review docs that the repo's agent docs
-point to. This is the repo's memory of how it broke before. Each lens brief
-carries the material for its hunting grounds, after the lens text: incident
-patterns to Correctness and Risk, the security audit and security docs to
-Risk, personas to Fresh eyes. The hunting grounds below stay the floor. Name
-the material each lens received in the ledger.
+Before dispatch, collect the repository's own review material, its memory of
+how it broke before: review skills such as `qa-team` with its incident
+patterns and personas, or `security-audit`, and the security or review docs
+that the repo's agent docs point to. Each brief carries the material for its
+lens after the lens text: incident patterns to Correctness and Risk, the
+security audit and security docs to Risk, personas to Fresh eyes. The hunting
+grounds below stay the floor. Name in the ledger the material each lens
+received.
 
 ## Brief
 
@@ -87,9 +85,8 @@ you judge it. Report a finding only when you can name its concrete trigger and
 its concrete consequence under intended use. When one cause breaks the same
 rule at more than one site, report it once and list every site.
 
-Style counts when it breaks a named standard: the repo's documented rules or
-the coding preferences in the user's agent instructions. Taste without a standard is not a
-finding.
+Style counts only when it breaks a named standard: the repo's documented rules
+or the coding preferences in the user's agent instructions.
 
 End with:
 
@@ -110,12 +107,12 @@ Lens: <lens name and hunting grounds>
 
 ## Lenses
 
-Every panel runs every lens. **UI** runs only when the diff changes a user
-interface. **Systems** runs only when the diff changes a boundary that many
-callers pass through: a shared helper, an executor, a serializer, a default
-resolved in one place. In round two it runs when a round-one finding named the
-same cause at more than one site. **Team** runs one lens per perspective of the
-area's owners and the author.
+Round one runs every lens whose trigger holds. **UI** runs only when the diff
+changes a user interface. **Systems** runs only when the diff changes a
+boundary that many callers pass through: a shared helper, an executor, a
+serializer, a default resolved in one place. In round two, Systems runs when
+a round-one finding named the same cause at more than one site. **Team** runs
+one lens per perspective of the area's owners and the author.
 
 ### Fresh eyes
 
@@ -137,18 +134,17 @@ it is wrong and find how it breaks.
 
 - Trace one concrete input through each new branch. Look for results that are
   wrong but silent.
-- Boundaries: empty, single, huge, malformed, duplicate, and off-by-one inputs.
+- Boundaries: empty, single, huge, malformed, malicious, duplicate, and
+  off-by-one inputs.
 - Data mapping between layers, type coercions, and state mutations.
 - Queries: join and filter conditions, aggregation, deterministic ordering,
   transaction boundaries.
-- Async: a missing await, blocking work on an async path, races on shared
-  state.
-- Error paths: what the caller sees when each dependency fails.
-- Goal fit: every part of the goal done, and no behaviour the goal does not
+- Async and concurrency: a missing await, blocking work on an async path,
+  races on shared state, concurrent requests, and retries.
+- Error paths: what the caller sees when each dependency fails, is slow, or
+  returns garbage.
+- Goal fit: every part of the goal done, and no behavior the goal does not
   ask for.
-- Malformed, huge, empty, or malicious input.
-- A slow dependency, or one that returns garbage.
-- Concurrent requests and retries.
 - Production volume.
 - Old and new code running side by side during the deploy.
 - The next developer who extends the code in the obvious, wrong way.
@@ -160,7 +156,8 @@ and through a deploy?
 
 Security: a finding names the source, the sink, the missing control, an
 exploit request, and why it is reachable. Drop a finding that misses one of
-them.
+them, such as defense in depth, a missing header, or a rate limit without an
+exploit chain.
 
 - Access control on every method and action of a changed endpoint,
   permissions that allow by default, tenant scoping (IDOR), and mass
@@ -175,9 +172,6 @@ them.
 - CI and dependencies: `pull_request_target` with the PR head, loose pins,
   new install scripts.
 
-Defense in depth, missing headers, or rate limits without an exploit chain are
-not findings.
-
 Production:
 
 - Performance: N+1 queries, a missing index on a new filter, unbounded loads,
@@ -189,7 +183,7 @@ Production:
 - Reliability: timeouts, retries without a cap, missing idempotency on side
   effects, swallowed errors, cache invalidation on every serving path,
   cleanup of resources.
-- Rollout: risky behaviour behind a feature flag, safe behaviour when the flag
+- Rollout: risky behavior behind a feature flag, safe behavior when the flag
   is off, manual deploy steps.
 - Observability: logs or metrics where data is dropped or limited, and enough
   signal to see the change fail in production.
@@ -198,9 +192,6 @@ Grade:
 
 - Grade the diff with the `merge-risk` rubric from the hunks alone. End with a
   `GRADE: <low|medium|high> | <the hunk that sets it>` line after `COVERED`.
-  The brief leaves out the author's callout, so the grade stays independent.
-  In triage, a Risk grade above the callout's is a fix item, and the higher
-  grade wins.
 - Check the owed proofs against [`PROOF.md`](PROOF.md). A persisted input, a
   boundary format, or a high grade with no owed proof is a finding.
 
@@ -226,8 +217,8 @@ Leave untouched lines alone, and leave short, clear code unextracted.
 
 Tests:
 
-- Behaviour through public seams, as the `tdd` skill defines them.
-- A test for every behaviour the goal adds or changes, and for every fixed bug.
+- Behavior through public seams, as the `tdd` skill defines them.
+- A test for every behavior the goal adds or changes, and for every fixed bug.
 - Tautological tests, tests coupled to internals, mocks that differ from
   production, and smoke tests that prove nothing.
 - Weakened or deleted assertions, skipped tests, and snapshots regenerated
@@ -254,7 +245,7 @@ the fix sit at the boundary or at one caller?
   through the boundary.
 
 A finding here needs evidence in the code for the shared cause. Similar diffs
-alone are not one.
+alone are not evidence.
 
 ### UI
 
@@ -282,19 +273,19 @@ team's PostHog project. Select them before dispatch:
    maintainers: the five most frequent authors of the touched directories,
    `git log --since=1.year --format=%aN -- <dirs> | sort | uniq -c | sort -rn | head -5`.
 2. List the perspectives on the PostHog MCP server with the `posthog-exec`
-   tool: `call skill-list {"search": "review-hog-perspective-"}`. Switch to
-   the team's project first, the one the user's agent instructions name, when
-   the active project differs. An empty list from another project is not an
-   empty lane.
+   tool: `call skill-list {"search": "review-hog-perspective-"}`. When the
+   active project differs from the team's project that the user's agent
+   instructions name, switch to it first. An empty list from another project
+   is not an empty lane.
 3. Keep a perspective when one of its `owners` is the author, has a GitHub
    login in the owner set per `org-member-get-github-login`, or has a name in
    the maintainer set. A perspective with no owners is a canonical one and
-   stays out: the other lanes already cover its ground.
+   stays out, because the other lanes already cover its ground.
 4. `skill-get` each kept perspective and run it as its own lens with the
    shared brief, named after the perspective, with the perspective's body as
    the lens text. The brief already carries the harness rules.
 
 Name the kept perspectives and the owners they matched in the panel brief.
 When the PostHog MCP server is not available or nothing is kept, skip the
-lane and write its gap line to the ledger before dispatch, naming the owners
+lane and, before dispatch, write its gap line to the ledger, naming the owners
 it searched for.

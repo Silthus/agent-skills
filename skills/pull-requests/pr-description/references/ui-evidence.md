@@ -1,77 +1,75 @@
 # UI evidence
 
-Use this reference when verifying a UI change for a PR, writing its evidence,
-or refreshing evidence after a fix or rebase.
-
 ## Capture during verification
 
-1. Identify the changed user journey and its consequential changed states or
-   branches. Choose the smallest set of scenarios that demonstrates them.
-   Include changed empty, loading, error, or narrow-layout states where they
-   affect the outcome. Every changed feature, view, and state gets a
-   screenshot.
-2. Exercise those scenarios before requesting review. Reuse the verification
-   session for PR captures. Use the runtime's native browser tools. In T3,
-   start with `preview_status` and open the preview when none is attached.
-   Use another browser only when the native tools are absent or explicitly
-   unavailable, or the user requests it.
-3. Capture the running app when the claim involves an integration or saved
-   result. A Storybook or mock capture can demonstrate appearance; label its
-   source and verify backend behavior separately when claiming it works.
-4. Use a still for every changed view and state. Add a short recording of
-   the main journey for a larger feature with several steps, or when the
-   action or order is needed to understand the result. In T3, record with
-   `preview_recording_start` and `preview_recording_stop`; elsewhere use the
-   `agent-browser` recording. When recording is impossible, name the missing
-   video as a gap. Reuse either format for verification and the PR. Produce additional formats only when they
-   show something missing or the repository requires them. Full QA remains
-   a separate workflow when requested or required.
-5. Inspect the captured files. Use invented data and check the whole visible
-   frame for private information before publication. Keep files and run
-   context outside source history: tested commit, browser source, relevant
-   flags, scenarios, results, and gaps.
+1. List the changed user journey and the changed states and branches that
+   affect its outcome, including empty, loading, error, and narrow-layout
+   states. Pick the smallest set of scenarios that shows them.
+2. Run those scenarios before you request review, and take the PR captures
+   in the same session. Use the runtime's native browser tools. In T3, start
+   with `preview_status` and open the preview when none is attached. Use
+   another browser when the native tools are absent or unavailable, or when
+   the user asks for one.
+3. Capture the running app when the claim involves an integration or a
+   saved result. A Storybook or mock capture shows appearance only. Label
+   its source, and verify backend behavior separately before you claim it
+   works.
+4. Take a still of every changed feature, view, and state. Add a short
+   recording of the main journey for a larger feature with several steps,
+   or when the reader needs the action or its order to understand the
+   result. In T3, record with `preview_recording_start` and
+   `preview_recording_stop`; elsewhere use the `agent-browser` recording.
+   When recording is impossible, name the missing video as a gap. The same
+   captures serve verification and the PR. Add another format only when it
+   shows something the others miss or the repository requires it. Full QA
+   is a separate workflow, run when requested or required.
+5. Use invented data. Before you publish, check each capture's whole frame
+   for private information. Keep the files and their run context outside
+   source history: the tested commit, browser source, relevant flags,
+   scenarios, results, and gaps.
 
 Done when every consequential changed scenario has an observed result and
-useful evidence, or a named verification gap. A gap remains unverified.
+useful evidence, or a named verification gap. A gap stays unverified.
 
 ## Present the journey
 
-Put captures in the order a user encounters them, from entry to result.
-Caption each with the action or state and the result it demonstrates, such
-as "Selecting Email opens provider setup." Group flags and capture source
-in one short context line when they apply to the whole sequence.
+Put captures in the order a user meets them, from entry to result. Caption
+each with the action or state and the result it shows, such as "Selecting
+Email opens provider setup." When flags and capture source apply to the
+whole sequence, put them in one short context line.
 
 Show before and after when the comparison explains the change. For a new
 screen or flow, say there is no previous equivalent. When UI code changes
-without a visible difference, state that in one line.
+without a visible difference, say so in one line.
 
-Show the main journey in a recording when it needs one, and use stills for
-the remaining changed branches. State what was actually exercised. Describe
-behavior outside the tested scope as unchecked.
+Use the recording for the main journey and stills for the other changed
+branches. State what you exercised, and label behavior outside that scope
+as unchecked.
 
 ## Upload media
 
 Upload screenshots and recordings with the `--attach` flag of `gh pr create`,
 `gh pr edit`, or `gh pr comment`. It needs `gh` 2.100.0 or newer; update an
-older `gh` first. Do not use releases or gists to host media.
+older `gh` first.
 
 `--attach` needs write access to the base repository. When it fails with
 `attaching files requires write access to the repository`, as for a PR from
 your fork into a protected repository:
 
-- When the `fleet` CLI is available (on `PATH` or at `~/dev/fleet/fleet`), publish each screenshot to your own
-  public fork and embed the returned URL:
+- When the `fleet` CLI is available (on `PATH` or at `~/dev/fleet/fleet`),
+  publish each screenshot to your own public fork and embed the returned URL:
   `fleet proof publish --repo <owner/repo> --pr <number> --commit <full SHA> --asset-repo <your public fork> <image>`.
   It publishes images only, not recordings.
 - Otherwise, ask the user to drag the files into the PR description in the
   browser. Until they do, name the missing media as a gap.
 
-Do not use other branches or repositories.
+Host media only through these routes, never in releases, gists, or other
+branches or repositories.
 
-Put each capture beside the behavior it proves: reference it in the body by
-the same path that you give to `--attach`. `gh` uploads the file and rewrites
-the reference to the uploaded asset. An attachment without a reference is
-appended to the end of the body, with the alt text after `#`.
+To put each capture beside the behavior it proves, reference it in the body
+by the path you pass to `--attach`. `gh` uploads the file and rewrites the
+reference to the uploaded asset. `gh` appends an unreferenced attachment to
+the end of the body, with the text after `#` as its alt text.
 
 ```sh
 # body.md contains ![Before: <state>](/tmp/<pr>/before.png) and
@@ -88,16 +86,16 @@ each image renders and each video plays.
 
 ## Refresh after changes
 
-After the last relevant visual or behavioral change, rerun the affected
-scenarios and replace their evidence. Reuse unaffected captures after
-checking that their behavior and appearance still match; record their tested
-commit and why they remain applicable in the proof notes. Limit rechecks to
-the scenarios the change can affect.
+After the last visual or behavioral change, rerun the scenarios it can
+affect and replace their evidence. Reuse an unaffected capture once you
+confirm its behavior and appearance still match. Record its tested commit
+and why it still applies in the proof notes.
 
-Present evidence applicable to the current code first. Follow the
-[preservation rule](../SKILL.md#preserve-evidence) for older media. If fresh rendering is blocked,
-label the older evidence and the current verification gap beside it.
+Order and keep evidence per the
+[preservation rule](../SKILL.md#preserve-evidence). When fresh rendering is
+blocked, label the older evidence and name the current verification gap
+beside it.
 
 Done when a reviewer can follow the changed journey without opening the
-diff, each capture says what it demonstrates, and no evidence implies a
-broader or fresher verification than was performed.
+diff, each capture says what it shows, and no evidence implies a broader or
+fresher verification than was performed.

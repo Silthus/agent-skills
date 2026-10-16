@@ -1,17 +1,16 @@
 ---
 name: merge-risk
 description: >-
-  Grade a PR's merge risk, its blast radius, as low, medium, or high, call
-  its door one-way or two-way, and post the risk callout to the PR
-  description. Use when the pr-description, qa-swarm, or review-pr skills
-  reach their risk step, or when the user asks how risky a PR is to merge.
+  Grade a PR's merge risk as low, medium, or high and post the risk callout
+  to its description. Use when pr-description, qa-swarm, or review-pr reach
+  their risk step, or when the user asks how risky a PR is.
 ---
 
 # Merge risk
 
 The **merge risk** is the blast radius of merging a diff: what breaks, for
-whom, and what limits it. Grade only the PR's own increment: in a stack, the
-diff against its parent PR.
+whom, and what limits it. Grade the PR's own increment. In a stack, that is
+the diff against its parent PR.
 
 ## Danger areas
 
@@ -29,17 +28,17 @@ effect.
 
 ## Grade
 
-Read every danger hunk with its callers. Danger areas and more than about
-400 changed production lines raise the grade. A default-off feature flag,
-focused tests on the risky path, and a two-way door lower it; a one-way door
-raises it. Done when every danger hunk and every one-way effect is named and the
-grade follows from them.
+Read every danger hunk with its callers. Danger areas, a one-way door, and
+more than about 400 changed production lines raise the grade. A default-off
+feature flag, focused tests on the risky path, and a two-way door lower it.
+Done when every danger hunk and every one-way effect is named and the grade
+follows from them.
 
 ## Callout
 
-Name the concrete risk and what limits it, in one to three bullets. The
-door follows the grade on its line. The grade sets the circle and the
-callout colour:
+Name the concrete risk and what limits it, in one to three bullets. The door
+follows the grade on its line. The grade sets the circle and the callout
+color:
 
 | Grade  | Circle | Callout       |
 | ------ | ------ | ------------- |
@@ -56,20 +55,19 @@ callout colour:
 <!-- /merge-risk -->
 ```
 
-GitHub fixes the callout's title and strips `class` and `style` from HTML, so
-the circle and the bold grade line inside the callout carry the risk.
+GitHub fixes the callout title and strips `class` and `style` from HTML, so
+the circle and the bold grade line carry the risk.
 
 ## Post
 
-Write only the risk callout to the PR description, after the problem. On a
-PR by someone else, show the proposed body change and post it after the user
-approves it.
+On someone else's PR, show the user the proposed body change and post it
+after they approve.
 
 1. Read the body with `gh pr view <n> --json body -q .body`.
-2. Remove existing `merge-risk` and `line-count` marker blocks wherever they sit.
+2. Remove every `merge-risk` and `line-count` marker block from the body.
 3. Put the callout under the `Merge Danger` heading when the body has one,
-   else right after the problem section. When the body has neither, put the
-   callout first. Keep the rest of the body byte for byte.
+   else right after the problem section, else first. Keep the rest of the
+   body byte for byte.
 4. Write it back with `gh pr edit <n> --body-file <file>`.
 
 Done when the description carries one risk callout with the current grade.
