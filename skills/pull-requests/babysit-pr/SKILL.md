@@ -35,10 +35,12 @@ anything else:
 3. Resolve every bot thread whose last comment is yours: run the command
    again with `--resolve`, or use the `resolveReviewThread` mutation. Human
    threads stay open.
-4. Report every open human thread.
+4. Report every open human thread, together with every bot thread whose item
+   waits on a Decision.
 
-The gate is done when no unanswered or unresolved bot thread remains. Then
-start monitoring.
+The gate is done when no unanswered or unresolved bot thread remains. A bot
+thread whose item waits on a Decision holds the gate until the user answers.
+Then start monitoring.
 
 ## Monitor
 
@@ -57,7 +59,7 @@ model selection policy in the user's agent instructions.
 Keep the branch mergeable. Rebase on the base branch when it conflicts, or
 when the repo requires an up-to-date branch outside a merge queue. When an
 overlapping PR makes this one obsolete, stop monitoring and report it. Close
-the PR only when the user authorized closure; otherwise ask.
+the PR only when the user explicitly authorized closure; otherwise ask.
 
 Post only when something changed.
 
@@ -68,7 +70,7 @@ hold on HEAD:
 
 - A reviewer approved it, and no review requests changes.
 - Every gating check, as `qa-swarm` defines it, is green.
-- No decision is open. An open thread is fine only when its item is fixed
+- No Decision is open. An open thread is fine only when its item is fixed
   and only the reply waits for the user's approval.
 - The branch has no conflict.
 

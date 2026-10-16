@@ -1,9 +1,10 @@
 ---
 name: merge-risk
 description: >-
-  Grade a PR's merge risk as low, medium, or high and post the risk callout
-  to its description. Use when pr-description, qa-swarm, or review-pr reach
-  their risk step, or when the user asks how risky a PR is.
+  Grade a PR's merge risk, its blast radius, as low, medium, or high, call
+  its door one-way or two-way, and post the risk callout to its description.
+  Use when pr-description, qa-swarm, or review-pr reach their risk step, or
+  when the user asks how risky a PR is.
 ---
 
 # Merge risk
