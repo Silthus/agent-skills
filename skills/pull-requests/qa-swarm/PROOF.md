@@ -2,9 +2,9 @@
 
 A **proof** is behavior you ran and watched where users and callers meet the
 change. A test suite proves the code its tests reach; a proof shows the change
-working in the running system, on the data it will meet. Every PR owes the
-proofs whose condition below holds. Each owed proof ends in saved evidence or
-a gap.
+working in the running system, on the data it will meet. A PR owes each proof
+whose condition below holds, and each owed proof ends in saved evidence or a
+gap.
 
 ## Kinds
 
@@ -14,7 +14,7 @@ Owed by every PR that changes runtime behavior.
 
 Start the app or service stack and trigger the changed path the way a user or
 caller does: a click, an API request, an event, a scheduled job. Call a sandbox
-of each real third party the path reaches, from the sandboxes the user's agent
+of each real third party the path reaches: one that the user's agent
 instructions list, or a private scratch account you create and name. Run the
 path twice: once with data the base code already wrote, such as an existing
 destination or a stored config, and once with data HEAD creates.
@@ -67,17 +67,18 @@ Owed by every merged PR that changes runtime behavior, the condition of Live
 run. The `babysit-pr` skill runs it after the deploy.
 
 Compare the touched area's error tracking, logs, and metrics after the deploy
-with the same window before it, at one hour and at 24 hours. Use the project
+with the same window before it, at one hour and at 24 hours, in the project
 the user's agent instructions name. A new error group, or a rate that moves
-past the baseline's noise, is a finding: report it with a drafted revert.
+past the baseline's noise, is a finding: report it with a revert prepared
+locally, as `babysit-pr` describes.
 
 Done when both checks ran and their results are saved.
 
 ## Gaps
 
 A **gap** is an owed proof that could not run. It names the proof, the reason,
-and what stays unknown. A gap is a decision for the user, so the handoff stays
-blocked until the user accepts it. The user's agent instructions may already
+and what stays unknown. A gap is a Decision for the user, so the handoff stays
+Blocked until the user accepts it. The user's agent instructions may already
 name a gap, such as a proof that waits for access.
 
 ## Record
