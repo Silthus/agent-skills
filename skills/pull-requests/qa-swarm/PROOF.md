@@ -69,7 +69,8 @@ run. The `babysit-pr` skill runs it after the deploy.
 Compare the touched area's error tracking, logs, and metrics after the deploy
 with the same window before it, at one hour and at 24 hours, in the project
 the user's agent instructions name. A new error group, or a rate that moves
-past the baseline's noise, is a finding: report it with a drafted revert.
+past the baseline's noise, is a finding: report it with a revert prepared
+locally, as `babysit-pr` describes.
 
 Done when both checks ran and their results are saved.
 
