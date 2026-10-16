@@ -63,14 +63,15 @@ Done when the diff is saved and every difference is classified.
 
 ### Post-deploy watch
 
-Owed by every merged PR. The `babysit-pr` skill runs it after the deploy.
+Owed by every merged PR that changes runtime behavior, the condition of Live
+run. The `babysit-pr` skill runs it after the deploy.
 
 Compare the touched area's error tracking, logs, and metrics after the deploy
 with the same window before it, at one hour and at 24 hours. Use the project
 the user's agent instructions name. A new error group, or a rate that moves
 past the baseline's noise, is a finding: report it with a drafted revert.
 
-Done when both checks ran and are reported.
+Done when both checks ran and their results are saved.
 
 ## Gaps
 
