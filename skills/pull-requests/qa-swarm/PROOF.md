@@ -76,7 +76,7 @@ Done when both checks ran and their results are saved.
 ## Gaps
 
 A **gap** is an owed proof that could not run. It names the proof, the reason,
-and what stays unknown. A gap is a decision for the user, so the handoff stays
+and what stays unknown. A gap is a Decision for the user, so the handoff stays
 Blocked until the user accepts it. The user's agent instructions may already
 name a gap, such as a proof that waits for access.
 

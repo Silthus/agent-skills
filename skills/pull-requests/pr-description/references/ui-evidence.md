@@ -8,8 +8,8 @@
 2. Run those scenarios before you request review, and take the PR captures
    in the same session. Use the runtime's native browser tools. In T3, start
    with `preview_status` and open the preview when none is attached. Use
-   another browser when the native tools are absent or unavailable, or when
-   the user asks for one.
+   another browser only when the native tool is absent or explicitly
+   unavailable, or when the user asks for one.
 3. Capture the running app when the claim involves an integration or a
    saved result. A Storybook or mock capture shows appearance only. Label
    its source, and verify backend behavior separately before you claim it
@@ -23,10 +23,10 @@
    captures serve verification and the PR. Add another format only when it
    shows something the others miss or the repository requires it. Full QA
    is a separate workflow, run when requested or required.
-5. Use invented data. Before you publish, check each capture's whole frame
-   for private information. Keep the files and their run context outside
-   source history: the tested commit, browser source, relevant flags,
-   scenarios, results, and gaps.
+5. Use invented data. Inspect each capture: it shows the intended state and
+   no private information. Check the whole frame before you publish. Keep
+   the files and their run context outside source history: the tested
+   commit, browser source, relevant flags, scenarios, results, and gaps.
 
 Done when every consequential changed scenario has an observed result and
 useful evidence, or a named verification gap. A gap stays unverified.

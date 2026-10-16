@@ -67,9 +67,10 @@ Done when all five are written down.
    its agent docs, scripts, and CI configuration name. Done when the gate is
    green.
 2. Run every owed proof before review, the live run first, and save its
-   evidence. For UI changes, follow [UI evidence](../pr-description/references/ui-evidence.md)
-   and capture the changed journey in the live run. Record a gap for each owed
-   proof you cannot run.
+   evidence. For UI changes, follow
+   [UI evidence](../pr-description/references/ui-evidence.md) and capture
+   the changed journey in the live run. Record a gap for each owed proof you
+   cannot run.
 3. Push. When no PR exists, open a draft with `gh pr create --draft` and write
    the description with the `pr-description` skill. Once the PR number exists,
    register the owed proofs with `fleet proof require`, then save the evidence
@@ -150,7 +151,8 @@ failure. A repo without CI relies on the local gate; name that as a gap.
 ## 4. Refresh proof
 
 1. Rerun every owed proof whose behavior changed since its last run. For UI
-   changes, use the refresh rules in [UI evidence](../pr-description/references/ui-evidence.md).
+   changes, use the refresh rules in
+   [UI evidence](../pr-description/references/ui-evidence.md).
    Keep the evidence for the final reviewed commit in the proof storage from
    step 2, and record the original run of any reused evidence.
 2. A failed proof is a Fix item in the ledger, inside the remaining round
@@ -161,8 +163,9 @@ failure. A repo without CI relies on the local gate; name that as a gap.
    the rounds and bots on its Involvement line.
 
 Behavior that only production can show belongs to the post-deploy watch,
-which the handoff names. Done when the description carries all of step 3 and,
-with the `fleet` CLI, `fleet proof gate` exits 0 or 3.
+which the handoff names. Done when the description carries the final
+evidence and gaps, a merge risk that matches the final diff, and the
+Decisions block. With the `fleet` CLI, `fleet proof gate` also exits 0 or 3.
 
 ## 5. Hand off
 

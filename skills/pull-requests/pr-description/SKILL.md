@@ -1,9 +1,9 @@
 ---
 name: pr-description
 description: >-
-  PR description with the problem first, a merge-risk callout, and proof
-  beside each behavior. Use when opening a PR, writing or refreshing a PR
-  body, or updating its evidence after a fix or rebase.
+  Write or refresh a PR description with the problem first, a merge-risk
+  callout, and proof beside each behavior. Use when opening a PR, editing a
+  PR body, or updating its evidence after a fix or rebase.
 metadata:
   credits:
     - skill: pr
@@ -27,7 +27,8 @@ metadata:
 3. State the user problem and the resulting behavior in one or two
    sentences. Describe the final implementation. Use the domain terms from
    `GLOSSARY.md` when it exists.
-4. Put each proof beside the behavior it shows:
+4. Prove the change works, and put each proof beside the behavior it
+   demonstrates:
    - **Screenshots**: one per changed feature, view, and state. For a change
      without a UI, show the observed command or API output.
    - **Recording**: a short video of the main journey when a larger feature
@@ -36,8 +37,8 @@ metadata:
    - **Flow diagram**: only when the change alters how calls or data flow
      between modules.
 
-   For UI changes, capture and refresh media with
-   [UI evidence](references/ui-evidence.md). For a flow diagram, read
+   For UI changes, read [UI evidence](references/ui-evidence.md) to
+   capture, caption, and refresh media. For a flow diagram, read
    [implementation views](references/implementation-views.md).
 5. Name the test seams, the checks you ran, and the material gaps. When the
    work ran proofs per [`PROOF.md`](../qa-swarm/PROOF.md) of the `qa-swarm`

@@ -34,7 +34,8 @@ forwards its prompt to Codex, so give it the brief's path, not its text:
 --fresh --wait Read-only review. Read <brief file> and follow it.
 ```
 
-From Codex, set `claude_review_model` to the selected Claude CLI model identifier and start each Claude lens read-only, from the repo root:
+From Codex, set `claude_review_model` to the selected Claude CLI model
+identifier and start each Claude lens read-only, from the repo root:
 
 ```sh
 claude -p --model "$claude_review_model" --allowedTools "Read,Grep,Glob" < <brief file>
@@ -42,9 +43,9 @@ claude -p --model "$claude_review_model" --allowedTools "Read,Grep,Glob" < <brie
 
 A lane fails when it ends without a `FINDINGS` block, when its `COVERED`
 list misses a changed file, or when it runs longer than 30 minutes. Stop an
-overdue lane, then rerun it once for the missing files. When it fails again,
-run that brief on the strongest model you have and report the substitution as
-a gap.
+overdue lane. Rerun a failed lane once for the files it did not cover. When
+it fails again, run that brief on the strongest model you have and report the
+substitution as a gap.
 
 A 429 or a usage-limit error is an **outage**, not a lane failure, because a
 rerun hits the same limit. Skip that family's lanes for the rest of the swarm,
@@ -107,12 +108,13 @@ Lens: <lens name and hunting grounds>
 
 ## Lenses
 
-Round one runs every lens whose trigger holds. **UI** runs only when the diff
-changes a user interface. **Systems** runs only when the diff changes a
-boundary that many callers pass through: a shared helper, an executor, a
-serializer, a default resolved in one place. In round two, Systems runs when
-a round-one finding named the same cause at more than one site. **Team** runs
-one lens per perspective of the area's owners and the author.
+Round one runs every lens. UI and Systems run only when their trigger holds.
+**UI** runs when the diff changes a user interface. **Systems** runs when the
+diff changes a boundary that many callers pass through: a shared helper, an
+executor, a serializer, a default resolved in one place. In round two,
+Systems runs when a round-one finding named the same cause at more than one
+site. **Team** runs one lens per perspective of the area's owners and the
+author.
 
 ### Fresh eyes
 
@@ -156,8 +158,8 @@ and through a deploy?
 
 Security: a finding names the source, the sink, the missing control, an
 exploit request, and why it is reachable. Drop a finding that misses one of
-them, such as defense in depth, a missing header, or a rate limit without an
-exploit chain.
+them. Also drop these findings: defense in depth, a missing header, and a
+rate limit without an exploit chain.
 
 - Access control on every method and action of a changed endpoint,
   permissions that allow by default, tenant scoping (IDOR), and mass
