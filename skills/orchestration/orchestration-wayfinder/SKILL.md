@@ -34,6 +34,7 @@ Charting is the sole undispatched act, apart from its **Prior-art sweeps**. With
 These rules bind the first chart and every later graduation of fog into tickets:
 
 - **Architecture first.** When the destination changes contracts between modules, the data model, or caching and performance, one of the tickets is an architecture `prototype` that blocks the spec or implementation tickets, so the human shapes the architecture before it is built. Its worker shapes it with the `architecture` skill.
+- **Decision lines on the map.** Each answer the human gives while charting or re-charting goes into the map's Decisions-so-far as a decision line (see `pr-description`), beside the ticket gists.
 - **Grilling stays the default** for every open decision. The map's **Notes** may waive it only when the human says so for this map: quote their words and the date. A waiver from another map, a memory, or an earlier session does not carry over; ask the human instead.
 
 ## Reading the frontier
@@ -102,7 +103,7 @@ The worker earns its handoff through the proof gate and the review in [`SHIP.md`
 - Treat the tracker as semantic truth. Runtime workers and human-attention affordances are projections, never substitutes.
 - Keep ordinary AFK work off the human's attention rail. A prototype or spec doing its AFK stretch is also background work until it parks.
 - A HITL park is complete only when the ticket has a comment containing the decisions locked as decision lines plus one pending question, and `wayfinder:awaiting-human` is present.
-- A HITL resolution is complete only when its durable handoff comment records each answer as a decision line, as `pr-description` defines it, and the resulting artifacts, the ticket is closed, and `wayfinder:awaiting-human` is absent. Then retire its runtime worker from human attention as the matching runtime addendum specifies.
+- A HITL resolution is complete only when its durable handoff comment records each answer as a decision line (see `pr-description`) and links the resulting artifacts, the ticket is closed, and `wayfinder:awaiting-human` is absent. Then retire its runtime worker from human attention as the matching runtime addendum specifies.
 
 ### Lane contract
 
@@ -132,7 +133,7 @@ The ticket is durable state; a worker is a cache. Recovery starts from the map, 
 3. Query open child state and compute the unblocked, unclaimed frontier per **Reading the frontier**. `fleet frontier`, when available, returns both in one call.
 4. Dispatch per ticket type and runtime addendum.
 5. On every tracker transition, reconcile attention state and dispatch newly unblocked work.
-6. Graduate newly sharp fog into tickets. Keep the canonical decision lookup index on the map, with a decision line for each decision the conductor locked itself, while preserving ticket comments as the durable evidence for each decision.
+6. Graduate newly sharp fog into tickets. Keep the canonical decision lookup index on the map, with a decision line for each decision locked while charting, while preserving ticket comments as the durable evidence for each decision.
 
 Done means **every in-scope ticket is closed, every spec is shipped, every dispatch setup and worker is terminal, and no runtime worker remains on the attention rail**. An empty frontier alone is not completion: claimed, blocked, and parked tickets are deliberately absent from it.
 

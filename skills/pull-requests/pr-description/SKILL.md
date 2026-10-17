@@ -55,14 +55,19 @@ metadata:
      what it replaced.
    - **Who**:
      - 👤 Human: the user chose without a recommendation, picked another
-       option, changed the recommendation, or set a standing instruction
-       that decides it.
+       option, changed the recommendation, accepted a draft only after
+       feedback that changed it, or set a standing instruction that decides
+       it.
      - 👍 Accepted default: the user read the agent's recommendation and
        accepted it as written.
-     - 🤖 Agent: the agent decided without asking; the user learns of it
-       here.
+     - 🤖 Agent: the agent decided without asking.
    - **Where**: a link to the comment that holds the decision and its
      details.
+
+   Record each decision where it is made, in the ticket's handoff comment
+   or the map, as a **decision line**:
+   `- <mark> **<question>** <answer>`. A later line for the same question
+   replaces the earlier one.
 
    A question put to the user without an answer is open, not a decision:
    list it on an **Open** line under the table with the recommendation. It
@@ -71,14 +76,11 @@ metadata:
    counts, the reviews run (panel lanes and bots), and whether proof was
    captured. It carries no numbers beyond those counts.
 
-   Each decision is recorded where it is made as a **decision line**,
-   `- 👤 **<question>** <answer>` with its Who mark, in the grilling reply,
-   the ticket's handoff comment, or the map. When the `fleet` CLI is
-   available (on `PATH` or at `~/dev/fleet/fleet`), `fleet decisions <map
-   URL>` collects a Wayfinder map's decision lines into the table. Classify
-   a decision without a line from its transcript: who answered, and whether
-   the answer matched the recommendation. A PR without such a decision keeps
-   one line: `No load-bearing decisions.`
+   When the `fleet` CLI is available (on `PATH` or at
+   `~/dev/fleet/fleet`), `fleet decisions <map URL>` collects a Wayfinder
+   map's decision lines into the table. Classify a decision without a line
+   from its transcript. A PR without such a decision keeps one line:
+   `No load-bearing decisions.`
    When the repository template has an agent-context section, put the block
    under its autonomy line. Otherwise, make it its own section after
    Evidence.
