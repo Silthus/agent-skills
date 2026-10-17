@@ -103,7 +103,7 @@ The worker earns its handoff through the proof gate and the review in [`SHIP.md`
 - Treat the tracker as semantic truth. Runtime workers and human-attention affordances are projections, never substitutes.
 - Keep ordinary AFK work off the human's attention rail. A prototype or spec doing its AFK stretch is also background work until it parks.
 - A HITL park is complete only when the ticket has a comment containing the decisions locked as decision lines plus one pending question, and `wayfinder:awaiting-human` is present.
-- Every resolution comment records each decision the ticket settled as a decision line (see `pr-description`): the human's answers and the worker's own calls.
+- Every resolution comment records each load-bearing decision the ticket settled as a decision line (see `pr-description`): the human's answers and the worker's own calls.
 - A HITL resolution is complete only when its durable handoff comment carries its decision lines and links the resulting artifacts, the ticket is closed, and `wayfinder:awaiting-human` is absent. Then retire its runtime worker from human attention as the matching runtime addendum specifies.
 
 ### Lane contract
