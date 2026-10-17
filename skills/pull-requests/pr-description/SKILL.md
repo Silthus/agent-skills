@@ -46,28 +46,49 @@ metadata:
    verification command and its expected result when it helps a reviewer
    reproduce the behavior. Put long output and process history in a
    collapsed block or in proof storage.
-6. Add a Decisions block for the load-bearing decisions and calls that
-   [qa-swarm triage](../qa-swarm/TRIAGE.md) defines. Mechanical choices stay
-   out. The block is one table with the columns Decision, Who, and Where,
-   then one Involvement line:
-   - **Who**: 👤 Human for an answer the user gave (a grilling round, a
-     prototype acceptance, a review decision). 🤖 Agent for a call the agent
-     made (a qa-swarm call, a research finding, a worker's recorded call).
-   - **Where**: a link to the ticket comment, thread, or ledger entry.
-   - **Involvement**: the grilling rounds answered, the prototypes iterated
-     with their round counts, the reviews run (panel lanes and bots), and
-     whether proof was captured. It carries no numbers beyond those counts.
+6. Add a Decisions block: one row per load-bearing decision or call that
+   [qa-swarm triage](../qa-swarm/TRIAGE.md) defines, never one row per
+   ticket or slice. Mechanical choices stay out. The table has the columns
+   Question, Answer, Who, and Where, sorted 👤, 👍, 🤖:
+   - **Question**: the question the decision settled, in a few words.
+   - **Answer**: one clause. When the user changed the recommendation, name
+     what it replaced.
+   - **Who**:
+     - 👤 Human: the user chose without a recommendation, picked another
+       option, changed the recommendation, accepted a draft only after
+       feedback that changed it, or set a standing instruction that decides
+       it.
+     - 👍 Accepted default: the user read the agent's recommendation and
+       accepted it as written.
+     - 🤖 Agent: the agent decided without asking.
+   - **Where**: a link to the comment that holds the decision and its
+     details.
 
-   A PR without such a decision keeps one line: `No load-bearing decisions.`
-   When the `fleet` CLI is available (on `PATH` or at `~/dev/fleet/fleet`),
-   `fleet decisions <map URL>` prints a Wayfinder map's rows and counts.
+   Record each decision where it is made, in the ticket's handoff comment
+   or the map, as a **decision line**:
+   `- <mark> **<question>** <answer>`. A later line for the same question
+   replaces the earlier one.
+
+   A question put to the user without an answer is open, not a decision:
+   list it on an **Open** line under the table with the recommendation. It
+   blocks the PR until the user answers. Then one **Involvement** line: the
+   grilling rounds answered, the prototypes iterated with their round
+   counts, the reviews run (panel lanes and bots), and whether proof was
+   captured. It carries no numbers beyond those counts.
+
+   When the `fleet` CLI is available (on `PATH` or at
+   `~/dev/fleet/fleet`), `fleet decisions <map URL>` collects a Wayfinder
+   map's decision lines into the table. Classify a decision without a line
+   from its transcript. A PR without such a decision keeps one line:
+   `No load-bearing decisions.`
    When the repository template has an agent-context section, put the block
    under its autonomy line. Otherwise, make it its own section after
    Evidence.
 
 Done when the problem and resulting behavior are clear without the diff,
 each consequential claim has supporting evidence or an explicit gap, every
-load-bearing decision names who made it, and the description follows the
+load-bearing decision names who made it, every unanswered question is on
+the Open line, and the description follows the
 repository's template.
 
 ## Default structure
@@ -96,10 +117,13 @@ Use this structure when the repository has no required template:
 
 ## Decisions
 
-| Decision | Who | Where |
-| --- | --- | --- |
-| <the question and its answer> | 👤 Human | <link to the ticket comment or thread> |
-| <the call and its alternative> | 🤖 Agent | <link to the ledger entry or comment> |
+| Question | Answer | Who | Where |
+| --- | --- | --- | --- |
+| <the question> | <the answer, and the recommendation it replaced> | 👤 Human | <link to the comment> |
+| <the question> | <the answer> | 👍 Accepted default | <link to the comment> |
+| <the question> | <the call and its alternative> | 🤖 Agent | <link to the comment or ledger entry> |
+
+Open: <each unanswered question, with its recommendation and link>, when any
 
 Involvement: <grilling rounds answered, prototypes iterated with their round counts, reviews run, proof captured>
 ```
