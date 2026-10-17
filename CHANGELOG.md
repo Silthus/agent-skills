@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.2.0](https://github.com/Silthus/agent-skills/compare/v1.1.0...v1.2.0) (2026-10-17)
+
+
+### Features
+
+* **architecture:** show each round in the thread and evolve one diagram per rung ([#8](https://github.com/Silthus/agent-skills/issues/8)) ([d5ccda0](https://github.com/Silthus/agent-skills/commit/d5ccda0072f9a2d6a26f32832984f2e01644f793))
+* **pr-description:** record each decision as a question, answer and who decided it ([#9](https://github.com/Silthus/agent-skills/issues/9)) ([81167ae](https://github.com/Silthus/agent-skills/commit/81167ae732bc94b73ebb4e1a8127ca484629de62))
+
+
+### Bug Fixes
+
+* keep waiting T3 threads on the Working shelf with a Monitor task ([5163c9e](https://github.com/Silthus/agent-skills/commit/5163c9ed6c0c61dbfb18c1c8988b373f1e6f683a))
+* **orchestration-wayfinder:** keep T3 conductors out of the inbox after status updates ([3fa55ab](https://github.com/Silthus/agent-skills/commit/3fa55ab64d1bc17a28d9ba53b6ac088d3c79ed30))
+
 ## [1.1.0](https://github.com/Silthus/agent-skills/compare/v1.0.0...v1.1.0) (2026-10-16)
 
 
