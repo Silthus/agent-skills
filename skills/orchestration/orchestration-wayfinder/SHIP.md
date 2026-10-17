@@ -17,7 +17,7 @@ When several of a spec's tickets need the same exploration, one research worker 
 1. Work in an own worktree on `spec/<slug>/<ticket>`, branched from the integration branch tip. Confirm that base before the first edit.
 2. Build with the `tdd` skill and gather the proof bundle below.
 3. **Land**: merge the integration branch tip into the ticket branch, run the repo's full local gate green, and push to the integration branch as a fast-forward. A rejected push means another ticket landed first: merge again and repeat.
-4. Write the resolution comment: the landed commit, the proof, the calls made, and the follow-ups. Close the ticket and remove the worktree.
+4. Write the resolution comment: the landed commit, the proof, each call made as a 🤖 decision line, and the follow-ups. Close the ticket and remove the worktree.
 
 ## Proof bundle
 
@@ -34,9 +34,9 @@ An artifact the worker cannot produce is a park, recorded as the one pending que
 
 The `ship` ticket unblocks when every implementation ticket of its spec has landed. Its worker never built the code, so it reviews with fresh eyes:
 
-1. Open a draft pull request from the integration branch with the `pr-description` skill, closing the spec and its tickets. The Summary maps each ticket to its commits, which are the reading order. The body carries the Decisions block the `pr-description` skill defines: when the `fleet` CLI is available (on `PATH` or at `~/dev/fleet/fleet`), `fleet decisions <map URL>` prints its rows and Involvement counts from the map's closed tickets; otherwise, write them by hand from the map's Decisions-so-far and each ticket's resolution comment. The spec stays one pull request; a `qa-swarm` split step keeps it whole.
+1. Open a draft pull request from the integration branch with the `pr-description` skill, closing the spec and its tickets. The Summary maps each ticket to its commits, which are the reading order. The body carries the Decisions block the `pr-description` skill defines: when the `fleet` CLI is available (on `PATH` or at `~/dev/fleet/fleet`), `fleet decisions <map URL>` collects the decision lines of the map and its closed tickets with the Involvement counts; otherwise, copy them by hand from the map's Decisions-so-far and each ticket's resolution comment. The spec stays one pull request; a `qa-swarm` split step keeps it whole.
 2. Review the whole branch against its base, with the spec as the oracle, the way the PR workflow in the user's agent instructions prescribes, when one exists; otherwise one review from the other model family, or the `qa-swarm` skill where those instructions call for it. Two tickets that built the same concept twice, such as one field under two names, are a finding. The danger areas are the ones `merge-risk` lists, as written; a docs-only diff has none.
-3. Fix every finding that holds in this one worker, gate green, and push. Append each call you made during the review as a 🤖 row of the Decisions block, and add the reviews run to its Involvement line.
+3. Fix every finding that holds in this one worker, gate green, and push. Append each call you made during the review as a 🤖 row of the Decisions block; a question you leave for the human goes on its Open line instead, and add the reviews run to its Involvement line.
 
 ## Review
 

@@ -101,8 +101,8 @@ The worker earns its handoff through the proof gate and the review in [`SHIP.md`
 - Reserve one of three map-level CodeRabbit slots before dispatching a `ship` ticket. Hold the slot through review; release it when the ticket is shipped or parked.
 - Treat the tracker as semantic truth. Runtime workers and human-attention affordances are projections, never substitutes.
 - Keep ordinary AFK work off the human's attention rail. A prototype or spec doing its AFK stretch is also background work until it parks.
-- A HITL park is complete only when the ticket has a comment containing decisions locked plus one pending question, and `wayfinder:awaiting-human` is present.
-- A HITL resolution is complete only when its durable handoff comment records the accepted answer and resulting artifacts, the ticket is closed, and `wayfinder:awaiting-human` is absent. Then retire its runtime worker from human attention as the matching runtime addendum specifies.
+- A HITL park is complete only when the ticket has a comment containing the decisions locked as decision lines plus one pending question, and `wayfinder:awaiting-human` is present.
+- A HITL resolution is complete only when its durable handoff comment records each answer as a decision line, as `pr-description` defines it, and the resulting artifacts, the ticket is closed, and `wayfinder:awaiting-human` is absent. Then retire its runtime worker from human attention as the matching runtime addendum specifies.
 
 ### Lane contract
 
@@ -132,7 +132,7 @@ The ticket is durable state; a worker is a cache. Recovery starts from the map, 
 3. Query open child state and compute the unblocked, unclaimed frontier per **Reading the frontier**. `fleet frontier`, when available, returns both in one call.
 4. Dispatch per ticket type and runtime addendum.
 5. On every tracker transition, reconcile attention state and dispatch newly unblocked work.
-6. Graduate newly sharp fog into tickets. Keep the canonical decision lookup index on the map while preserving ticket comments as the durable evidence for each decision.
+6. Graduate newly sharp fog into tickets. Keep the canonical decision lookup index on the map, with a decision line for each decision the conductor locked itself, while preserving ticket comments as the durable evidence for each decision.
 
 Done means **every in-scope ticket is closed, every spec is shipped, every dispatch setup and worker is terminal, and no runtime worker remains on the attention rail**. An empty frontier alone is not completion: claimed, blocked, and parked tickets are deliberately absent from it.
 

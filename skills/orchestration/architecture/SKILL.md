@@ -91,6 +91,6 @@ flowchart LR
 
 Write `docs/architecture/<name>.md` once, at capture; during the rounds the thread and the ticket comments hold the design. The file holds the question, the final diagram of each rung, and the locked contracts with their invariants, error modes, and performance characteristics. Then record one ADR per locked seam that passes `domain-modeling`'s three-part bar (hard to reverse, surprising without context, a real trade-off), in the format of `ADR-FORMAT.md` in the `domain-modeling` skill. The file becomes the interface section of the spec or implementation ticket that follows.
 
-For a Wayfinder ticket, the resolution comment links the file and lists every locked decision.
+For a Wayfinder ticket, the resolution comment links the file and lists every locked decision as a decision line.
 
 Done when the file holds every final diagram and contract, and every locked seam has its ADR or a one-line note that it misses the bar.
