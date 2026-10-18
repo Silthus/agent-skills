@@ -6,24 +6,32 @@ import { chromium, type Browser, type Page } from 'playwright-core';
 const usage = 'usage: bun screenshot.ts <page.html | diagram.mmd> [out-prefix] [--width <css px, default 1100>] [--browser <executable>]';
 const mermaidScript = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
 const cacheDirs = [join(homedir(), '.cache/ms-playwright'), join(homedir(), 'Library/Caches/ms-playwright')];
-const executables = ['*/*/chrome-headless-shell', '*/*/chrome', '*/*/Chromium.app/Contents/MacOS/Chromium'];
+const executables = [
+  '*/*/chrome-headless-shell',
+  '*/*/headless_shell',
+  '*/*/chrome',
+  '*/*/Chromium.app/Contents/MacOS/Chromium',
+  '*/*/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',
+];
+
+const revisionOf = (path: string) => Number(/ms-playwright\/[^/]+-(\d+)\//.exec(path)?.[1] ?? 0);
 
 function cachedBrowsers(): string[] {
   return cacheDirs
     .filter(existsSync)
     .flatMap((dir) => executables.flatMap((pattern) => [...new Bun.Glob(pattern).scanSync({ cwd: dir, absolute: true })]))
-    .sort()
-    .reverse();
+    .sort((a, b) => revisionOf(b) - revisionOf(a));
 }
 
 async function launch(explicit?: string): Promise<Browser> {
-  const candidates = [explicit, chromium.executablePath(), ...cachedBrowsers()].filter((path): path is string => !!path && existsSync(path));
-  if (candidates[0]) return chromium.launch({ executablePath: candidates[0] });
-  try {
-    return await chromium.launch({ channel: 'chrome' });
-  } catch {
-    throw new Error('No Chromium found. Install one with `bunx playwright install chromium-headless-shell`, or pass --browser <executable>.');
+  if (explicit) return chromium.launch({ executablePath: explicit });
+  const paths = [chromium.executablePath(), ...cachedBrowsers()].filter(existsSync);
+  const attempts = [() => chromium.launch(), ...paths.map((path) => () => chromium.launch({ executablePath: path })), () => chromium.launch({ channel: 'chrome' })];
+  for (const attempt of attempts) {
+    const browser = await attempt().catch(() => undefined);
+    if (browser) return browser;
   }
+  throw new Error('No Chromium found. Install one with `bunx playwright install chromium-headless-shell`, or pass --browser <executable>.');
 }
 
 async function shootPanel(page: Page, path: string): Promise<void> {
