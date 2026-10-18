@@ -13,31 +13,42 @@ Call the Skill tool with "grilling" for the round format and the frontier rule, 
 
 Dispatch research subagents to map what the change touches: the modules, the seams and the contracts at them, and the hot paths. Read `GLOSSARY.md` and the ADRs in the area, so the rounds use the domain's names and name any settled decision they reopen.
 
-Done when every module and every contract you will draw is linked to a real `path:line` that you opened and checked.
+Measure every touched module, and the untouched ones beside it for the diagram's toggle:
+
+- its **import surface**: how many of its exports other modules use;
+- the files that import it, and the functions they call most, which become its seam bar;
+- each **leak**: a dependency that bypasses its seam, counted in symbols and files, such as `30 symbols, 9 files`;
+- its import **cycles**, and the bus events it publishes and subscribes to.
+
+Done when every module and every contract you will draw is linked to a real `path:line` that you opened and checked, and every count on the diagram comes from a search you ran.
 
 ## Rounds
 
-A round is the rung's diagram plus the frontier questions, nothing else. From a diagram's second round on, open with one line that names what the last answers changed in it. Draw the diagram, then ask every question whose prerequisites are settled, in the exact `grilling` format: numbered ❓ questions, each with a ➡️ recommended answer. The round in full is the turn's final reply: put links to the ticket or branch in one closing line, and close by asking the user to accept all recommendations, accept with changes, or discuss first.
+A round is one **premise**, the rung's diagram, and the frontier questions, nothing else. The premise is the round's core claim, in one or two sentences the user can accept or reject, such as "The game splits by what a member does: Quests decides what they pursue, Rewards holds what they collect, Progression counts what they earn, Unlocks holds what they can see, and Messaging only tells them, by following the bus." Most of the round's questions break the premise down; a question that does not follow from it waits for a later round. From a diagram's second round on, open with one line that names what the last answers changed in it.
+
+Draw the diagram, then ask every question whose prerequisites are settled, in the exact `grilling` format: numbered ❓ questions, each with a ➡️ recommended answer. The round in full is the turn's final reply: put links to the ticket or branch in one closing line, and close by asking the user to accept all recommendations, accept with changes, or discuss first.
 
 Descend the ladder one rung per round:
 
-1. **Context**: a change map. The actors, the external systems, and the modules the change touches. Ask about scope: which modules are in, which actors drive the change.
-2. **Modules and seams**: the same flowchart, zoomed in to the modules and the dependencies between them. Draw each open fork as alternatives in the same diagram, marked as **The living diagram** describes. Ask who owns what, which way each dependency points, and where each seam goes. When a seam stays contested after its round, design it twice: dispatch the subagents from `DESIGN-IT-TWICE.md` in the `codebase-design` skill and draw their interfaces as the alternatives in the next round's diagram.
-3. **Call paths**: one sequence diagram per key path: the main read, the main write, and the most important failure. Ask what each participant knows, where a step can fail, and what happens when it does.
+1. **Context**: a change map, the module page zoomed out. The actors and external systems as frames along the top, and the modules the change touches as frames with their seam bars and import surfaces, without chips. Ask about scope: which modules are in, which actors drive the change.
+2. **Modules and seams**: the same page zoomed in. Each module gets its implementation parts as chips, and the wires show which callers go through a seam and which reach past it. Draw each open fork as alternatives on the same page, marked as **The living diagram** describes. Ask who owns what, which way each dependency points, and where each seam goes. When a seam stays contested after its round, design it twice: dispatch the subagents from `DESIGN-IT-TWICE.md` in the `codebase-design` skill and draw their interfaces as the alternatives in the next round's diagram.
+3. **Call paths**: one Mermaid sequence diagram per key path: the main read, the main write, and the most important failure. Ask what each participant knows, where a step can fail, and what happens when it does.
 4. **Contracts**: the interface at each locked seam as code in the repo's language, with its invariants, error modes, and performance characteristics. Ask what each caller must know and what stays behind the seam.
 
 Each answer reshapes the design tree. Lock a fork yourself only when the code or an ADR settles it, and say so in the recommendation; the user can reopen it.
 
 ## The living diagram
 
-Each diagram lives across its rounds: one flowchart for rungs 1 and 2, and one sequence diagram per key path in rung 3. Every round redraws the diagram with the answers applied. An accepted suggestion or fork alternative turns solid and drops its `Qn` tag, the rejected ones go away, and the frontier's new guesses appear.
+Each diagram lives across its rounds: one module page for rungs 1 and 2, and one sequence diagram per key path in rung 3. Every round redraws the diagram with the answers applied. An accepted suggestion or fork alternative turns solid and drops its `Qn` tag, the rejected ones go away, and the frontier's new guesses appear.
 
-A flowchart marks two things, and its legend explains both:
+The module page is the frame-and-seam diagram that `DIAGRAM.md` specifies: read it before you draw rung 1. Write the page as a JSON spec and generate it with `scripts/modules-page.ts`; the page carries its own legend. It shows:
 
-- **Fill** is the change: **new**, **changed**, **untouched**, or **external**.
-- **Border** is the decision: solid for **locked**; dashed for a **suggestion**, with its question number in the label, such as `Q2 Selection API`; dotted for an **open fork**, its alternatives labelled `Q3 A` and `Q3 B`. Every suggestion and every fork has its question in the round.
+- **Seams and leaks**: each module is a frame with its seam as the top bar, so a wire to the bar goes through the seam and a red wire to a chip reaches past it. The measured counts from Ground sit on the frames and the leak wires.
+- **The change**: green is what this change adds, yellow what it changes. Orange dashed with a `follow-up` tag is what the target needs but a later refactor builds.
+- **Three views**: Target, Target + what it removes, and Today. Removed parts stay visible in the middle view, grey and struck through, so the user sees what goes without losing what stays. A toggle shows the untouched modules and their seams, so the user can spot what else the change might reach.
+- **The decision**: a suggestion has a dashed purple outline and its question number, such as `Q2`; an open fork has dotted alternatives labelled `Q3 A` and `Q3 B`. Every suggestion and every fork has its question in the round.
 
-Take the class definitions and the legend from the worked example. Give a node its fill and its border in two statements, `class Api new` and `class Api suggested`: Mermaid reads `class Api new,suggested` as one class name and styles nothing. Draw a suggested or alternative edge as `-. "Q3 A: calls" .->`. In a sequence diagram, put the question number in the label of each suggested message.
+In a sequence diagram, put the question number in the label of each suggested message.
 
 Facts are yours to find: dispatch a subagent for anything the environment can answer. Decisions are the user's.
 
@@ -45,51 +56,35 @@ Done when the frontier is empty: every seam locked, every key path drawn, every 
 
 ## Render the diagram
 
-Diagrams are Mermaid. Where the round appears decides how the diagram renders:
+Render each round's diagram before you post it. `scripts/screenshot.ts` writes a PNG of every view of a module page and lists its label collisions; render at the width you post at (`--width 728` for T3), read each PNG, and fix the spec until none remain. For a `.mmd` sequence diagram it writes an SVG and a PNG.
 
-- **T3 Code** (`T3CODE_HOME` is set): before the final reply, render the round's diagram inline with `html_render`, as one small self-contained page that holds only that diagram. Preview it with `html_preview` first to get its height. The page is a `<pre class="mermaid">` block plus one module script that imports Mermaid from `https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs` and calls `mermaid.initialize({ startOnLoad: true })`; the tool's own description covers the page style. The final reply then holds the rest of the round: the change line, the questions, and the links line.
-- **GitHub ticket**: post the round as a comment with the diagram in a fenced `mermaid` code block, which GitHub renders.
-- **Elsewhere**: put the fenced `mermaid` block at the top of the round.
+Where the round appears decides what it shows:
+
+- **T3 Code** (`T3CODE_HOME` is set): before the final reply, render the diagram inline with `html_render`. Preview it with `html_preview` first to get its height. For rungs 1 and 2, pass the generated module page; it carries its own views and toggle. For rung 3, pass a small page that holds the inline SVG from `screenshot.ts`, since a page that loads Mermaid from a CDN captures before the script runs and renders blank. The final reply then holds the rest of the round: the change line, the premise, the questions, and the links line.
+- **GitHub ticket**: post the round as a comment. For rungs 1 and 2, embed the PNG of the Target view, or of Target + what it removes when the change removes something, and say in one or two sentences what the other views show. Commit the PNGs and the page to the ticket's branch and link them at the commit, or attach the PNG in the GitHub editor when there is no branch. For rung 3, a fenced `mermaid` block renders on GitHub.
+- **Elsewhere**: put the PNG at the top of the round.
+
+When no Chromium is available to render the page, fall back to a fenced `mermaid` flowchart for rungs 1 and 2 with a legend for its marks, and say in the round that the module page could not be rendered.
 
 ## Worked example
 
-A rung 2 round with one open fork, drawn as two alternatives:
+A rung 2 round with one open suggestion. Its module page is `example/modules.json`, rendered with the commands in `DIAGRAM.md`.
 
-```mermaid
-flowchart LR
-  subgraph Legend
-    direction LR
-    LNew[new]:::new
-    LChanged[changed]:::changed
-    LUntouched[untouched]:::untouched
-    LExternal[external]:::external
-    LSuggested[suggestion]:::suggested
-    LFork[open fork]:::fork
-  end
-  Engine[Game engine]
-  Progression[Progression]
-  Bus[("Q1 B: Event bus")]
-  Engine -. "Q1 A: calls" .-> Progression
-  Engine -. "Q1 B: publishes" .-> Bus
-  Bus -. "Q1 B: delivers" .-> Progression
-  classDef new fill:#dcfce7
-  classDef changed fill:#fef9c3
-  classDef untouched fill:#f1f5f9
-  classDef external fill:#dbeafe
-  classDef suggested stroke-dasharray:6 4,stroke-width:2px
-  classDef fork stroke-dasharray:2 3,stroke-width:2px
-  class Engine,Progression changed
-  class Bus new
-  class Bus fork
-```
+**Premise.** Progression owns what a player earns and answers it through one read, `progressOf`; the website stops computing levels itself, and every other module hears about progress on the bus.
 
-❓ **Q1** - **Engine to progression dependency**: A has the engine call progression directly, so the engine knows progression exists. B has the engine publish events on a bus that progression subscribes to. Which way should this dependency point?
+The page shows Website reads calling `progressOf` through Progression's seam (green), the old `getLevels` leak of `9 symbols, 3 files` struck through, Notifications' leak of `12 symbols, 4 files` into Progression's streaks staying (red), and a new Achievements module as a follow-up that subscribes to `levelReached`, tagged `Q2`.
 
-➡️ B. Progression is one of several listeners for engine events (achievements and analytics are next), so two adapters already justify the seam, and the engine stays free of every consumer.
+❓ **Q1** - **Notifications' leak into streaks**: Notifications reads 12 of Progression's internal symbols from 4 files to write badge lines. Should this change move that read behind `progressOf`, or leave it for a later refactor?
+
+➡️ Leave it. The leak is old, it does not grow with this change, and moving it would touch every notice template; draw it as a leak that stays and record it as a follow-up.
+
+❓ **Q2** - **Achievements on the bus**: should Achievements subscribe to `levelReached` instead of Progression calling it?
+
+➡️ Yes. Progression already publishes `levelReached`, so a subscriber costs Progression nothing and it stays free of every consumer.
 
 ## Capture
 
-Write `docs/architecture/<name>.md` once, at capture; during the rounds the thread and the ticket comments hold the design. The file holds the question, the final diagram of each rung, and the locked contracts with their invariants, error modes, and performance characteristics. Then record one ADR per locked seam that passes `domain-modeling`'s three-part bar (hard to reverse, surprising without context, a real trade-off), in the format of `ADR-FORMAT.md` in the `domain-modeling` skill. The file becomes the interface section of the spec or implementation ticket that follows.
+Write `docs/architecture/<name>.md` once, at capture; during the rounds the thread and the ticket comments hold the design. The file holds the question, the final diagram of each rung, and the locked contracts with their invariants, error modes, and performance characteristics. Commit the final module page and its view PNGs beside it in `docs/architecture/<name>/`, embed the PNG, and link the page. Then record one ADR per locked seam that passes `domain-modeling`'s three-part bar (hard to reverse, surprising without context, a real trade-off), in the format of `ADR-FORMAT.md` in the `domain-modeling` skill. The file becomes the interface section of the spec or implementation ticket that follows.
 
 For a Wayfinder ticket, the resolution comment links the file and lists every locked decision as a decision line.
 
