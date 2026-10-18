@@ -1,0 +1,308 @@
+{
+  "rows": [
+    {
+      "modules": [
+        {
+          "id": "web",
+          "name": "Website reads",
+          "flex": 1,
+          "seam": [
+            "getProfile",
+            {
+              "name": "getProgress",
+              "change": "added"
+            },
+            {
+              "name": "getLevels",
+              "change": "removed"
+            }
+          ],
+          "chips": [
+            {
+              "id": "web-progress",
+              "text": "getProgress",
+              "change": "added"
+            },
+            {
+              "id": "web-old",
+              "text": "getLevels: computes levels itself",
+              "change": "removed"
+            }
+          ]
+        },
+        {
+          "id": "notify",
+          "name": "Notifications",
+          "used": 18,
+          "flex": 1,
+          "seam": [
+            "sendNotice",
+            "digest"
+          ],
+          "chips": [
+            {
+              "id": "notify-badges",
+              "text": "badge lines"
+            },
+            {
+              "text": "called by 5 modules",
+              "cycle": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "modules": [
+        {
+          "id": "progression",
+          "name": "Progression",
+          "note": "what a player earns",
+          "used": 34,
+          "flex": 1.5,
+          "seam": [
+            {
+              "name": "progressOf",
+              "change": "added"
+            },
+            "applyGain",
+            {
+              "name": "levelOf",
+              "change": "removed"
+            }
+          ],
+          "chips": [
+            {
+              "id": "prog-model",
+              "text": "Progress read model: one view",
+              "change": "added",
+              "wide": true
+            },
+            {
+              "id": "prog-xp",
+              "text": "XP, levels"
+            },
+            {
+              "id": "prog-streaks",
+              "text": "streaks"
+            }
+          ]
+        },
+        {
+          "id": "achievements",
+          "name": "Achievements",
+          "note": "what a player unlocks",
+          "change": "added",
+          "followUp": true,
+          "flex": 1,
+          "seam": [
+            "unlock",
+            "badgesOf"
+          ],
+          "chips": [
+            {
+              "text": "badge ladders"
+            },
+            {
+              "text": "unlock records"
+            }
+          ],
+          "q": "Q2"
+        }
+      ]
+    },
+    {
+      "gap": 46,
+      "bus": {
+        "name": "Bus",
+        "note": "publish(event) → every subscriber, in its own transaction"
+      }
+    },
+    {
+      "gap": 46,
+      "modules": [
+        {
+          "id": "engine",
+          "name": "Engine",
+          "used": 41,
+          "seam": [
+            "give(points)"
+          ],
+          "chips": [
+            {
+              "text": "points, awards"
+            }
+          ]
+        },
+        {
+          "id": "store",
+          "name": "Store",
+          "used": 12,
+          "seam": [
+            "buy",
+            "owns"
+          ],
+          "chips": [
+            {
+              "text": "items, prices"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "wires": [
+    {
+      "from": "web-progress",
+      "to": "progression-seam",
+      "toAt": 0.08,
+      "change": "added",
+      "label": "progressOf",
+      "labelAt": 0.3
+    },
+    {
+      "from": "web-old",
+      "to": "prog-xp",
+      "kind": "leak",
+      "change": "removed",
+      "label": "9 symbols, 3 files",
+      "bend": 70,
+      "labelAt": 0.15,
+      "labelAlign": "start",
+      "labelOffset": [
+        8,
+        0
+      ],
+      "crossAt": 0.32
+    },
+    {
+      "from": "notify-badges",
+      "to": "prog-streaks",
+      "kind": "leak",
+      "label": "12 symbols, 4 files",
+      "bend": 60,
+      "labelAt": 0.4,
+      "change": "removed",
+      "crossAt": 0.25,
+      "q": "Q1"
+    },
+    {
+      "from": "notify-badges",
+      "fromAt": 0.7,
+      "to": "progression-seam",
+      "toAt": 0.55,
+      "change": "added",
+      "q": "Q1",
+      "label": "progressOf",
+      "bend": 50,
+      "labelAt": 0.35,
+      "labelAlign": "start",
+      "labelOffset": [
+        6,
+        0
+      ]
+    },
+    {
+      "from": "progression",
+      "fromAt": 0.4,
+      "to": "bus",
+      "straight": "from",
+      "kind": "bus",
+      "label": "pub levelReached",
+      "bend": 15,
+      "labelAlign": "start",
+      "labelOffset": [
+        5,
+        0
+      ]
+    },
+    {
+      "from": "bus",
+      "fromSide": "top",
+      "to": "progression",
+      "toSide": "bottom",
+      "toAt": 0.75,
+      "straight": "to",
+      "kind": "bus",
+      "label": "sub pointsGiven",
+      "bend": 15,
+      "labelAlign": "start",
+      "labelOffset": [
+        5,
+        0
+      ]
+    },
+    {
+      "from": "bus",
+      "fromSide": "top",
+      "to": "achievements",
+      "toSide": "bottom",
+      "toAt": 0.3,
+      "straight": "to",
+      "kind": "bus",
+      "change": "added",
+      "followUp": true,
+      "q": "Q2",
+      "label": "sub levelReached",
+      "bend": 15,
+      "labelAlign": "start",
+      "labelOffset": [
+        5,
+        0
+      ]
+    },
+    {
+      "from": "engine",
+      "fromSide": "top",
+      "to": "bus",
+      "toSide": "bottom",
+      "straight": "from",
+      "kind": "bus",
+      "label": "pub pointsGiven",
+      "bend": 15,
+      "labelAlign": "start",
+      "labelOffset": [
+        5,
+        0
+      ]
+    }
+  ],
+  "untouched": [
+    {
+      "name": "Wallet",
+      "seam": [
+        "spend",
+        "credit",
+        "balanceOf"
+      ],
+      "used": 12,
+      "note": "pub coinsSpent"
+    },
+    {
+      "name": "Leaderboard",
+      "seam": [
+        "board",
+        "rankOf"
+      ],
+      "used": 9,
+      "note": "sub pointsGiven"
+    },
+    {
+      "name": "Friends",
+      "seam": [
+        "friendsOf",
+        "invite"
+      ],
+      "used": 15
+    },
+    {
+      "name": "Accounts",
+      "seam": [
+        "playerOf",
+        "settingsOf"
+      ],
+      "used": 40,
+      "note": "pub playerLeft"
+    }
+  ]
+}
