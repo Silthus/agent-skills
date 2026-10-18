@@ -14,7 +14,7 @@ const executables = [
   '*/*/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',
 ];
 
-const revisionOf = (path: string) => Number(/-(\d+)\//.exec(path)?.[1] ?? 0);
+const revisionOf = (path: string) => Number(/ms-playwright\/[^/]+-(\d+)\//.exec(path)?.[1] ?? 0);
 
 function cachedBrowsers(): string[] {
   return cacheDirs
