@@ -56,7 +56,7 @@ function elementIds(spec: Spec): string[] {
     if (bus) return [busId(bus)];
     return modulesOf(row).flatMap((module) => [
       module.id,
-      seamId(module),
+      ...(module.seam.length ? [seamId(module)] : []),
       ...(module.chips ?? []).flatMap((chip) => (chip.id ? [chip.id] : [])),
     ]);
   });

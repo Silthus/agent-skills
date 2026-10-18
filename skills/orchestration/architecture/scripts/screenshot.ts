@@ -49,7 +49,9 @@ async function shootModulesPage(page: Page, input: string, prefix: string): Prom
 
 async function shootMermaid(page: Page, input: string, prefix: string): Promise<void> {
   await page.setContent('<!doctype html><html><body style="margin:0;background:#fff"><div id="diagram" style="display:inline-block;padding:16px"></div></body></html>');
-  await page.addScriptTag({ url: mermaidScript });
+  await page.addScriptTag({ url: mermaidScript }).catch(() => {
+    throw new Error(`Could not load Mermaid from ${mermaidScript}; rendering a sequence diagram needs network access.`);
+  });
   const svg = await page.evaluate(async (source) => {
     const mermaid = (window as unknown as { mermaid: { initialize(config: object): void; render(id: string, text: string): Promise<{ svg: string }> } }).mermaid;
     mermaid.initialize({ startOnLoad: false, theme: 'neutral' });

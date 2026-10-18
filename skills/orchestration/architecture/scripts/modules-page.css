@@ -9,6 +9,7 @@ svg.wires{position:absolute;left:0;top:0;pointer-events:none;overflow:visible;z-
 .row{display:flex;gap:14px;align-items:flex-start;position:relative;z-index:1}
 .mod{flex:1;border:2px solid #334155;border-radius:8px;background:#f8fafc;min-width:0}
 .mod.new{border-color:#16a34a;background:#f0fdf4}
+.mod.changed{border-color:#ca8a04;background:#fefce8}
 .mod.external{border-color:#2563eb;background:#eff6ff}
 .mod.follow{border:2px dashed #ea580c;background:#fff7ed}
 .seam{display:flex;flex-wrap:wrap;gap:2px 12px;align-items:center;background:#0f172a;color:#fff;font-family:var(--font-mono,ui-monospace,SFMono-Regular,Menlo,monospace);font-size:10.5px;padding:5px 8px;border-radius:6px 6px 0 0;line-height:1.35}
@@ -17,6 +18,7 @@ svg.wires{position:absolute;left:0;top:0;pointer-events:none;overflow:visible;z-
 .mod.external .seam{background:#1e3a8a}
 .seam .tag{background:#fff;color:#0f172a;border-radius:3px;padding:0 4px;font-family:var(--font-sans,system-ui,sans-serif);font-weight:700;font-size:9.5px}
 .fn.new::after{content:" +";color:#86efac;font-weight:700}
+.fn.changed{color:#fde047}
 .name{font-weight:700;font-size:13px;padding:6px 8px 2px}
 .name small{font-weight:500;color:#64748b;font-size:11px}
 .mod:not(:has(.chips)) .name{padding-bottom:8px}

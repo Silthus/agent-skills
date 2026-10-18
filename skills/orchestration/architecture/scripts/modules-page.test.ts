@@ -9,7 +9,7 @@ const spec = (overrides: Partial<Spec> = {}): Spec => ({
     ] },
     { bus: { name: 'Bus' } },
   ],
-  wires: [{ from: 'engine', to: 'bus', kind: 'bus', label: 'pub kudosGiven' }],
+  wires: [{ from: 'engine', to: 'bus', kind: 'bus', label: 'pub pointsGiven' }],
   ...overrides,
 });
 
@@ -25,6 +25,16 @@ describe('checkSpec', () => {
   test('names a wire end that is not on the page', () => {
     expect(checkSpec(spec({ wires: [{ from: 'engine', to: 'rewards-seam' }] }))).toEqual([
       'wire engine → rewards-seam: no element rewards-seam',
+    ]);
+  });
+
+  test('a module without seam functions has no seam bar to attach to', () => {
+    const rows: Spec['rows'] = [{ modules: [
+      { id: 'player', name: 'Player', external: true, seam: [] },
+      { id: 'engine', name: 'Engine', seam: ['give'] },
+    ] }];
+    expect(checkSpec({ rows, wires: [{ from: 'player-seam', to: 'engine-seam' }] })).toEqual([
+      'wire player-seam → engine-seam: no element player-seam',
     ]);
   });
 
