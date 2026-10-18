@@ -28,10 +28,11 @@ metadata:
 3. State the user problem and the resulting behavior in one or two
    sentences. Describe the final implementation. Use the domain terms from
    `GLOSSARY.md` when it exists.
-4. Write the Impact section with the `impact` skill when it is installed,
-   right after the problem: the metric this change moves and where we see
-   it. A PR from a Wayfinder map copies the map's Impact section, narrowed
-   to this change. The map already settled pushback, so ask nothing.
+4. Write the Impact section right after the problem, with the `impact`
+   skill when it is installed. It names the metric this change moves and
+   where we see it. A PR from a Wayfinder map copies the map's Impact
+   section and narrows it to this change. Pushback happened while the map
+   was charted, so ask nothing.
 5. Prove the change works, and put each proof beside the behavior it
    demonstrates:
    - **Screenshots**: one per changed feature, view, and state. For a change
@@ -91,8 +92,8 @@ metadata:
    Evidence.
 
 Done when the problem and resulting behavior are clear without the diff,
-the Impact section names its metric, unless `impact` is missing or exempts
-the work,
+the Impact section names its metric, unless `impact` is not installed or
+the work is exempt,
 each consequential claim has supporting evidence or an explicit gap, every
 load-bearing decision names who made it, every unanswered question is on
 the Open line, and the description follows the
