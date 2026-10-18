@@ -17,7 +17,7 @@ Before the first dispatch, recovery, or attention-state action, identify the run
 - Codex drives → [`CODEX.md`](CODEX.md)
 - Claude Code drives → [`CLAUDE.md`](CLAUDE.md)
 
-When the conductor runs inside T3 Code (`T3CODE_HOME` is set), also read [`T3.md`](T3.md) before the first dispatch: grilling and prototype tickets get their own T3 threads.
+When the conductor runs inside T3 Code (`T3CODE_HOME` is set), also read [`T3.md`](T3.md) before the first dispatch: every ticket that can park for the human gets its own T3 thread.
 
 The addenda contain only task/session mechanics. Load only the matching runtime addendum. This file owns the shared tracker and conductor protocol.
 
@@ -97,7 +97,8 @@ The worker earns its handoff through the proof gate and the review in [`SHIP.md`
 
 - Fan out every unblocked, unclaimed non-grilling frontier ticket. If any grilling ticket is already open and claimed, dispatch no other grilling. Dispatch the next grilling only after the active one closes.
 - Give every worker a wall-time cap and require a durable report before idle: its resolution, or the exact one question awaiting the human.
-- Isolate parallel writers whose scopes could collide. Serialize shared-file work.
+- Every worker prompt carries **leave nothing running**: the worker runs each wait it needs in the foreground and ends every turn, a park included, with no background command, watcher, `kickoff wait`, or Monitor still live. In T3 Code, live background work keeps the worker's thread, and the conductor that started it, on the Working shelf, so the park never reaches the human's inbox.
+- Give every worker that writes files, commits, or checks out a branch its own worktree. A worker in the conductor's checkout can switch the conductor's branch. Serialize shared-file work.
 - Send a ticket's follow-up work, such as review fixes, to its existing worker instead of dispatching a new one.
 - When a review provider has an **outage** (a 429 or a usage limit), record it and its reset date once in the map's **Notes**, and state it in every dispatch until the reset.
 - Reserve one of three map-level CodeRabbit slots before dispatching a `ship` ticket. Hold the slot through review; release it when the ticket is shipped or parked.
