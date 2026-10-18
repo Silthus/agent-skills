@@ -40,7 +40,7 @@ Draw the diagram, then ask every question whose prerequisites are settled, in th
 Descend the ladder one rung per round:
 
 1. **Context.** Rung 1 draws the change map, which is the module page zoomed out. The actors and external systems sit as frames along the top, and the modules the change touches sit below them with their seam bars and outside-use counts, without chips. Ask which modules are in scope, which actors drive the change, and which extra modules a deepening opportunity would pull in.
-2. **Modules and seams.** Rung 2 zooms the same page in. Each module gets its implementation parts as chips, and the wires show which callers go through a seam and which reach past it. The premise states the module map after deepening, not only the feature. Draw up to three Strong opportunities as suggestions with their `Qn`, green when you recommend building one in this change and orange as a follow-up when a later refactor should build it. Ask for each: this change, a follow-up, or not at all. Recommend this change when the opportunity moves a seam the feature already moves. Ask about the bold opportunity too, even when you recommend against it. Draw each open fork as alternatives on the same page. Ask who owns what, which way each dependency points, and where each seam goes. When a seam stays contested after its round, design it twice. Dispatch the subagents from `DESIGN-IT-TWICE.md` in the `codebase-design` skill, and draw their interfaces as the alternatives in the next round's diagram.
+2. **Modules and seams.** Rung 2 zooms the same page in. Each module gets its implementation parts as chips, and the wires show which callers go through a seam and which reach past it. The premise states the module map after deepening, not only the feature. Draw up to three Strong opportunities as suggestions with their `Qn`. Their frames and chips are green when you recommend building them in this change and orange as a follow-up when a later refactor should build them. A suggested wire shows only its `Qn`. Ask for each: this change, a follow-up, or not at all. Recommend this change when the opportunity moves a seam the feature already moves. Ask about the bold opportunity too, even when you recommend against it. Draw each open fork as alternatives on the same page. Ask who owns what, which way each dependency points, and where each seam goes. When a seam stays contested after its round, design it twice. Dispatch the subagents from `DESIGN-IT-TWICE.md` in the `codebase-design` skill, and draw their interfaces as the alternatives in the next round's diagram.
 3. **Call paths.** Rung 3 draws one Mermaid sequence diagram per key path: the main read, the main write, and the most important failure. Ask what each participant knows, where a step can fail, and what happens when it does.
 4. **Contracts.** Rung 4 writes the interface at each locked seam as code in the repo's language, with its invariants, error modes, and performance characteristics. Ask what each caller must know and what stays behind the seam.
 
@@ -48,7 +48,7 @@ Each answer reshapes the design tree. Lock a fork yourself only when the code or
 
 ## The living diagram
 
-Each diagram lives across its rounds: one module page for rungs 1 and 2, and one sequence diagram per key path in rung 3. Every round redraws the diagram with the answers applied. An accepted suggestion or fork alternative turns solid and drops its `Qn` tag, the rejected ones go away, and the frontier's new guesses appear.
+Each diagram lives across its rounds: one module page for rungs 1 and 2, and one sequence diagram per key path in rung 3. Every round redraws the diagram with the answers applied. An accepted suggestion or fork alternative turns solid and drops its `Qn` tag, the rejected ones go away and restore what they removed, and the frontier's new guesses appear.
 
 `DIAGRAM.md` specifies the module page and its marks, so read it before you draw rung 1. Write the page as a JSON spec and generate it with `scripts/modules-page.ts`. Every part or wire with a `Qn` has its question in the round. In a sequence diagram, put the question number in the label of each suggested message.
 
@@ -60,13 +60,13 @@ Render each round's diagram before you post it. `scripts/screenshot.ts` writes a
 
 Where the round appears decides what it shows:
 
-- **T3 Code** (`T3CODE_HOME` is set). Before the final reply, render the diagram inline with `html_render`. For rungs 1 and 2, pass the generated page's HTML itself, so the user can switch views and open the toggle in the thread. Take the height from `html_preview` of a copy with `data-untouched="on"` on `.panel`, which is the tallest state. For rung 3, pass a small page that holds the inline SVG from `screenshot.ts`. A page that loads Mermaid from a CDN renders blank, because the capture runs before the script. The final reply then holds the rest of the round: the change line, the premise, the questions, and the links line.
+- **T3 Code** (`T3CODE_HOME` is set). Before the final reply, render the diagram inline with `html_render`. For rungs 1 and 2, pass the generated page's HTML itself, so the user can switch views and open the toggle in the thread. Take the height from `html_preview` of a copy with `data-view="removed"` and `data-untouched="on"` on `.panel`, the tallest state, or of a `today` copy when its parts make Today taller. For rung 3, pass a small page that holds the inline SVG from `screenshot.ts`. A page that loads Mermaid from a CDN renders blank, because the capture runs before the script. The final reply then holds the rest of the round: the change line, the premise, the questions, and the links line.
 - **GitHub ticket.** Post the round as a comment. For rungs 1 and 2, embed the PNG of the Target view, or of Target + what it removes when the change removes something, and say in one or two sentences what the other views show. Commit the spec, the page and the PNGs to the ticket's branch and link them at the commit, or attach the PNG in the GitHub editor when there is no branch. For rung 3, a fenced `mermaid` block renders on GitHub.
 - **Elsewhere.** Put the PNG at the top of the round.
 
 When `screenshot.ts` finds no Chromium, install one as `DIAGRAM.md` says. When that fails, or Bun has no network for its first `playwright-core` fetch:
 
-- In T3, `html_render` the page anyway. Check its layout with `html_preview` of one copy per view, each with `data-view` set on `.panel`.
+- In T3, `html_render` the page anyway. Check its layout with `html_preview` of one copy per view, with `data-view` set to `target`, `removed` or `today` on `.panel`, plus one `removed` copy with `data-untouched="on"`.
 - Elsewhere, draw rungs 1 and 2 as the Mermaid flowchart in `DIAGRAM.md`'s fallback section, and say in the round that `screenshot.ts` could not render the page.
 
 When it cannot load Mermaid for a rung 3 diagram, put the fenced `mermaid` block in the round.
@@ -85,11 +85,11 @@ On the page, Website reads calls `progressOf` through Progression's seam in gree
 
 ❓ **Q2** - **Achievements on the bus**: should a new Achievements module own badges and subscribe to `levelReached`, as a follow-up?
 
-➡️ Yes, as a follow-up. Notifications then sends badge lines without knowing how a player earns a badge. Progression already publishes `levelReached`, so the subscriber costs Progression nothing.
+➡️ Yes, as a follow-up. One module then owns the badge rules that Notifications' badge lines compute today. Progression already publishes `levelReached`, so the subscriber costs Progression nothing.
 
 ❓ **Q3** - **One player-state module**: Engine, Store and Progression each write part of a player's state. Should one module own every write, with the others publishing events to it?
 
-➡️ No, not in this change. It would touch every caller of Engine and Store for a feature that only reads progress. Keep it in the follow-up list, where the next change to Engine can pick it up.
+➡️ A follow-up, not this change. It would touch every caller of Engine and Store for a feature that only reads progress. The next change to Engine can pick it up from the follow-up list.
 
 ## Capture
 
