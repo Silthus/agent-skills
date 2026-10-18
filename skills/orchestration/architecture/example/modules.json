@@ -106,7 +106,8 @@
             {
               "text": "unlock records"
             }
-          ]
+          ],
+          "q": "Q2"
         }
       ]
     },
@@ -181,25 +182,24 @@
       "label": "12 symbols, 4 files",
       "bend": 60,
       "labelAt": 0.4,
-      "q": "Q1"
+      "change": "removed",
+      "crossAt": 0.25
     },
     {
-      "from": "progression",
-      "fromSide": "top",
-      "fromAt": 0.96,
-      "to": "notify",
-      "toSide": "bottom",
-      "toAt": 0.06,
-      "change": "removed",
-      "label": "notify",
-      "bend": 30,
-      "labelAlign": "end",
+      "from": "notify-badges",
+      "fromAt": 0.7,
+      "to": "progression-seam",
+      "toAt": 0.55,
+      "change": "added",
+      "q": "Q1",
+      "label": "progressOf",
+      "bend": 50,
+      "labelAt": 0.35,
+      "labelAlign": "start",
       "labelOffset": [
-        -10,
+        6,
         0
-      ],
-      "crossAt": 0.2,
-      "labelAt": 0.65
+      ]
     },
     {
       "from": "progression",
