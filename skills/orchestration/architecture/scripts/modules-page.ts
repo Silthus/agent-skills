@@ -183,7 +183,7 @@ function legend(spec: Spec): string {
     [true, 'seam', '<b class="swatch seamkey">fn</b>', "a module's interface; parts sit below it"],
     [spec.wires.some((wire) => (wire.kind ?? 'call') === 'call' && !wire.change && !wire.followUp && !wire.q), 'call', line('#334155'), 'through a seam'],
     [changes(spec).has('added'), 'added', line('#15803d'), 'by this change, green'],
-    [changes(spec).has('changed'), 'changed', '<span class="swatch chip changed">part</span>', 'by this change'],
+    [changes(spec).has('changed'), 'changed', `${line('#ca8a04')}<span class="swatch chip changed">part</span>`, 'by this change'],
     [changes(spec).has('removed') || changes(spec).has('todayOnly'), 'removed', line('#94a3b8', 'dashed'), '✕ by this change, struck through'],
     [wireKinds.has('leak'), 'leak', line('#dc2626'), 'reaches past a seam, with measured counts'],
     [wireKinds.has('bus'), 'bus', line('#475569'), 'pub and sub on the rail'],

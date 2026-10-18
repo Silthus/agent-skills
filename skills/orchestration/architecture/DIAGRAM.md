@@ -7,7 +7,7 @@ bun <this skill's directory>/scripts/modules-page.ts spec.json modules.html
 bun <this skill's directory>/scripts/screenshot.ts modules.html
 ```
 
-`modules-page.ts` stops and names each wire end that has no element and each id used twice. `screenshot.ts` writes one PNG per view beside the page (`modules-target.png`, `modules-removed.png`, `modules-today.png`, and `modules-untouched.png` with the untouched modules shown, or a single `modules.png` for a page without views), and prints every wire label that overlaps another label, covers a seam bar, a name, a chip or the bus, or runs off the page. `--width` sets the page width in CSS pixels: 1100 by default for a PNG, 728 for the T3 reply column. It finds Chromium in the Playwright cache, or takes `--browser <executable>`. When there is none, install it with `bunx playwright install chromium-headless-shell`. Bun fetches `playwright-core` on the first run when the skill's directory has no `node_modules`, which needs network access once.
+`modules-page.ts` stops and names each wire end that has no element and each id used twice. `screenshot.ts` writes one PNG per view beside the page (`modules-target.png`, `modules-removed.png`, `modules-today.png`, and `modules-untouched.png` with the untouched modules shown, or `modules.png` for a page without views), and prints every wire label that overlaps another label, covers a seam bar, a name, a chip or the bus, or runs off the page. `--width` sets the page width in CSS pixels: 1100 by default for a PNG, 728 for the T3 reply column. It finds Chromium in the Playwright cache, or takes `--browser <executable>`. When there is none, install it with `bunx playwright install chromium-headless-shell`. Bun fetches `playwright-core` on the first run when the skill's directory has no `node_modules`, which needs network access once.
 
 ## What the page draws
 
@@ -16,7 +16,7 @@ bun <this skill's directory>/scripts/screenshot.ts modules.html
 - **The bus** is a full-width dark rail between module rows. Publishers and subscribers attach to it with short vertical `pub X` and `sub X` wires.
 - **Fill is the change**: green is added by this change, yellow is changed. An orange dashed frame or chip with a `follow-up` tag is part of the target that a later refactor builds.
 - **Views**: Target, Target + what it removes, and Today. In the middle view the removed chips, seam functions and wires stay in place, grey, dashed and struck through, with a ✕ on each removed wire. A toggle shows the untouched modules as mini cards: their top functions as the seam bar, their import surface, and their bus events.
-- **Decisions**: a part with `q` gets a purple dashed outline and its question tag, such as `Q2`. A part with `fork: true` is an alternative with a dotted outline; set its `q` to `Q3 A` or `Q3 B`.
+- **Decisions**: a part with `q` gets a purple dashed outline and its question tag, such as `Q2`. A part with `q` and `fork: true` is an alternative with a dotted outline; set its `q` to `Q3 A` or `Q3 B`. Today draws wires as they are, without their question.
 
 The legend lists only the marks the page uses, and the view buttons appear only when the spec adds or removes something.
 

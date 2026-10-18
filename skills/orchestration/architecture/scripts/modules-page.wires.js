@@ -12,7 +12,7 @@ const strokes = {
 
 function strokeOf(wire, view) {
   if (wire.change === "removed" && view === "removed") return "removed";
-  if (wire.q) return wire.fork ? "fork" : "ask";
+  if (wire.q && view !== "today") return wire.fork ? "fork" : "ask";
   if (wire.followUp) return "followUp";
   if (wire.kind === "leak") return "leak";
   if (wire.change === "added" || wire.change === "changed") return wire.change;
@@ -51,11 +51,11 @@ function drawLabel(svg, point, text, stroke, align) {
   return { text, box };
 }
 
-function drawCross(svg, at) {
+function drawCross(svg, at, name) {
   const radius = 7.5;
   svg.appendChild(svgElement("circle", { cx: at.x, cy: at.y, r: radius, fill: "#ffffff", stroke: "#64748b", "stroke-width": 1.5 }));
   svg.appendChild(svgElement("path", { d: `M${at.x - 3.5},${at.y - 3.5}L${at.x + 3.5},${at.y + 3.5}M${at.x + 3.5},${at.y - 3.5}L${at.x - 3.5},${at.y + 3.5}`, stroke: "#475569", "stroke-width": 2 }));
-  return { text: "✕", box: { x: at.x - radius, y: at.y - radius, width: radius * 2, height: radius * 2 } };
+  return { text: `✕ on ${name}`, box: { x: at.x - radius, y: at.y - radius, width: radius * 2, height: radius * 2 } };
 }
 
 function apart(a, b) {
@@ -93,8 +93,8 @@ function drawWire(svg, root, wire, view) {
   svg.appendChild(path);
   const pointAt = (t) => { const u = 1 - t; return { x: u * u * u * a.x + 3 * u * u * t * c1.x + 3 * u * t * t * c2.x + t * t * t * z.x, y: u * u * u * a.y + 3 * u * u * t * c1.y + 3 * u * t * t * c2.y + t * t * t * z.y }; };
   const labelAt = wire.labelAt ?? 0.5, [dx, dy] = wire.labelOffset ?? [0, 0];
-  const marks = stroke.cross ? [drawCross(svg, pointAt(wire.crossAt ?? Math.min(labelAt + 0.25, 0.85)))] : [];
-  const text = [wire.q, (view === "today" && wire.todayLabel) || wire.label].filter(Boolean).join(": ");
+  const marks = stroke.cross ? [drawCross(svg, pointAt(wire.crossAt ?? Math.min(labelAt + 0.25, 0.85)), wire.label ?? `${wire.from} → ${wire.to}`)] : [];
+  const text = [view !== "today" && wire.q, (view === "today" && wire.todayLabel) || wire.label].filter(Boolean).join(": ");
   if (!text) return marks;
   const at = pointAt(labelAt);
   return [...marks, drawLabel(svg, { x: at.x + dx, y: at.y + dy }, text, stroke, wire.labelAlign)];
