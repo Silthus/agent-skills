@@ -183,7 +183,8 @@
       "bend": 60,
       "labelAt": 0.4,
       "change": "removed",
-      "crossAt": 0.25
+      "crossAt": 0.25,
+      "q": "Q1"
     },
     {
       "from": "notify-badges",
