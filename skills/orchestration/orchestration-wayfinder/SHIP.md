@@ -14,7 +14,7 @@ When several of a spec's tickets need the same exploration, one research worker 
 
 ## Implementation ticket
 
-1. Work in an own worktree on `spec/<slug>/<ticket>`, branched from the integration branch tip. Confirm that base before the first edit.
+1. Work in an own worktree on `spec/<slug>-<n>`, where `<n>` is the ticket's issue number, branched from the integration branch tip. `spec/<slug>` is already a ref, so Git can't create a branch beneath it. Confirm that base before the first edit.
 2. Build with the `tdd` skill and gather the proof bundle below.
 3. **Land**: merge the integration branch tip into the ticket branch, run the repo's full local gate green, and push to the integration branch as a fast-forward. A rejected push means another ticket landed first: merge again and repeat.
 4. Write the resolution comment: the landed commit, the proof, its decision lines, and the follow-ups. Close the ticket and remove the worktree.
