@@ -6,19 +6,27 @@ import { chromium, type Browser, type Page } from 'playwright-core';
 const usage = 'usage: bun screenshot.ts <page.html | diagram.mmd> [out-prefix] [--width <css px, default 1100>] [--browser <executable>]';
 const mermaidScript = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
 const cacheDirs = [join(homedir(), '.cache/ms-playwright'), join(homedir(), 'Library/Caches/ms-playwright')];
-const executables = ['*/*/chrome-headless-shell', '*/*/headless_shell', '*/*/chrome', '*/*/Chromium.app/Contents/MacOS/Chromium'];
+const executables = [
+  '*/*/chrome-headless-shell',
+  '*/*/headless_shell',
+  '*/*/chrome',
+  '*/*/Chromium.app/Contents/MacOS/Chromium',
+  '*/*/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',
+];
+
+const revisionOf = (path: string) => Number(/-(\d+)\//.exec(path)?.[1] ?? 0);
 
 function cachedBrowsers(): string[] {
   return cacheDirs
     .filter(existsSync)
     .flatMap((dir) => executables.flatMap((pattern) => [...new Bun.Glob(pattern).scanSync({ cwd: dir, absolute: true })]))
-    .sort()
-    .reverse();
+    .sort((a, b) => revisionOf(b) - revisionOf(a));
 }
 
 async function launch(explicit?: string): Promise<Browser> {
   if (explicit) return chromium.launch({ executablePath: explicit });
-  const attempts = [() => chromium.launch(), ...cachedBrowsers().map((path) => () => chromium.launch({ executablePath: path })), () => chromium.launch({ channel: 'chrome' })];
+  const paths = [chromium.executablePath(), ...cachedBrowsers()].filter(existsSync);
+  const attempts = [() => chromium.launch(), ...paths.map((path) => () => chromium.launch({ executablePath: path })), () => chromium.launch({ channel: 'chrome' })];
   for (const attempt of attempts) {
     const browser = await attempt().catch(() => undefined);
     if (browser) return browser;
