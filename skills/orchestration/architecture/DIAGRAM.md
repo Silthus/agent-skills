@@ -16,7 +16,7 @@ bun <this skill's directory>/scripts/screenshot.ts modules.html
 - **The bus** is a full-width dark rail between module rows. Publishers and subscribers attach to it with short vertical `pub X` and `sub X` wires.
 - **Fill is the change**: green is added by this change, yellow is changed. An orange dashed frame or chip with a `follow-up` tag is part of the target that a later refactor builds.
 - **Views**: Target, Target + what it removes, and Today. In the middle view the removed chips, seam functions and wires stay in place, grey, dashed and struck through, with a ✕ on each removed wire. A toggle shows the untouched modules as mini cards: their top functions as the seam bar, their import surface, and their bus events.
-- **Decisions**: a part with `q` gets a purple dashed outline and its question tag, such as `Q2`. A part with `q` and `fork: true` is an alternative with a dotted outline; set its `q` to `Q3 A` or `Q3 B`. Today draws wires as they are, without their question.
+- **Decisions**: a part with `q` gets a purple dashed outline and its question tag, such as `Q2`. A part with `q` and `fork: true` is an alternative with a dotted outline; set its `q` to `Q3 A` or `Q3 B`. Today draws everything as it is, without its question.
 
 The legend lists only the marks the page uses, and the view buttons appear only when the spec adds or removes something.
 
@@ -50,7 +50,7 @@ The rows are placed by hand, so you choose which modules sit next to each other.
 
 ## Mermaid fallback
 
-Only when no Chromium can render the page outside T3, draw rungs 1 and 2 as a Mermaid `flowchart` with one `subgraph` per module, its seam functions in the subgraph title. Mark each node with two classes in two statements, `class Api new` and `class Api suggested`: Mermaid reads `class Api new,suggested` as one class name and styles nothing. Use these classes, and a `Legend` subgraph that shows each one the diagram uses:
+Only when the page cannot be rendered outside T3 (no Chromium, or no network for the first `playwright-core` fetch), draw rungs 1 and 2 as a Mermaid `flowchart` with one `subgraph` per module, its seam functions in the subgraph title. Mark each node with two classes in two statements, `class Api new` and `class Api suggested`: Mermaid reads `class Api new,suggested` as one class name and styles nothing. Use these classes, and a `Legend` subgraph that shows each one the diagram uses:
 
 ```mermaid
 flowchart LR

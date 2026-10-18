@@ -64,7 +64,7 @@ Where the round appears decides what it shows:
 - **GitHub ticket**: post the round as a comment. For rungs 1 and 2, embed the PNG of the Target view, or of Target + what it removes when the change removes something, and say in one or two sentences what the other views show. Commit the spec, the page and the PNGs to the ticket's branch and link them at the commit, or attach the PNG in the GitHub editor when there is no branch. For rung 3, a fenced `mermaid` block renders on GitHub.
 - **Elsewhere**: put the PNG at the top of the round.
 
-When `screenshot.ts` cannot render, because it finds no Chromium or has no network for its first `playwright-core` fetch, install what it names as `DIAGRAM.md` says. When that fails too:
+When `screenshot.ts` finds no Chromium, install one as `DIAGRAM.md` says. When that fails, or Bun has no network for its first `playwright-core` fetch:
 
 - In T3, `html_render` the page anyway and check its layout in the `html_preview` screenshot of each view.
 - Elsewhere, draw rungs 1 and 2 as the Mermaid flowchart in `DIAGRAM.md`'s fallback section, and say in the round that the module page could not be rendered.
