@@ -41,18 +41,25 @@ CLI is signed in. Step 3 runs its check there.
 1. Pick a short lowercase name, such as the prototype or branch name, and a
    free port: `ss -ltn` does not list it.
 2. Serve the work on `127.0.0.1:<port>` as a systemd user service, so it
-   outlives this session. If `systemd-run` cannot reach the user manager, run
-   `export XDG_RUNTIME_DIR=/run/user/$(id -u)` first. When the user slice
-   `fleet-heavy.slice` exists (`systemctl --user cat fleet-heavy.slice`
-   succeeds), add `--slice=fleet-heavy.slice` to each `systemd-run` command
-   below, so the preview's memory cannot starve the agents. Otherwise leave
-   the flag out.
+   outlives this session.
+   - **With Fleet** (`~/dev/fleet/fleet` exists): run
+     `~/dev/fleet/fleet heavy --service preview-<name> -- <command>` from the
+     project. Fleet starts the service in its heavy slice, on the worktree's
+     compute box when the worktree has a lease, and prints
+     `serves from <workspace>`. Use that workspace for `<workspace>` in the
+     link; with a lease, `~/dev/fleet/fleet lease status --json` also gives the
+     `agent` and `owner`. Take the preview down with
+     `~/dev/fleet/fleet heavy --stop preview-<name>`.
+   - **Without Fleet:** run `systemd-run --user --unit=preview-<name> <command>`.
+     If `systemd-run` cannot reach the user manager, run
+     `export XDG_RUNTIME_DIR=/run/user/$(id -u)` first.
+
+   The command:
    - **Static build** (Storybook, `vite build`): build into a directory inside
      the project, because `/tmp` is cleared when the workspace restarts. Serve
-     it with `systemd-run --user --unit=preview-<name> python3 -m http.server <port> --bind 127.0.0.1 --directory <build-dir>`.
-   - **Dev server:** `systemd-run --user --unit=preview-<name> --working-directory=<project> <command>`.
-     Coder forwards its own host name, so allow it: Vite
-     `server.allowedHosts: [".<wildcard-host>"]`.
+     it with `python3 -m http.server <port> --bind 127.0.0.1 --directory <build-dir>`.
+   - **Dev server:** the project's dev command. Coder forwards its own host
+     name, so allow it: Vite `server.allowedHosts: [".<wildcard-host>"]`.
 3. Check the link. The page and one of its scripts or stylesheets return 200
    with a Coder session token:
    `curl -s -o /dev/null -w "%{http_code}\n" -H "Coder-Session-Token: $(coder login token)" <url>`.
@@ -65,5 +72,5 @@ CLI is signed in. Step 3 runs its check there.
    was skipped. Then give the user the link.
 
 Keep the port private: change no port sharing in Coder. To take a preview
-down, run `systemctl --user stop preview-<name>`. Stop previews that are no
+down without Fleet, run `systemctl --user stop preview-<name>`. Stop previews that are no
 longer needed.
