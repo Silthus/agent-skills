@@ -58,4 +58,6 @@ svg.wires{position:absolute;left:0;top:0;pointer-events:none;overflow:visible;z-
 .panel[data-view=removed] .v-removed{color:#94a3b8;text-decoration:line-through}
 .panel[data-view=removed] .chip.v-removed{background:#f8fafc;border:1px dashed #94a3b8}
 .panel[data-view=removed] .v-removed :is(.q,.f,.used){text-decoration:none}
+.panel[data-view=today] .ask{outline:none}
+.panel[data-view=today] .q{display:none}
 .panel[data-untouched=off] .untouched{display:none}
