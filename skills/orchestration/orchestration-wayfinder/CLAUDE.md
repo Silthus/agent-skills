@@ -10,7 +10,7 @@ Read this addendum only when Claude Code drives. [`SKILL.md`](SKILL.md) is the s
 - Pass `isolation: "worktree"` to every worker that writes files, commits, or checks out a branch.
 - Record the worker name and transcript path in the ticket's claim comment as soon as they are available.
 
-Every worker prompt includes the wall-time cap, report-before-idle requirement, **leave nothing running** (background work pins the conductor under Working in T3 Code), ticket claim, prescribed skill and the fallback when the Skill tool refuses it, durable park/resolution protocol, the rule that downstream dispatch belongs to the conductor, and **Casting** from [`SKILL.md`](SKILL.md).
+Every worker prompt includes the wall-time cap, report-before-idle requirement, **leave nothing running** (anything left live pins the conductor on T3's Working shelf), ticket claim, prescribed skill and the fallback when the Skill tool refuses it, durable park/resolution protocol, the rule that downstream dispatch belongs to the conductor, and **Casting** from [`SKILL.md`](SKILL.md).
 
 An `implement` or `ship` worker's prompt points to its section of [`SHIP.md`](SHIP.md) and carries the spec's integration branch.
 
