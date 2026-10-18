@@ -148,7 +148,7 @@ function untouchedCards(untouched: Untouched[]): string {
     const facts = [module.used === undefined ? '' : `${module.used} used outside`, module.note ?? ''].filter(Boolean).join(' · ');
     return `<div class="mini">${seamBar(module.seam.map((fn) => `<span class="fn">${escape(fn)}</span>`))}<b>${escape(module.name)}</b><p>${escape(facts)}</p></div>`;
   };
-  return `<div class="untouched"><h4>Untouched by this change. The top bar is the seam: its most used functions.</h4><div class="grid">${untouched.map(card).join('')}</div></div>`;
+  return `<div class="untouched"><h4>Untouched by this change. The top bar is the seam, with its most used functions.</h4><div class="grid">${untouched.map(card).join('')}</div></div>`;
 }
 
 function everyMark(spec: Spec): Array<Marks & { cycle?: boolean }> {
