@@ -67,7 +67,8 @@ after they approve.
 1. Read the body with `gh pr view <n> --json body -q .body`.
 2. Remove every `merge-risk` and `line-count` marker block from the body.
 3. Put the callout under the `Merge Danger` heading when the body has one,
-   else right after the problem section, else first. Keep the rest of the
+   else right after the Impact section, else right after the problem
+   section, else first. Keep the rest of the
    body byte for byte.
 4. Write it back with `gh pr edit <n> --body-file <file>`.
 

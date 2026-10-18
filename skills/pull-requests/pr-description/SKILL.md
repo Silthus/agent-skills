@@ -23,11 +23,17 @@ metadata:
    it. Its section structure, QA, media, and publication rules win.
 2. Write the prose with the `writing-voice` skill when it is installed, and
    the risk callout with the `merge-risk` skill. Put the callout after the
-   problem, within the repository's section structure.
+   problem and its Impact section, within the repository's section
+   structure.
 3. State the user problem and the resulting behavior in one or two
    sentences. Describe the final implementation. Use the domain terms from
    `GLOSSARY.md` when it exists.
-4. Prove the change works, and put each proof beside the behavior it
+4. Write the Impact section right after the problem, with the `impact`
+   skill when it is installed. It names the metric this change moves and
+   where we see it. A PR from a Wayfinder map copies the map's Impact
+   section and narrows it to this change. Pushback happened while the map
+   was charted, so ask nothing.
+5. Prove the change works, and put each proof beside the behavior it
    demonstrates:
    - **Screenshots**: one per changed feature, view, and state. For a change
      without a UI, show the observed command or API output.
@@ -40,13 +46,13 @@ metadata:
    For UI changes, read [UI evidence](references/ui-evidence.md) to
    capture, caption, and refresh media. For a flow diagram, read
    [implementation views](references/implementation-views.md).
-5. Name the test seams, the checks you ran, and the material gaps. When the
+6. Name the test seams, the checks you ran, and the material gaps. When the
    work ran proofs per [`PROOF.md`](../qa-swarm/PROOF.md) of the `qa-swarm`
    skill, list each owed proof with its evidence or its gap. Add a
    verification command and its expected result when it helps a reviewer
    reproduce the behavior. Put long output and process history in a
    collapsed block or in proof storage.
-6. Add a Decisions block: one row per load-bearing decision or call that
+7. Add a Decisions block: one row per load-bearing decision or call that
    [qa-swarm triage](../qa-swarm/TRIAGE.md) defines, never one row per
    ticket or slice. Mechanical choices stay out. The table has the columns
    Question, Answer, Who, and Where, sorted 👤, 👍, 🤖:
@@ -86,6 +92,8 @@ metadata:
    Evidence.
 
 Done when the problem and resulting behavior are clear without the diff,
+the Impact section names its metric, unless `impact` is not installed or
+the work is exempt,
 each consequential claim has supporting evidence or an explicit gap, every
 load-bearing decision names who made it, every unanswered question is on
 the Open line, and the description follows the
@@ -99,6 +107,10 @@ Use this structure when the repository has no required template:
 ## Problem
 
 <the user problem and the issue it closes>
+
+## Impact
+
+<the impact line, per the `impact` skill>
 
 ## Merge Danger
 
