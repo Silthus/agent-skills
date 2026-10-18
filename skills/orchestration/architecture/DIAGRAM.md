@@ -11,12 +11,12 @@ bun <this skill's directory>/scripts/screenshot.ts modules.html
 
 ## What the page draws
 
-- **Modules.** A module is a bordered frame. Its top bar is its **seam**, which lists its interface functions in a monospace font on a dark background. Its implementation parts are **chips** inside it. A wire that ends on the seam bar goes through the seam; a wire that ends on a chip reaches past it.
+- **Modules.** A module is a bordered frame. Its top bar is its **seam**, which lists its interface functions in a monospace font on a dark background. Its implementation parts are **chips** inside it. A wire that ends on the seam bar goes through the seam, and a wire that ends on a chip reaches past it.
 - **Leaks.** A leak is a red wire labelled with measured counts, such as `30 symbols, 9 files`. Each frame shows how many of its exports other modules use, such as `61 used outside`. An import cycle is a red dashed chip marked ↺.
 - **The bus.** The bus is a full-width dark rail between module rows. Publishers and subscribers attach to it with short vertical `pub X` and `sub X` wires.
 - **The change.** Green is what this change adds, yellow what it changes. An orange dashed frame or chip with a `follow-up` tag is part of the target that a later refactor builds.
 - **Views.** The buttons switch between Target, Target + what it removes, and Today. In the middle view the removed chips, seam functions and wires stay in place, grey, dashed and struck through, with a ✕ on each removed wire. A toggle shows the untouched modules as mini cards, each with its top functions as the seam bar, its outside-use count, and its bus events.
-- **Decisions.** A part with `q` gets a purple dashed outline and its question tag, such as `Q2`. A part with `q` and `fork: true` is an alternative with a dotted outline; set its `q` to `Q3 A` or `Q3 B`. Today draws everything as it is, without its question, so give a suggested part or alternative that does not exist yet `change: 'added'` to keep it out of Today.
+- **Decisions.** A part with `q` gets a purple dashed outline and its question tag, such as `Q2`. A part with `q` and `fork: true` is an alternative with a dotted outline, and its `q` reads `Q3 A` or `Q3 B`. Today draws everything as it is, without its question, so give a suggested part or alternative that does not exist yet `change: 'added'` to keep it out of Today.
 
 The legend lists only the marks the page uses, and the view buttons appear only when the spec adds or removes something.
 
@@ -32,7 +32,7 @@ type Untouched = { name: string; seam: string[]; used?: number; note?: string };
 ```
 
 - A wire end is a module `id`, its seam bar `<id>-seam`, a chip `id`, or the bus id (`bus` unless set).
-- `change: 'removed'` is drawn today, struck through in the middle view, and gone from the target. `todayOnly` is drawn only in Today, for a part the struck-through view would only clutter. `todayName` names a module as it is called today.
+- `change: 'removed'` shows a part in Today, strikes it through in the middle view, and leaves it out of the target. `todayOnly` shows a part only in Today, for a part the struck-through view would only clutter. `todayName` names a module as it is called today.
 - `external: true` draws an actor or an external system as a blue frame. A module with no seam functions has no bar, which suits actors in rung 1.
 - `flex` sets a frame's width in its row (default 1); `gap` sets the space above a row in pixels (default 56).
 - `untouched` fills the toggle. Put a card's bus events in its `note`, such as `pub coinsSpent`. Leave `untouched` out and the toggle goes away.
@@ -50,7 +50,7 @@ You place the rows by hand, so you choose which modules sit next to each other. 
 
 ## Mermaid fallback
 
-Only when the page cannot be rendered outside T3 (no Chromium, or no network for the first `playwright-core` fetch), draw rungs 1 and 2 as a Mermaid `flowchart` with one `subgraph` per module, its seam functions in the subgraph title. Mark each node with two classes in two statements, `class Api new` and `class Api suggested`: Mermaid reads `class Api new,suggested` as one class name and styles nothing. Use these classes, and add a `Legend` subgraph that shows each one the diagram uses.
+Only when `screenshot.ts` cannot render the page outside T3 (no Chromium, or no network for the first `playwright-core` fetch), draw rungs 1 and 2 as a Mermaid `flowchart` with one `subgraph` per module, its seam functions in the subgraph title. Mark each node with two classes in two statements, `class Api new` and `class Api suggested`. Mermaid reads `class Api new,suggested` as one class name and styles nothing. Use these classes, and add a `Legend` subgraph that shows each one the diagram uses.
 
 ```mermaid
 flowchart LR
