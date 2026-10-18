@@ -8,5 +8,8 @@
   "devDependencies": {
     "@types/bun": "^1.3.11",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "playwright-core": "^1.58.2"
   }
 }
