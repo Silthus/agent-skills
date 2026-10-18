@@ -46,7 +46,7 @@ The module page is the frame-and-seam diagram that `DIAGRAM.md` specifies: read 
 - **Seams and leaks**: each module is a frame with its seam as the top bar, so a wire to the bar goes through the seam and a red wire to a chip reaches past it. The measured counts from Ground sit on the frames and the leak wires.
 - **The change**: green is what this change adds, yellow what it changes. Orange dashed with a `follow-up` tag is what the target needs but a later refactor builds.
 - **Three views**: Target, Target + what it removes, and Today. Removed parts stay visible in the middle view, grey and struck through, so the user sees what goes without losing what stays. A toggle shows the untouched modules and their seams, so the user can spot what else the change might reach.
-- **The decision**: a suggestion has a dashed purple outline and its question number, such as `Q2`; an open fork has dotted alternatives labelled `Q3 A` and `Q3 B`. Every suggestion and every fork has its question in the round.
+- **The decision**: a suggestion has a dashed purple outline and its question number, such as `Q2`; an open fork has dotted alternatives whose `q` is `Q3 A` and `Q3 B`. Every suggestion and every fork has its question in the round.
 
 In a sequence diagram, put the question number in the label of each suggested message.
 
@@ -56,15 +56,19 @@ Done when the frontier is empty: every seam locked, every key path drawn, every 
 
 ## Render the diagram
 
-Render each round's diagram before you post it. `scripts/screenshot.ts` writes a PNG of every view of a module page and lists its label collisions; render at the width you post at (`--width 728` for T3), read each PNG, and fix the spec until none remain. For a `.mmd` sequence diagram it writes an SVG and a PNG.
+Render each round's diagram before you post it. `scripts/screenshot.ts` writes a PNG of every view of a module page and lists its label collisions; render at the width you post at (`--width 728` for T3), read each PNG, and fix the spec until none remain. For a `.mmd` sequence diagram it writes an SVG and a PNG; it loads Mermaid from a CDN, so it needs network access. Keep each spec and `.mmd` file beside its renders: the next round redraws from them.
 
 Where the round appears decides what it shows:
 
 - **T3 Code** (`T3CODE_HOME` is set): before the final reply, render the diagram inline with `html_render`. Preview it with `html_preview` first to get its height. For rungs 1 and 2, pass the generated module page; it carries its own views and toggle. For rung 3, pass a small page that holds the inline SVG from `screenshot.ts`, since a page that loads Mermaid from a CDN captures before the script runs and renders blank. The final reply then holds the rest of the round: the change line, the premise, the questions, and the links line.
-- **GitHub ticket**: post the round as a comment. For rungs 1 and 2, embed the PNG of the Target view, or of Target + what it removes when the change removes something, and say in one or two sentences what the other views show. Commit the PNGs and the page to the ticket's branch and link them at the commit, or attach the PNG in the GitHub editor when there is no branch. For rung 3, a fenced `mermaid` block renders on GitHub.
+- **GitHub ticket**: post the round as a comment. For rungs 1 and 2, embed the PNG of the Target view, or of Target + what it removes when the change removes something, and say in one or two sentences what the other views show. Commit the spec, the page and the PNGs to the ticket's branch and link them at the commit, or attach the PNG in the GitHub editor when there is no branch. For rung 3, a fenced `mermaid` block renders on GitHub.
 - **Elsewhere**: put the PNG at the top of the round.
 
-When no Chromium is available to render the page, fall back to a fenced `mermaid` flowchart for rungs 1 and 2 with a legend for its marks, and say in the round that the module page could not be rendered.
+When `screenshot.ts` finds no Chromium, install one as `DIAGRAM.md` says. When that fails too:
+
+- In T3, `html_render` the page anyway and check its layout in the `html_preview` screenshot of each view.
+- Elsewhere, draw rungs 1 and 2 as the Mermaid flowchart in `DIAGRAM.md`'s fallback section, and say in the round that the module page could not be rendered.
+- For rung 3 without network, put the fenced `mermaid` block in the round.
 
 ## Worked example
 
@@ -72,11 +76,11 @@ A rung 2 round with one open suggestion. Its module page is `example/modules.jso
 
 **Premise.** Progression owns what a player earns and answers it through one read, `progressOf`; the website stops computing levels itself, and every other module hears about progress on the bus.
 
-The page shows Website reads calling `progressOf` through Progression's seam (green), the old `getLevels` leak of `9 symbols, 3 files` struck through, Notifications' leak of `12 symbols, 4 files` into Progression's streaks staying (red), and a new Achievements module as a follow-up that subscribes to `levelReached`, tagged `Q2`.
+The page shows Website reads calling `progressOf` through Progression's seam (green), and the old `getLevels` leak of `9 symbols, 3 files` struck through. Notifications' leak of `12 symbols, 4 files` into Progression's streaks is open as `Q1`. A new Achievements module is a follow-up, and its subscription to `levelReached` is open as `Q2`.
 
 ❓ **Q1** - **Notifications' leak into streaks**: Notifications reads 12 of Progression's internal symbols from 4 files to write badge lines. Should this change move that read behind `progressOf`, or leave it for a later refactor?
 
-➡️ Leave it. The leak is old, it does not grow with this change, and moving it would touch every notice template; draw it as a leak that stays and record it as a follow-up.
+➡️ Leave it. The leak is old, it does not grow with this change, and moving it would touch every notice template. Once accepted, it turns into a red leak that stays.
 
 ❓ **Q2** - **Achievements on the bus**: should Achievements subscribe to `levelReached` instead of Progression calling it?
 
@@ -84,7 +88,7 @@ The page shows Website reads calling `progressOf` through Progression's seam (gr
 
 ## Capture
 
-Write `docs/architecture/<name>.md` once, at capture; during the rounds the thread and the ticket comments hold the design. The file holds the question, the final diagram of each rung, and the locked contracts with their invariants, error modes, and performance characteristics. Commit the final module page and its view PNGs beside it in `docs/architecture/<name>/`, embed the PNG, and link the page. Then record one ADR per locked seam that passes `domain-modeling`'s three-part bar (hard to reverse, surprising without context, a real trade-off), in the format of `ADR-FORMAT.md` in the `domain-modeling` skill. The file becomes the interface section of the spec or implementation ticket that follows.
+Write `docs/architecture/<name>.md` once, at capture; during the rounds the thread and the ticket comments hold the design. The file holds the question, the final diagram of each rung, and the locked contracts with their invariants, error modes, and performance characteristics. Commit the final module page, its spec and its view PNGs beside it in `docs/architecture/<name>/`, embed the PNG, and link the page. Then record one ADR per locked seam that passes `domain-modeling`'s three-part bar (hard to reverse, surprising without context, a real trade-off), in the format of `ADR-FORMAT.md` in the `domain-modeling` skill. The file becomes the interface section of the spec or implementation ticket that follows.
 
 For a Wayfinder ticket, the resolution comment links the file and lists every locked decision as a decision line.
 

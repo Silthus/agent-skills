@@ -3,6 +3,7 @@ const strokes = {
   bus: { color: "#475569", width: 1.5 },
   leak: { color: "#dc2626", width: 2.2 },
   added: { color: "#15803d", width: 2.2 },
+  changed: { color: "#ca8a04", width: 2.2 },
   followUp: { color: "#ea580c", dash: "6 4", width: 2 },
   ask: { color: "#7c3aed", dash: "6 4", width: 2 },
   fork: { color: "#7c3aed", dash: "2 3", width: 2 },
@@ -14,7 +15,7 @@ function strokeOf(wire, view) {
   if (wire.q) return wire.fork ? "fork" : "ask";
   if (wire.followUp) return "followUp";
   if (wire.kind === "leak") return "leak";
-  if (wire.change === "added") return "added";
+  if (wire.change === "added" || wire.change === "changed") return wire.change;
   return wire.kind ?? "call";
 }
 
@@ -51,8 +52,10 @@ function drawLabel(svg, point, text, stroke, align) {
 }
 
 function drawCross(svg, at) {
-  svg.appendChild(svgElement("circle", { cx: at.x, cy: at.y, r: 7.5, fill: "#ffffff", stroke: "#64748b", "stroke-width": 1.5 }));
+  const radius = 7.5;
+  svg.appendChild(svgElement("circle", { cx: at.x, cy: at.y, r: radius, fill: "#ffffff", stroke: "#64748b", "stroke-width": 1.5 }));
   svg.appendChild(svgElement("path", { d: `M${at.x - 3.5},${at.y - 3.5}L${at.x + 3.5},${at.y + 3.5}M${at.x + 3.5},${at.y - 3.5}L${at.x - 3.5},${at.y + 3.5}`, stroke: "#475569", "stroke-width": 2 }));
+  return { text: "✕", box: { x: at.x - radius, y: at.y - radius, width: radius * 2, height: radius * 2 } };
 }
 
 function apart(a, b) {
@@ -90,11 +93,11 @@ function drawWire(svg, root, wire, view) {
   svg.appendChild(path);
   const pointAt = (t) => { const u = 1 - t; return { x: u * u * u * a.x + 3 * u * u * t * c1.x + 3 * u * t * t * c2.x + t * t * t * z.x, y: u * u * u * a.y + 3 * u * u * t * c1.y + 3 * u * t * t * c2.y + t * t * t * z.y }; };
   const labelAt = wire.labelAt ?? 0.5, [dx, dy] = wire.labelOffset ?? [0, 0];
-  if (stroke.cross) drawCross(svg, pointAt(wire.crossAt ?? Math.min(labelAt + 0.25, 0.85)));
+  const marks = stroke.cross ? [drawCross(svg, pointAt(wire.crossAt ?? Math.min(labelAt + 0.25, 0.85)))] : [];
   const text = [wire.q, (view === "today" && wire.todayLabel) || wire.label].filter(Boolean).join(": ");
-  if (!text) return;
+  if (!text) return marks;
   const at = pointAt(labelAt);
-  return drawLabel(svg, { x: at.x + dx, y: at.y + dy }, text, stroke, wire.labelAlign);
+  return [...marks, drawLabel(svg, { x: at.x + dx, y: at.y + dy }, text, stroke, wire.labelAlign)];
 }
 
 function drawWires(root, wires) {
@@ -102,7 +105,7 @@ function drawWires(root, wires) {
   svg.setAttribute("width", box.width);
   svg.setAttribute("height", box.height);
   svg.innerHTML = "<defs>" + Object.entries(strokes).map(([name, { color }]) => `<marker id="arrow-${name}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="${color}"/></marker>`).join("") + "</defs>";
-  const labels = wires.filter((wire) => shownIn(wire, view)).map((wire) => drawWire(svg, root, wire, view)).filter(Boolean);
+  const labels = wires.filter((wire) => shownIn(wire, view)).flatMap((wire) => drawWire(svg, root, wire, view) ?? []);
   root.dataset.collisions = JSON.stringify(collisions(root, labels));
 }
 

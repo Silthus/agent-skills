@@ -46,9 +46,7 @@
             },
             {
               "text": "called by 5 modules",
-              "cycle": true,
-              "change": "removed",
-              "followUp": true
+              "cycle": true
             }
           ]
         }
@@ -174,16 +172,16 @@
         8,
         0
       ],
-      "crossAt": 0.6
+      "crossAt": 0.32
     },
     {
       "from": "notify-badges",
       "to": "prog-streaks",
       "kind": "leak",
-      "label": "12 symbols: stays",
-      "todayLabel": "12 symbols, 4 files",
+      "label": "12 symbols, 4 files",
       "bend": 60,
-      "labelAt": 0.4
+      "labelAt": 0.4,
+      "q": "Q1"
     },
     {
       "from": "progression",
@@ -199,7 +197,9 @@
       "labelOffset": [
         -10,
         0
-      ]
+      ],
+      "crossAt": 0.2,
+      "labelAt": 0.55
     },
     {
       "from": "progression",
