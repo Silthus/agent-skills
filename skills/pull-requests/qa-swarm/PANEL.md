@@ -65,34 +65,34 @@ received.
 
 ## Brief
 
-Every brief carries the same text and the full diff before its lens, so the
-lanes share a prompt cache:
+Every brief carries the same text and the full diff first, so the lanes share
+a prompt cache. The Design lens gets no Context block: it judges the design
+from the goal and the code alone, so the author's framing cannot settle it.
 
 ```md
 You review a pull request. You did not write it. Review only: do not edit
 files, commit, push, or post to GitHub.
 
 Goal: <goal>
+Stack: <the PRs below this one, or none>
 Base: origin/<base>. Head: <sha>. The diff is below.
-Danger areas: <hunks>
-PR description: <current body, without its merge-risk callout>
-Owed proofs: <the owed kinds>
-Evidence: <accessible capture links or proof paths, tested commits, and gaps>
-Settled: <ledger entries that are fixed, rejected, or decided>. Raise one
-again only when the code under it changed.
 
 Read each changed hunk with its surrounding code, callers, and types before
 you judge it. Report a finding only when you can name its concrete trigger and
-its concrete consequence under intended use. When one cause breaks the same
-rule at more than one site, report it once and list every site.
+its concrete consequence under intended use. A Design finding names, in
+place of a trigger and a consequence, the concepts that exist now and the
+concepts the restructuring deletes. When one cause breaks the same rule at
+more than one site, report it once and list every site.
 
 Style counts only when it breaks a named standard: the repo's documented rules
-or the coding preferences in the user's agent instructions.
+or the coding preferences in the user's agent instructions. Structure is not
+style.
 
 End with:
 
 FINDINGS:
 - <file>:<line> | <blocker|major|minor|nit> | <lens> | <trigger> -> <consequence> | <fix> | sites: <file:line, ...>
+- Design form: <file>:<line> | <severity> | Design | <concepts now> -> deletes <concepts> | <restructuring> | sites: <file:line, ...>
 (or "(none)")
 COVERED: <every changed file you cleared or flagged>
 
@@ -101,10 +101,32 @@ hunting ground of your lens.
 
 <output of git diff origin/<base>...<sha>>
 
+Settled: <ledger entries that are fixed, rejected, or decided>. Raise one
+again only when the code under it changed.
+
+Context (every lens except Design):
+Approach: <approach, or none>
+Danger areas: <hunks>
+PR description: <current body, without its merge-risk callout>
+Owed proofs: <the owed kinds>
+Evidence: <accessible capture links or proof paths, tested commits, and gaps>
+
 Lens: <lens name and hunting grounds>
 
 <the repo knowledge for this lens, or nothing>
 ```
+
+## Design pass
+
+Before a PR opens, one reviewer reads the branch with the Design lens, so the
+design is settled before a person reads it. Cast it on the Review lane and
+give it the brief above for the branch diff against the base, with no Context
+block. Triage each finding per [`TRIAGE.md`](TRIAGE.md), fix the Fix and Call
+items, and keep the findings in a ledger file outside the repository. When
+the PR opens, copy them into its ledger, so the first review sees them as
+settled. The pass runs once, before and outside the round budget and
+`fleet proof`; the review that follows reads its fixes. Done when every
+finding has a bucket and every Fix and Call item is committed.
 
 ## Lenses
 
@@ -199,23 +221,47 @@ Grade:
 
 ### Design
 
-Is this the simplest code that meets the goal, and do the tests prove it?
+Is there a **code judo** move: a restructuring that keeps the goal's behavior
+and makes whole branches, helpers, modes, parameters, or layers disappear?
+Find the move, or show with your sketch that none exists.
 
-- Simple design, in order: it passes the tests, reveals its intent, says each
-  thing once, and has no superfluous parts.
-- Removal first: every new branch, flag, fallback, alias, mode, or parameter
-  that the goal does not need. The fix is to delete it.
+Before you judge the diff's design, sketch the smallest design that delivers
+the goal from the base code, in at most ten lines: the data it adds, the one
+place its logic lives, and the contracts it touches. Then compare the diff
+with your sketch. Each concept the diff has and your sketch lacks must earn
+its place. End with the sketch as a `SKETCH:` block after `COVERED`.
+
+- **Data over code**: a callback, hook, or generic mechanism that hides a
+  simple data fact, such as which URL parameter a page reads. Declare the fact
+  and build the behavior once.
+- **Speculative scope**: every new branch, flag, fallback, alias, mode,
+  parameter, or contract field that the goal does not need, including one
+  that serves a consumer no PR in the stack adds. The fix is to delete it.
+- **Canonical layer**: logic that re-derives a concept another module owns,
+  such as a second parsing rule beside the parser, and feature logic in a
+  shared path.
+- **Boundaries**: optional parameters, boolean or nullable modes, `any`, and
+  casts that let one function serve callers with different needs. Two needs
+  are two contracts.
+- **Spaghetti growth**: special cases bolted onto an existing flow, and
+  repeated conditionals on one concept that signal a missing model.
+- **Indirection**: thin wrappers, pass-through helpers, and identity
+  abstractions.
+- **Size**: a file the diff pushes from under 1000 lines to over 1000 lines.
 - The coding preferences in the user's agent instructions, when they exist,
   such as names and small methods that explain the code instead of comments,
   type safety, and YAGNI.
 - The smell baseline in step 3 of the `code-review` skill, and coupling:
-  boolean parameters that make one function do two jobs, parallel arrays,
-  circular dependencies.
+  parallel arrays and circular dependencies.
 - Naming: names that hide what a thing holds or does, negated booleans, stale
   copied names.
 - Fit: the idioms, helpers, and patterns of the surrounding code.
 
-Leave untouched lines alone, and leave short, clear code unextracted.
+Restructure the code the diff adds and the modules that own the concepts it
+touches, and leave unrelated code as it is. Prefer the move that deletes a
+concept to the move that relocates it. Grade a finding by what it deletes:
+a contract, a concept, or a layer is `major`, and a helper or a branch is
+`minor`. Rank findings by how much they delete.
 
 Tests:
 
