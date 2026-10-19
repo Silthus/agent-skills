@@ -56,10 +56,13 @@ below, `fleet` means whichever exists. With Fleet, a worktree has a lease when
      without the final period, for `<workspace>` in the link. The agent and
      owner stay the ones from Settings. With a lease, the box gets local edits
      only when a `fleet heavy` command runs. After edits, run
-     `fleet heavy --stop preview-<name>`, rebuild a static build, and run the
-     same `--service` command again. When its `serves from` line names another
-     workspace, give the user the new link. A leased preview stops with its
-     box: after `fleet lease release`, or when Coder stops the idle box.
+     `fleet heavy --stop preview-<name>`, rebuild a static build, check the
+     port again with `fleet heavy -- ss -ltn`, and run the `--service` command
+     again, on a free port if the old one is taken. Fleet runs locally when the
+     box cannot start or does not answer, so a rerun can move the preview to
+     another host. When its `serves from` line names another workspace, give
+     the user the new link. A leased preview stops with its box: after
+     `fleet lease release`, or when Coder stops the idle box.
    - **Without Fleet:** run
      `systemd-run --user --unit=preview-<name> --working-directory="$PWD" <command>`
      from the project.
@@ -87,4 +90,7 @@ below, `fleet` means whichever exists. With Fleet, a worktree has a lease when
 
 Keep the port private: change no port sharing in Coder. Stop previews that are
 no longer needed: `fleet heavy --stop preview-<name>` with Fleet, else
-`systemctl --user stop preview-<name>`.
+`systemctl --user stop preview-<name>`. With a lease, a failed `--stop` could
+not reach Coder or the box, so the preview can still run there. Run it once
+more. If it fails again, go on, and tell the user that the old link can show
+the old work until the box stops.
