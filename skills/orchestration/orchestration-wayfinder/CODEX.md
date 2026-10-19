@@ -13,7 +13,7 @@ Follow **Casting** in [`SKILL.md`](SKILL.md).
 
 ## Create a native task
 
-1. Call `list_projects`, then `create_thread` against the repo project.
+1. Call `list_projects`, then `create_thread` against the code repo's project, per **Map tracker** in [`SKILL.md`](SKILL.md).
 2. Use a worktree when the worker may write prototypes, specs, docs, or code. A grilling that writes no files may use the saved project directly.
 3. Make the ticket title the task title. Prompt the worker to claim first, obey its ticket skill (reading its `SKILL.md` directly when the Skill tool refuses it), park durably, and leave downstream dispatch to the conductor. An `implement` or `ship` task points to its section of [`SHIP.md`](SHIP.md) and carries the spec's integration branch.
 4. Record the returned locator on the ticket immediately:
