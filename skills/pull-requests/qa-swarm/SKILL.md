@@ -11,6 +11,9 @@ metadata:
     - skill: verify by observation, small stacked PRs
       author: Daniel Visca
       url: "https://posthog.com/newsletter/code-review-tips"
+    - skill: thermo-nuclear-code-quality-review, the code judo rubric of the Design lens
+      author: Cursor (MIT)
+      url: "https://github.com/cursor/plugins/tree/main/thermos"
 ---
 
 # QA swarm
@@ -47,9 +50,15 @@ rounds, because a third panel costs as much as the first and mostly finds churn.
 
 Fetch the base branch, then write down:
 
-- **Goal**: what the user asked for, in one or two sentences, and the issue it
-  closes. The goal is the oracle: behavior it does not ask for gets extra
-  scrutiny.
+- **Goal**: the outcome a user gets, in one or two sentences, and the issue it
+  closes. Say what a user can do after the change that they cannot do on the
+  base, and leave the design out. The goal is the oracle: behavior it does not
+  ask for gets extra scrutiny, and so does behavior that no user can observe
+  once the PR and the PRs below it merge, such as a parameter for a reader
+  that no PR in the stack adds.
+- **Approach**: the design the author chose, in a few bullets: the contracts
+  it adds or changes and where the logic lives. It is a claim for the panel to
+  judge, never a part of the goal.
 - **Base** and the diff, `git diff origin/<base>...HEAD`.
 - **Danger areas**: the hunks in the danger areas of the `merge-risk` skill.
 - **Split**: one concern per PR, at most about 400 changed production lines.
@@ -59,23 +68,25 @@ Fetch the base branch, then write down:
 - **Proofs**: the proofs the PR owes per [`PROOF.md`](PROOF.md), with the
   persisted inputs and boundary formats the changed path touches.
 
-Done when all five are written down.
+Done when all six are written down.
 
 ## 2. Open the draft
 
-1. Run the repo's local gate: the formatter, lint, typecheck, and tests that
+1. Run the [design pass](PANEL.md#design-pass) when no PR exists yet, and fix
+   what holds before anything else.
+2. Run the repo's local gate: the formatter, lint, typecheck, and tests that
    its agent docs, scripts, and CI configuration name. Done when the gate is
    green.
-2. Run every owed proof before review, the live run first, and save its
+3. Run every owed proof before review, the live run first, and save its
    evidence. For UI changes, follow
    [UI evidence](../pr-description/references/ui-evidence.md) and capture
    the changed journey in the live run. Record a gap for each owed proof you
    cannot run.
-3. Push. When no PR exists, open a draft with `gh pr create --draft` and write
+4. Push. When no PR exists, open a draft with `gh pr create --draft` and write
    the description with the `pr-description` skill. Once the PR number exists,
    register the owed proofs with `fleet proof require`, then save the evidence
-   and gaps from step 2 under it, as [Record](PROOF.md#record) describes.
-4. Keep the proof and the ledger in storage that outlives the worktree and
+   and gaps from step 3 under it, as [Record](PROOF.md#record) describes.
+5. Keep the proof and the ledger in storage that outlives the worktree and
    stays out of source history. The **ledger** holds every finding, thread,
    and check failure with its source, location, bucket, and evidence. With the
    `fleet` CLI, get the commit proof directory with

@@ -17,7 +17,7 @@ post-deploy watch as owed. When the `fleet` CLI is available (on `PATH` or at
 `~/dev/fleet/fleet`), run
 `fleet proof require --repo <owner/repo> --pr <number> --commit <head SHA> --kinds post-deploy-watch`.
 Otherwise, register it in the ledger. For a PR that never ran the swarm,
-create the ledger where step 2.4 of the `qa-swarm` skill puts it. Until the
+create the ledger where step 2.5 of the `qa-swarm` skill puts it. Until the
 merge, `fleet proof gate` without `--landed` lists the watch as pending.
 
 ## Ready

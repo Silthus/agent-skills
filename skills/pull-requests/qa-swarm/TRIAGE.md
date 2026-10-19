@@ -32,8 +32,29 @@ still exists at HEAD. A finding that a commit of this run already fixed is
   does not touch. Record it for the handoff.
 - **Reject**: the premise is wrong; the code, a caller, or the framework
   already prevents it; the input cannot occur at the call sites; or it asks
-  for abstraction, configuration, or defensive checks with no bug behind it.
-  Record the reason with the evidence: the file and line that prevents it.
+  to add abstraction, configuration, or defensive checks with no bug behind
+  it. Record the reason with the evidence: the file and line that prevents it.
+
+## Design findings
+
+A Design finding has no bug behind it; judge it by what it deletes. These
+rules come before the buckets above. A restructuring inside the files the PR
+touches and the module that owns the concept, which deletes more concepts
+than it adds, is a Fix, or a Call when it has more than one defensible shape.
+It is a Decision only when it changes behavior users see, stored data, or a
+contract read outside the repository. Deleting behavior that no user can
+observe once the PR and its stack merge is a Fix. A finding that only
+relocates code is a Reject.
+
+## Repeat causes
+
+A finding that is another case of a cause an earlier round or final read
+already fixed shows that the earlier fix sits in the wrong place. The fix is
+to move the rule into the module that owns the concept, such as the parser,
+the type, or the shared boundary, delete the local patches, and cover the
+cases through that module. Within the round budget it is a Fix, and the next
+review of it runs the Systems lens. Once the budget is spent, it is a
+Decision with that move as the recommended answer.
 
 ## Sources
 
