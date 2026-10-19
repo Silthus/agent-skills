@@ -38,12 +38,13 @@ CLI is signed in. Step 3 runs its check there.
 
 ## Steps
 
-Fleet is available when the `fleet` CLI is on `PATH` or at `~/dev/fleet/fleet`.
-With Fleet, a worktree has a lease when `fleet lease status` names a compute
-box. Fleet then runs the preview on that box.
+Fleet is available when the `fleet` CLI is on `PATH` or at `~/dev/fleet/fleet`;
+below, `fleet` means whichever exists. With Fleet, a worktree has a lease when
+`fleet lease status` names a compute box. Fleet then runs the preview on that box.
 
-1. Pick a short lowercase name that is unique to this worktree, such as the
-   branch name: Fleet replaces a running preview of the same name. Pick a free
+1. Pick a short lowercase name that is unique to this preview, such as the
+   branch name with `/` replaced by `-` plus what it serves
+   (`<branch>-storybook`): Fleet replaces a running preview of the same name. Pick a free
    port: `ss -ltn` does not list it. With a lease, check on the box with
    `fleet heavy -- ss -ltn`.
 2. Serve the work on `127.0.0.1:<port>` as a systemd user service, so it
@@ -53,8 +54,11 @@ box. Fleet then runs the preview on that box.
      from the project. Fleet starts the service in its heavy slice and ends with
      `Fleet heavy: preview-<name> serves from <workspace>.`. Use that workspace,
      without the final period, for `<workspace>` in the link. The agent and
-     owner stay the ones from Settings. A leased preview stops with its box:
-     after `fleet lease release`, or when Coder stops the idle box.
+     owner stay the ones from Settings. With a lease, the box gets local edits
+     only when a `fleet heavy` command runs: after edits, run the same
+     `--service` command again, which syncs and restarts the preview. A leased
+     preview stops with its box: after `fleet lease release`, or when Coder
+     stops the idle box.
    - **Without Fleet:** run
      `systemd-run --user --unit=preview-<name> --working-directory="$PWD" <command>`
      from the project.
