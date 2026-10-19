@@ -3,7 +3,8 @@ name: pr-description
 description: >-
   Write or refresh a PR description with the problem first, a merge-risk
   callout, and proof beside each behavior. Use when opening a PR, editing a
-  PR body, or updating its evidence after a fix or rebase.
+  PR body, or when work continues on a PR: a follow-up request, review
+  fixes, or a rebase.
 metadata:
   credits:
     - skill: pr
@@ -52,28 +53,41 @@ metadata:
    verification command and its expected result when it helps a reviewer
    reproduce the behavior. Put long output and process history in a
    collapsed block or in proof storage.
-7. Add a Decisions block: one row per load-bearing decision or call that
-   [qa-swarm triage](../qa-swarm/TRIAGE.md) defines, never one row per
-   ticket or slice. Mechanical choices stay out. The table has the columns
-   Question, Answer, Who, and Where, sorted 👤, 👍, 🤖:
+7. Add a Decisions block: one row per decision a reviewer or a future
+   reader needs. That is each load-bearing decision or call that
+   [qa-swarm triage](../qa-swarm/TRIAGE.md) defines, and each decision
+   that changes an earlier decision line. Mechanical choices and rows per
+   ticket or slice stay out. The table has the columns Question, Answer,
+   Who, and Where, sorted 👤, 👍, 🤖:
    - **Question**: the question the decision settled, in a few words.
    - **Answer**: one clause. When the user changed the recommendation, name
      what it replaced.
    - **Who**:
-     - 👤 Human: the user chose without a recommendation, picked another
-       option, changed the recommendation, accepted a draft only after
-       feedback that changed it, or set a standing instruction that decides
-       it.
+     - 👤 Human: the user asked for new scope, chose without a
+       recommendation, picked another option, changed the recommendation,
+       accepted a draft only after feedback that changed it, or set a
+       standing instruction that decides it.
      - 👍 Accepted default: the user read the agent's recommendation and
-       accepted it as written.
+       accepted it as written. When the user asks for new scope and
+       accepts the agent's scoping of it as written, record two questions:
+       the ask as 👤 and the scoping as 👍.
      - 🤖 Agent: the agent decided without asking.
    - **Where**: a link to the comment that holds the decision and its
      details.
 
    Record each decision where it is made, in the ticket's handoff comment
    or the map, as a **decision line**:
-   `- <mark> **<question>** <answer>`. A later line for the same question
-   replaces the earlier one.
+   `- <mark> **<question>** <answer>`. Decisions made in the agent session
+   or a review round, with no ticket comment or map to hold them, go into
+   one PR comment: the `leaving-pr-comments` callout, then the decision
+   lines. Post it, and each edit that adds or replaces a line, after the
+   user approves it per that skill. The row's Where reads
+   `pending approval` until its line is posted, then links to the comment. A
+   later line for the same question replaces the earlier one, and its row
+   replaces the earlier row. Each time work continues on the PR, such as a
+   follow-up request, review fixes, or a rebase that changes behavior,
+   record its decision lines and refresh the table in the same edit as the
+   rest of the body.
 
    A question put to the user without an answer is open, not a decision:
    list it on an **Open** line under the table with the recommendation. It
@@ -84,8 +98,9 @@ metadata:
 
    When the `fleet` CLI is available (on `PATH` or at
    `~/dev/fleet/fleet`), `fleet decisions <map URL>` collects a Wayfinder
-   map's decision lines into the table. Classify a decision without a line
-   from its transcript. A PR without such a decision keeps one line:
+   map's decision lines into the table; add the rows for the PR comment's
+   lines. A decision without a line gets one in the PR comment, classified
+   from its transcript. A PR with no row keeps one line instead:
    `No load-bearing decisions.`
    When the repository template has an agent-context section, put the block
    under its autonomy line. Otherwise, make it its own section after
@@ -95,9 +110,10 @@ Done when the problem and resulting behavior are clear without the diff,
 the Impact section names its metric, unless `impact` is not installed or
 the work is exempt,
 each consequential claim has supporting evidence or an explicit gap, every
-load-bearing decision names who made it, every unanswered question is on
-the Open line, and the description follows the
-repository's template.
+load-bearing decision names who made it, the Decisions table holds the
+latest line for every question decided, including those since the PR
+opened, every unanswered question is on the Open line, and the
+description follows the repository's template.
 
 ## Default structure
 
@@ -133,7 +149,7 @@ Use this structure when the repository has no required template:
 | --- | --- | --- | --- |
 | <the question> | <the answer, and the recommendation it replaced> | 👤 Human | <link to the comment> |
 | <the question> | <the answer> | 👍 Accepted default | <link to the comment> |
-| <the question> | <the call and its alternative> | 🤖 Agent | <link to the comment or ledger entry> |
+| <the question> | <the call and its alternative> | 🤖 Agent | <link to the comment> |
 
 Open: <each unanswered question, with its recommendation and link>, when any
 
