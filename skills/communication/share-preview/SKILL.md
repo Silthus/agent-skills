@@ -38,26 +38,35 @@ CLI is signed in. Step 3 runs its check there.
 
 ## Steps
 
-1. Pick a short lowercase name, such as the prototype or branch name, and a
-   free port: `ss -ltn` does not list it.
+Fleet is available when the `fleet` CLI is on `PATH` or at `~/dev/fleet/fleet`.
+With Fleet, a worktree has a lease when `fleet lease status` names a compute
+box. Fleet then runs the preview on that box.
+
+1. Pick a short lowercase name that is unique to this worktree, such as the
+   branch name: Fleet replaces a running preview of the same name. Pick a free
+   port: `ss -ltn` does not list it. With a lease, check on the box with
+   `fleet heavy -- ss -ltn`.
 2. Serve the work on `127.0.0.1:<port>` as a systemd user service, so it
-   outlives this session.
-   - **With Fleet** (`~/dev/fleet/fleet` exists): run
-     `~/dev/fleet/fleet heavy --service preview-<name> -- <command>` from the
-     project. Fleet starts the service in its heavy slice, on the worktree's
-     compute box when the worktree has a lease, and prints
-     `serves from <workspace>`. Use that workspace for `<workspace>` in the
-     link; with a lease, `~/dev/fleet/fleet lease status --json` also gives the
-     `agent` and `owner`. Take the preview down with
-     `~/dev/fleet/fleet heavy --stop preview-<name>`.
-   - **Without Fleet:** run `systemd-run --user --unit=preview-<name> <command>`.
-     If `systemd-run` cannot reach the user manager, run
-     `export XDG_RUNTIME_DIR=/run/user/$(id -u)` first.
+   outlives this session. If `systemd-run` cannot reach the user manager, run
+   `export XDG_RUNTIME_DIR=/run/user/$(id -u)` first.
+   - **With Fleet:** run `fleet heavy --service preview-<name> -- <command>`
+     from the project. Fleet starts the service in its heavy slice and ends with
+     `Fleet heavy: preview-<name> serves from <workspace>.`. Use that workspace,
+     without the final period, for `<workspace>` in the link. The agent and
+     owner stay the ones from Settings. A leased preview stops with its box:
+     after `fleet lease release`, or when Coder stops the idle box.
+   - **Without Fleet:** run
+     `systemd-run --user --unit=preview-<name> --working-directory="$PWD" <command>`
+     from the project.
 
    The command:
    - **Static build** (Storybook, `vite build`): build into a directory inside
-     the project, because `/tmp` is cleared when the workspace restarts. Serve
-     it with `python3 -m http.server <port> --bind 127.0.0.1 --directory <build-dir>`.
+     the project, because `/tmp` is cleared when the workspace restarts. With
+     Fleet, build with `fleet heavy -- <build command>`, so the build lands
+     where the preview runs: a lease syncs only the files Git sees, not ignored
+     build output. Serve it with
+     `python3 -m http.server <port> --bind 127.0.0.1 --directory <build-dir>`,
+     with `<build-dir>` relative to the project.
    - **Dev server:** the project's dev command. Coder forwards its own host
      name, so allow it: Vite `server.allowedHosts: [".<wildcard-host>"]`.
 3. Check the link. The page and one of its scripts or stylesheets return 200
@@ -71,6 +80,6 @@ CLI is signed in. Step 3 runs its check there.
    only the request without the token, and tell the user that the 200 check
    was skipped. Then give the user the link.
 
-Keep the port private: change no port sharing in Coder. To take a preview
-down without Fleet, run `systemctl --user stop preview-<name>`. Stop previews that are no
-longer needed.
+Keep the port private: change no port sharing in Coder. Stop previews that are
+no longer needed: `fleet heavy --stop preview-<name>` with Fleet, else
+`systemctl --user stop preview-<name>`.
