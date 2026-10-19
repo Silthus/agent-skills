@@ -37,7 +37,7 @@ still exists at HEAD. A finding that a commit of this run already fixed is
 
 ## Sources
 
-- **Panel finding**: the ledger is its only record. Post nothing.
+- **Panel finding**: the ledger holds it. Post no reply to it.
 - **Bot thread or bot comment**: every comment in the thread comes from a
   review bot, such as CodeRabbit, Greptile, Copilot, Cursor Bugbot, or PostHog
   Review, or carries an automated-comment callout. Reply in its thread per the
