@@ -81,12 +81,13 @@ metadata:
    or a review round, with no ticket comment or map to hold them, go into
    one PR comment: the `leaving-pr-comments` callout, then the decision
    lines. Post it, and each edit that adds or replaces a line, after the
-   user approves it per that skill. Until then, the row's Where reads
-   `pending approval`. A later line for the same question replaces the
-   earlier one, and its row replaces the earlier row. Each time work
-   continues on the PR, such as a follow-up request, review fixes, or a
-   rebase that changes behavior, record its decision lines and refresh the
-   table in the same edit as the rest of the body.
+   user approves it per that skill. The row's Where reads
+   `pending approval` until the comment is posted, then links to it. A
+   later line for the same question replaces the earlier one, and its row
+   replaces the earlier row. Each time work continues on the PR, such as a
+   follow-up request, review fixes, or a rebase that changes behavior,
+   record its decision lines and refresh the table in the same edit as the
+   rest of the body.
 
    A question put to the user without an answer is open, not a decision:
    list it on an **Open** line under the table with the recommendation. It
@@ -99,7 +100,7 @@ metadata:
    `~/dev/fleet/fleet`), `fleet decisions <map URL>` collects a Wayfinder
    map's decision lines into the table; add the rows for the PR comment's
    lines. A decision without a line gets one in the PR comment, classified
-   from its transcript. A PR without a load-bearing decision keeps one line:
+   from its transcript. A PR with no row keeps one line instead:
    `No load-bearing decisions.`
    When the repository template has an agent-context section, put the block
    under its autonomy line. Otherwise, make it its own section after
