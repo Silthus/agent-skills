@@ -34,7 +34,7 @@ Charting is the sole undispatched act, apart from its **Prior-art sweeps**. With
 The map and its tickets live in the **map tracker**: the tracker the user's agent instructions name for maps, usually in their skill settings; otherwise the code repo's own tracker, per Wayfinder. The code lives in the **code repo**: worktrees, branches, the integration branch, and pull requests. When the two differ:
 
 - Record `Code repo: <owner/repo>` in the map's **Notes** when you chart it.
-- Name the map tracker in every tracker command, such as `gh issue view <n> -R <owner/repo>`. Inside a checkout of the code repo, `gh` infers the code repo.
+- Name the map tracker in every tracker command: `-R <owner/repo>` on `gh issue`, and the map tracker's `repos/<owner>/<repo>/...` path or GraphQL variables on `gh api`, which rejects `-R`. Inside a checkout of the code repo, `gh` infers the code repo.
 - Every worker prompt carries the map URL and the code repo.
 - Cross-repo references use the full form, `<owner/repo>#<n>`: a ticket links its pull request, and a pull request links its tickets.
 - When the map tracker is private and the code repo is public, everything written to the code repo keeps only public context: pull request bodies, comments, commits, and branch names carry the decision and the ticket link, while the numbers, customer data, and internal findings behind it stay on the map.
