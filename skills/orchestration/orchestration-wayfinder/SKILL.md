@@ -54,11 +54,13 @@ Read the map's state with the frontier query of the tracker doc, per Wayfinder. 
 
 ## Compute lease
 
-When the `fleet` CLI offers `fleet lease` and the user's instructions route the code repo's heavy work (broad tests, typechecks, builds, previews) through `fleet heavy`, the map gets one compute box. The conductor owns it:
+When the `fleet` CLI offers `fleet lease` and the user's instructions route the code repo's heavy work (broad tests, typechecks, builds, previews) through `fleet heavy`, the map gets one compute box. The conductor owns it. Below, `fleet` is the path the conductor resolved per **Reading the frontier**, and every attach line names that path. The lease name is `map-<tracker repo name>-<n>`, such as `map-personal-12`, because map numbers repeat across trackers.
 
-- **Lease early.** As soon as the map holds an open `prototype`, `task`, `implement`, or `ship` ticket, blocked or not, run `fleet lease map-<n>` in the conductor's checkout, where `<n>` is the map's issue number. A new box takes minutes to boot and longer to warm its caches, so leasing at the first such ticket lets that happen while earlier tickets run. Run it in the foreground after dispatching the tickets that need no box. When it fails, for example because the lease cap is reached, record that in the map's **Notes** and dispatch anyway; `fleet heavy` then runs locally.
-- **Workers attach.** Every prompt for a ticket of those types tells the worker to run `fleet lease map-<n>` in its own worktree before its first heavy command. On the leased box this takes seconds, and from then on `fleet heavy` in that worktree runs there. When it fails, the worker carries on and `fleet heavy` runs locally. Workers never release the lease.
-- **Release at done.** When the map is done, or the human drops it, run `fleet lease release` in the conductor's checkout. That stops the box, and the hub's nightly reap deletes it later.
+- **Lease early.** As soon as the map holds an open `implement` or `ship` ticket, or a `prototype` or `task` ticket that runs the code repo's tests or builds, blocked or not, run `fleet lease <name>` in the conductor's checkout. A new box takes about 3 minutes to boot and about 20 more to warm its test database, and leasing early does that while earlier tickets run. First dispatch the tickets that need no box. Then run the lease in the foreground with a 10-minute timeout, and record `Compute lease: <name>` in the map's **Notes**. When the lease fails, for example because the lease cap is reached, record the failure there instead, dispatch without the attach line, and try again at the next wake.
+- **Keep it running.** The box stops after 2 idle hours. Before each dispatch of a ticket that runs code, run `fleet lease <name>` again in the conductor's checkout, the same way. It takes seconds while the box runs and about 3 minutes after a stop, and then the worker attaches to a running box.
+- **Workers attach.** While the **Notes** record the lease, every prompt for a ticket that runs code carries the attach line: run `fleet lease <name>` in your own worktree before your first heavy command. After that, `fleet heavy` in that worktree runs on the box. When the attach fails, run it once more before the next heavy command, then carry on locally. Workers never release the lease.
+- **Handoff.** A new conductor after a handoff or resume runs `fleet lease <name>` in its own checkout before its first dispatch, so that it can release the lease later.
+- **Release at done.** When the map is done, or the human drops it, run `fleet lease release` in the conductor's checkout and remove the **Notes** line. That stops the box, and Fleet's nightly reap deletes it after 3 days unused.
 
 ## Prior-art sweeps
 
@@ -156,6 +158,6 @@ The ticket is durable state; a worker is a cache. Recovery starts from the map, 
 5. On every tracker transition, reconcile attention state and dispatch newly unblocked work.
 6. Graduate newly sharp fog into tickets. Keep the canonical decision lookup index on the map, per **Decision lines on the map**, while preserving ticket comments as the durable evidence for each decision.
 
-Done means **every in-scope ticket is closed, every spec is shipped, every dispatch setup and worker is terminal, and no runtime worker remains on the attention rail**. An empty frontier alone is not completion: claimed, blocked, and parked tickets are deliberately absent from it.
+Done means **every in-scope ticket is closed, every spec is shipped, every dispatch setup and worker is terminal, no runtime worker remains on the attention rail, and the map's compute lease is released**. An empty frontier alone is not completion: claimed, blocked, and parked tickets are deliberately absent from it.
 
 At done, offer the human a retro of the map with the `retro` skill once. Running it stays their call.
