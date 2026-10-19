@@ -52,6 +52,14 @@ These rules bind the first chart and every later graduation of fog into tickets:
 
 Read the map's state with the frontier query of the tracker doc, per Wayfinder. When the `fleet` CLI is available (on `PATH` or at `~/dev/fleet/fleet`; use whichever exists) and the tracker is GitHub, `fleet frontier <map URL>` can replace that query: one call lists every open ticket as frontier, claimed, parked, or blocked, and the closed ones by number. Run it again whenever you need fresh state, instead of viewing tickets one at a time. On GitHub, read one ticket with `gh issue view <n> -R <owner/repo> --json title,body,labels,assignees,state`, and add `comments` to the fields only when you need its discussion or resolution.
 
+## Compute lease
+
+When the `fleet` CLI offers `fleet lease` and the user's instructions route the code repo's heavy work (broad tests, typechecks, builds, previews) through `fleet heavy`, the map gets one compute box. The conductor owns it:
+
+- **Lease early.** As soon as the map holds an open `prototype`, `task`, `implement`, or `ship` ticket, blocked or not, run `fleet lease map-<n>` in the conductor's checkout, where `<n>` is the map's issue number. A new box takes minutes to boot and longer to warm its caches, so leasing at the first such ticket lets that happen while earlier tickets run. Run it in the foreground after dispatching the tickets that need no box. When it fails, for example because the lease cap is reached, record that in the map's **Notes** and dispatch anyway; `fleet heavy` then runs locally.
+- **Workers attach.** Every prompt for a ticket of those types tells the worker to run `fleet lease map-<n>` in its own worktree before its first heavy command. On the leased box this takes seconds, and from then on `fleet heavy` in that worktree runs there. When it fails, the worker carries on and `fleet heavy` runs locally. Workers never release the lease.
+- **Release at done.** When the map is done, or the human drops it, run `fleet lease release` in the conductor's checkout. That stops the box, and the hub's nightly reap deletes it later.
+
 ## Prior-art sweeps
 
 When charting starts from a loose idea instead of an existing map or ticket, dispatch two background sweeps before the first grilling question. Each sweep finds out whether others already discussed the problem, have the same problem, or started to solve it:
@@ -124,7 +132,7 @@ The worker earns its handoff through the proof gate and the review in [`SHIP.md`
 2. Dispatch only through a surface that guarantees a one-shot deadline wake allowing a durable report, or worker termination at the cap. After hard termination, mark the lane orphaned and reconcile its ticket comments, labels, assignment, and closure before re-dispatching or reaping it. If neither enforcement mode is available, record a durable orchestration blocker instead of dispatching. T3 threads are the exception: they notify the conductor and settle themselves, per [`T3.md`](T3.md).
 3. On each conductor wake and before completion, health-check lanes whose last durable activity is older than 15 minutes; do not create a polling lane.
 4. A lane reports durably before idle; no report means orphaned, not done. Reconcile durable ticket state before any redispatch.
-5. Reap every lane and remove its worktree before declaring the map complete.
+5. Reap every lane and remove its worktree before declaring the map complete, then release the map's compute lease per **Compute lease**.
 6. The conductor owns waits as event/state transitions, never background pollers or chained blocking waits. The T3 hold in [`T3.md`](T3.md) is neither: it reads no state and only keeps a waiting conductor out of the human's inbox.
 7. The map has exactly three CodeRabbit slots shared by its `ship` lanes.
 
