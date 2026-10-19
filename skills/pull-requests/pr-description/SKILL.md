@@ -33,7 +33,10 @@ metadata:
    skill when it is installed. It names the metric this change moves and
    where we see it. A PR from a Wayfinder map copies the map's Impact
    section and narrows it to this change. Pushback happened while the map
-   was charted, so ask nothing.
+   was charted, so ask nothing. When the map is private and this
+   repository is public, everything copied from the map, its Impact
+   section and its decision lines alike, keeps only public context: the
+   numbers, customer data, and internal findings stay on the map.
 5. Prove the change works, and put each proof beside the behavior it
    demonstrates:
    - **Screenshots**: one per changed feature, view, and state. For a change
