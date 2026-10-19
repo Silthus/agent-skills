@@ -96,4 +96,5 @@ Keep the port private: change no port sharing in Coder. Stop previews that are
 no longer needed: `fleet heavy --stop preview-<name>` with Fleet, else
 `systemctl --user stop preview-<name>`. A stop that reports the unit is not
 loaded found the preview already stopped. With a lease, when `--stop` fails
-twice, tell the user that the preview runs on the box until the box stops.
+twice, tell the user that the preview can still run on the box until the box
+stops.
