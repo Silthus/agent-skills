@@ -147,7 +147,7 @@ On any worker notification, read the tracker per **Reading the frontier** (with 
 - **Open + assigned, no awaiting label** → active, queued, or orphaned. Use the runtime addendum to distinguish them without interrogating the worker.
 - **Invalidated by another resolution** → record why, stop or retire its runtime worker, clear its human-attention state, and update or close the ticket through Wayfinder's scope rules.
 
-The ticket is durable state; a worker and the conductor's own context are caches. The runtime compacts the conductor's context automatically. Treat a compaction as a resume: reload the map and its **Notes**, re-read the runtime addendum, and [`T3.md`](T3.md) in T3 Code, and run their **Recovery**, then query the frontier per **Conductor loop** before you dispatch. In T3 Code, start a new hold per **Wait out of the inbox** in [`T3.md`](T3.md) while a lane is open. Recovery starts from the map, ticket comments, assignment, labels, and recorded runtime locator.
+The ticket is durable state; a worker and the conductor's own context are caches. The runtime compacts the conductor's context automatically. Treat a compaction as a resume: reload the map and its **Notes**, re-read the runtime addendum, and [`T3.md`](T3.md) in T3 Code, and run their **Recovery**, then query the frontier per **Conductor loop** before you dispatch. In T3 Code, the old hold is gone; end each turn per **Wait out of the inbox** in [`T3.md`](T3.md). Recovery starts from the map, ticket comments, assignment, labels, and recorded runtime locator.
 
 ## Conductor loop
 
