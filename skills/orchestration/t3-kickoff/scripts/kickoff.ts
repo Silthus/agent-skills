@@ -245,8 +245,6 @@ async function create(flags: Flags): Promise<void> {
 
   const prompt = (promptFile === "-" ? readFileSync(0, "utf8") : readFileSync(promptFile, "utf8")).replace(/\s+$/, "");
   if (!prompt) die("prompt is empty");
-  // A clone or a new worktree takes disk before the launch; check before either.
-  if (!flags["dry-run"] && (worktree === "new" || flags["clone"])) assertDiskRoom();
 
   await withSession(async (server, session) => {
     let rpc: Rpc | undefined;
@@ -274,6 +272,7 @@ async function create(flags: Flags): Promise<void> {
       }
 
       assertProviderAvailable(model);
+      if (worktree === "new") assertDiskRoom();
       const workspaceStrategy =
         worktree === "new" ? { type: "worktree", baseRef: base, startFromOrigin: !flags["no-origin"] } : { type: "root" };
       const launch = {
@@ -315,6 +314,7 @@ function addProject(server: Server, cloneUrl: string): void {
   const name = cloneUrl.replace(/\.git$/, "").split(/[/:]/).pop()!;
   const path = join(homedir(), "dev", name);
   if (!existsSync(path)) {
+    assertDiskRoom();
     log(`cloning ${cloneUrl} into ${path}`);
     const clone = spawnSync("git", ["clone", cloneUrl, path], { encoding: "utf8" });
     if (clone.status !== 0) fail(`git clone failed: ${clone.stderr.trim().slice(0, 500)}`);

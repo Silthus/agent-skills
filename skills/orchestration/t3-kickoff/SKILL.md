@@ -34,7 +34,7 @@ Without any of them, `kickoff` makes no workspace or quota check.
 
 - **Workspace safety policy.** The file is `{"protectedRoots": ["<path relative to home>"]}`. `kickoff` refuses to launch in a protected root. The check follows symlinks and verifies the Git common directory, so a linked worktree outside the root is also refused if its Git metadata lives there. Use this for a checkout that a workspace template owns: the refusal preserves the checkout, and the agent uses an independent clone instead.
 - **Provider availability.** Before a launch, `kickoff` refuses a model whose provider has a fresh `exhausted` status in the report. The report is JSON: `{"checkedAt": "<ISO time>", "providers": {"claude": "available|exhausted|unknown", "codex": "..."}}`. A report older than 11 minutes counts as `unknown`, and `unknown` never blocks.
-- **Free disk.** `kickoff` refuses `--worktree new` and `--clone` while the machine it runs on has less than 5 GB free, because one more worktree or clone can fill the disk and crash T3 with every thread on it. `--worktree none` still runs, and so does a launch on a machine with room. `--dry-run` skips the check. It needs no file.
+- **Free disk.** `kickoff` refuses a new worktree, and a `--clone` that has to clone, while the machine it runs on has less than 5 GB free, because one more worktree or clone can fill the disk and crash T3 with every thread on it. It checks right before each, so a clone that uses the room also stops the worktree after it. `--worktree none` on a known project still runs, and so does a launch on a machine with room. `--dry-run` skips the check. It needs no file.
 - **Remote script.** `kickoff handoff` runs the t3-kickoff skill on the target from `~/.agents/skills`, `~/.claude/skills`, or `~/.codex/skills`, unless `remoteScript` names another path.
 
 ## Start a thread
@@ -98,7 +98,7 @@ It deletes the thread and removes the worktree and its `t3code/` branch unless a
 - `scripts/server.ts`: finds the running server and its binary. On Linux it reads `/proc/<pid>/exe`. On macOS the desktop app runs the server through Electron, so it takes the executable and the server script from `ps` and runs them in Node mode.
 - `scripts/settings.ts`: reads the settings file and its environment overrides.
 - `scripts/availability.ts`: reads the provider availability report.
-- `scripts/disk.ts`: the free disk floor for a new worktree.
+- `scripts/disk.ts`: the free disk floor for a new worktree or clone.
 - `scripts/workspace-safety.ts`: applies the workspace safety policy.
 
 Run the tests with `bun test` in this directory.
