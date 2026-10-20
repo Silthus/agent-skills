@@ -119,7 +119,7 @@ The worker earns its handoff through the proof gate and the review in [`SHIP.md`
 - Give every worker a wall-time cap and require a durable report before idle: its resolution, or the exact one question awaiting the human.
 - Every worker prompt carries **leave nothing running**: the worker runs each wait it needs in the foreground and ends every turn, a park included, with nothing it started still live: no background command such as `kickoff wait`, watcher, monitor, subagent, or child task. In T3 Code, anything left live keeps the worker's thread, and the conductor that started it, on the Working shelf, so the park never reaches the human's inbox.
 - Give every worker that writes files, commits, or checks out a branch its own worktree. A worker in the conductor's checkout can switch the conductor's branch. Serialize shared-file work.
-- Send a ticket's follow-up work, such as review fixes, to its existing worker when it touches the same files. Chart any other follow-up as its own ticket and dispatch that ticket.
+- While a ticket is open, send its follow-up work, such as review fixes, to its existing worker when it touches the same files. Chart every other follow-up, including those in a resolution comment, as its own ticket and dispatch that ticket.
 - When a review provider has an **outage** (a 429 or a usage limit), record it and its reset date once in the map's **Notes**, and state it in every dispatch until the reset.
 - Reserve one of three map-level CodeRabbit slots before dispatching a `ship` ticket. Hold the slot through review; release it when the ticket is shipped or parked.
 - Treat the tracker as semantic truth. Runtime workers and human-attention affordances are projections, never substitutes.
@@ -147,7 +147,7 @@ On any worker notification, read the tracker per **Reading the frontier** (with 
 - **Open + assigned, no awaiting label** → active, queued, or orphaned. Use the runtime addendum to distinguish them without interrogating the worker.
 - **Invalidated by another resolution** → record why, stop or retire its runtime worker, clear its human-attention state, and update or close the ticket through Wayfinder's scope rules.
 
-The ticket is durable state; a worker and the conductor's own context are caches. The runtime compacts the conductor's context automatically. Treat a compaction as a resume: re-read the runtime addendum and run its **Recovery**, then reload the map and the frontier per **Conductor loop** before you act. Recovery starts from the map, ticket comments, assignment, labels, and recorded runtime locator.
+The ticket is durable state; a worker and the conductor's own context are caches. The runtime compacts the conductor's context automatically. Treat a compaction as a resume: reload the map and its **Notes**, re-read the runtime addendum, and [`T3.md`](T3.md) in T3 Code, and run their **Recovery**, then query the frontier per **Conductor loop** before you dispatch. In T3 Code, start a new hold per **Wait out of the inbox** in [`T3.md`](T3.md) while a lane is open. Recovery starts from the map, ticket comments, assignment, labels, and recorded runtime locator.
 
 ## Conductor loop
 
