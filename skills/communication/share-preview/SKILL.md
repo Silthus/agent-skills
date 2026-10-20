@@ -1,6 +1,6 @@
 ---
 name: share-preview
-description: Share a running app, Storybook, or static build from a Coder workspace as a private Coder link. Use when asked to share, show, or preview work in a browser.
+description: Share a running app, Storybook, or static build from a Coder workspace as a private Coder link. Use when asked to share, show, or preview work in a browser, or when a UI prototype or UI change is ready for the user to see.
 ---
 
 # Share a preview
