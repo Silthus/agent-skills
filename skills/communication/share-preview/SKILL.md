@@ -77,7 +77,9 @@ below, `fleet` means whichever exists. With Fleet, a worktree has a lease when
    lazy chunks fail, pages reload, and Coder rejects the websocket.
    - **Project preview command:** when the project or the user's agent
      instructions document a preview command, use it, and read its log
-     until it reports the preview ready.
+     until it reports the preview ready:
+     `journalctl --user -u preview-<name> -n 20`, through `fleet heavy --`
+     with Fleet.
    - **Static build** (Storybook, `vite build`): build into a directory inside
      the project, because `/tmp` is cleared when the workspace restarts. With
      Fleet, build with `fleet heavy -- <build command>`, so the build lands
@@ -92,9 +94,9 @@ below, `fleet` means whichever exists. With Fleet, a worktree has a lease when
      asks for hot reload.
 3. Check the link in a headless browser signed in to Coder. A page whose
    scripts fail still returns 200, so only a browser shows a broken
-   preview. The Coder token is `$CODER_SESSION_TOKEN` when it is set, else
-   `coder login token`; when `$PREVIEW_CHECK_HOST` is set, read it there
-   with `ssh "$PREVIEW_CHECK_HOST" coder login token`. Below, `<link>` has
+   preview. Take the Coder token from the first source that has it:
+   `$CODER_SESSION_TOKEN`, then `ssh <check host> coder login token` when
+   a check host is set, then `coder login token`. Below, `<link>` has
    no trailing slash and `<page>` is a path such as `/insights`. With
    `agent-browser` (on a Linux workspace, `export AGENT_BROWSER_ARGS=--no-sandbox`
    first):
@@ -122,7 +124,8 @@ below, `fleet` means whichever exists. With Fleet, a worktree has a lease when
    shows, is a bug in the app: name it to the user beside the link.
    Confirm that the port is private:
    `curl -s -o /dev/null -w '%{http_code}\n' <link>/` returns 303, a
-   redirect to Coder sign-in. If no token or headless browser is
+   redirect to Coder sign-in. Any other code means the port is shared:
+   stop and tell the user. If no token or headless browser is
    available, tell the user which check was skipped. Then give the user
    the link.
 
