@@ -34,7 +34,7 @@ Without any of them, `kickoff` makes no workspace or quota check.
 
 - **Workspace safety policy.** The file is `{"protectedRoots": ["<path relative to home>"]}`. `kickoff` refuses to launch in a protected root. The check follows symlinks and verifies the Git common directory, so a linked worktree outside the root is also refused if its Git metadata lives there. Use this for a checkout that a workspace template owns: the refusal preserves the checkout, and the agent uses an independent clone instead.
 - **Provider availability.** Before a launch, `kickoff` refuses a model whose provider has a fresh `exhausted` status in the report. The report is JSON: `{"checkedAt": "<ISO time>", "providers": {"claude": "available|exhausted|unknown", "codex": "..."}}`. A report older than 11 minutes counts as `unknown`, and `unknown` never blocks.
-- **Free disk.** `kickoff` refuses a new worktree while the machine has less than 5 GB free, because one more worktree can fill the disk and crash T3 with every thread on it. `--worktree none` and launches on another machine still run. This check needs no file.
+- **Free disk.** `kickoff` refuses `--worktree new` and `--clone` while the machine it runs on has less than 5 GB free, because one more worktree or clone can fill the disk and crash T3 with every thread on it. `--worktree none` still runs, and so does a launch on a machine with room. `--dry-run` skips the check. It needs no file.
 - **Remote script.** `kickoff handoff` runs the t3-kickoff skill on the target from `~/.agents/skills`, `~/.claude/skills`, or `~/.codex/skills`, unless `remoteScript` names another path.
 
 ## Start a thread
