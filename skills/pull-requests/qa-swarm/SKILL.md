@@ -76,9 +76,12 @@ Done when all six are written down.
    what holds before anything else.
 2. Run the repo's local gate: the formatter, lint, typecheck, and tests that
    its agent docs, scripts, and CI configuration name. A step that times out
-   fails the gate: rerun it on the changed files only, such as `semgrep` on
-   `git diff --name-only origin/<base>...HEAD`. A step that still cannot run
-   is a gap in the handoff, never green. Done when the gate is green.
+   fails. Rerun a per-file step, such as a linter, a formatter, or `semgrep`,
+   on the changed files only:
+   `git diff --name-only --diff-filter=d origin/<base>...HEAD`. Every other
+   step that times out, and a per-file step that times out again, records a
+   gap. Every later run of the local gate follows the same rule. Done when
+   every step is green or recorded as a gap.
 3. Run every owed proof before review, the live run first, and save its
    evidence. For UI changes, follow
    [UI evidence](../pr-description/references/ui-evidence.md) and capture
@@ -146,17 +149,18 @@ for the bots and checks, and goes straight to the final read.
 
 Round two is the last panel. Fix what it finds and push. Every commit after
 the last reviewed one then gets a **final read**: one fresh reviewer from the
-review lane reads the fix diff since that commit, `git diff <last reviewed SHA>...HEAD`,
-in place of the full diff, with the lens brief of the findings those fixes
-close. With the `fleet` CLI, reserve it with
-`fleet proof review-start ... --scope final --base <last reviewed SHA>` and
-complete it with `fleet proof review-finish ... --round final <findings file>`.
-A final read never counts toward the two-round budget. A fix from a final read
-is a new commit, so it gets its own final read; a finding from that second
-final read becomes a Decision, and `fleet proof` rejects a third final read
-until the user answers it; record the answer with `--override`. Skip the final
-read when a review already covered HEAD. A Fix item you cannot close becomes a Decision, and the handoff
-is Blocked.
+review lane reads the fix diff since that commit,
+`git diff <last reviewed SHA>...HEAD`, in place of the full diff, with the
+lens brief of the findings those fixes close. With the `fleet` CLI, reserve it
+with `fleet proof review-start ... --scope final --base <last reviewed SHA>`
+and complete it with
+`fleet proof review-finish ... --round final <findings file>`. A final read
+never counts toward the two-round budget. A fix from a final read is a new
+commit, so it gets its own final read; a Fix or Call item from that second
+final read becomes a Decision. `fleet proof` rejects a third final read until
+the user answers it; record the answer with `--override`. Skip the final read
+when a review already covered HEAD. A Fix item you cannot close becomes a
+Decision, and the handoff is Blocked.
 
 Done when every ledger item is fixed, rejected, or a Decision, and every
 gating check on HEAD is green. A check that has not reported yet is not green.
@@ -200,7 +204,8 @@ Report to the user, then stop:
 - **Read first**: the danger hunks.
 - **Follow-ups**: real problems outside the goal.
 - **Gaps**: each owed proof that could not run, as a Decision for the user;
-  a lane that failed and its substitute; a skipped Team lane; a silent bot.
+  a lane that failed and its substitute; a skipped Team lane; a silent bot;
+  a gate step that could not run.
 
 When the user's agent instructions ask for a Slack message at the end of a
 PR, end with it, formatted by the `slack-pr-update` skill. When the user asks

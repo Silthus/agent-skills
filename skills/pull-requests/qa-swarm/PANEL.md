@@ -78,8 +78,11 @@ Stack: <the PRs below this one, or none>
 Base: origin/<base>. Head: <sha>. The diff is below.
 
 Read the changed files whole. Open another file only to follow a symbol that
-a changed hunk defines, calls, or changes. Report a finding only when you can name its concrete trigger and
-its concrete consequence under intended use. A Design finding names, in
+a changed hunk defines, calls, or changes: to its definition, its callers, and
+its types. Design may also search for a module that already owns a concept
+the diff adds, and Systems traces callers up to their entry paths. Report a
+finding only when you can name its concrete trigger and its concrete
+consequence under intended use. A Design finding names, in
 place of a trigger and a consequence, the concepts that exist now and the
 concepts the restructuring deletes. When one cause breaks the same rule at
 more than one site, report it once and list every site.
