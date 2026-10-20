@@ -78,9 +78,9 @@ Done when all six are written down.
    its agent docs, scripts, and CI configuration name. Done when the gate is
    green.
 3. Run every owed proof before review, the live run first, and save its
-   evidence. For UI changes, follow
-   [UI evidence](../pr-description/references/ui-evidence.md) and capture
-   the changed journey in the live run. Record a gap for each owed proof you
+   evidence. For UI changes, the [UI walk](PROOF.md#ui-walk) captures the
+   changed journey, and its screenshots are the PR's
+   [UI evidence](../pr-description/references/ui-evidence.md). Record a gap for each owed proof you
    cannot run.
 4. Push. When no PR exists, open a draft with `gh pr create --draft` and write
    the description with the `pr-description` skill. Once the PR number exists,

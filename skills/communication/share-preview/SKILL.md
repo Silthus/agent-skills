@@ -127,7 +127,7 @@ below, `fleet` means whichever exists. With Fleet, a worktree has a lease when
    redirect to Coder sign-in. Any other code means the port is shared:
    stop and tell the user. If no token or headless browser is
    available, tell the user which check was skipped. Then give the user
-   the link.
+   the link in the final reply of the turn.
 
 Keep the port private: change no port sharing in Coder. Stop previews that are
 no longer needed: `fleet heavy --stop preview-<name>` with Fleet, else

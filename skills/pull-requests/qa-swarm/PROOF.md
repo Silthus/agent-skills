@@ -26,20 +26,18 @@ saved for HEAD's behavior.
 
 Owed by every PR that changes what a user sees: a screen, a component, copy.
 
-Serve HEAD as a seeded preview, a production build on demo data, with the
-project's preview command, such as `fleet posthog-preview` for a PostHog
-checkout, or else with the `share-preview` skill. A Storybook story or a
-single rendered state shows appearance only. In a browser signed in to the
-preview, walk every stage of the changed journey from entry to result and
-take a screenshot of each stage. Walk copy or controls that depend on state
-twice: on data that has the state and on data that lacks it, such as a
-project with a verified sender and one without. When the ticket carries an
-element checklist from an accepted prototype, put each screen beside the
-prototype's screenshot of it, tick every `build` row the walk shows, and
-report each row it lacks as a finding.
+Serve HEAD with the `share-preview` skill as a production build on seeded
+demo data. A Storybook story or a single rendered state shows appearance
+only. In a browser signed in to the preview, walk every stage of the changed
+journey from entry to result and take a screenshot of each stage. Walk copy
+or controls that depend on state twice: on data that has the state and on
+data that lacks it, such as a project with a verified sender and one
+without. When the ticket carries an element checklist from an accepted
+prototype, put each screen beside the prototype's screenshot of it and tick
+every `build` row the walk shows. A `build` row the walk lacks is a finding
+until the user's words re-mark it `later` or `cut`.
 
-Done when every stage and every `build` row has a screenshot of HEAD, and
-the final reply of the turn carries the checked preview link.
+Done when every stage and every `build` row has a screenshot of HEAD.
 
 ### Prod shape
 
