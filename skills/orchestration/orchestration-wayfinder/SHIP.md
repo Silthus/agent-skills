@@ -48,7 +48,7 @@ The terminal is the reviewed draft pull request with every finding fixed or reje
 
 ## Per-ticket pull requests
 
-A spec whose implementation tickets already opened their own pull requests finishes that way and gets no `ship` ticket. Each remaining ticket opens a draft pull request with the `pr-description` skill from its own branch, stacked on its blocker's pull request branch, and runs the Review and Handoff above itself.
+A spec whose implementation tickets already opened their own pull requests finishes that way and gets no `ship` ticket. Each remaining ticket opens a draft pull request with the `pr-description` skill from its own branch, stacked on its blocker's pull request branch, and runs the Review and Handoff above itself. An `implement` ticket without a spec ships the same way, from a branch off `main`.
 
 ## Merge, when the map grants it
 
