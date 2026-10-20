@@ -34,7 +34,7 @@ from `$CODER_AGENT_URL`: the wildcard host can differ from the access URL.
 
 Optional: `$PREVIEW_CHECK_HOST`, or a check host in the user's agent
 instructions, is an SSH alias of a machine where the `coder`
-CLI is signed in. Step 3 runs its check there.
+CLI is signed in. Step 3 reads the Coder token there.
 
 ## Steps
 
@@ -72,18 +72,12 @@ below, `fleet` means whichever exists. With Fleet, a worktree has a lease when
      `systemd-run --user --unit=preview-<name> --working-directory="$PWD" <command>`
      from the project.
 
-   The command serves a production build. A dev server loads each module
-   in its own request and holds a hot-reload websocket, and behind the
-   Coder proxy that breaks: lazy chunks fail, pages reload, and Coder
-   rejects the websocket.
-   - **PostHog with Fleet:** run
-     `fleet heavy --service preview-<name> -- ~/dev/fleet/fleet posthog-preview <port>`
-     from the checkout root. It builds the frontend, starts the backend and
-     every service the browser calls, and logs `ready at <link>` after
-     several minutes: read the log with
-     `fleet heavy -- journalctl --user -u preview-<name> -n 20`. The app
-     login is `test@posthog.com` / `12345678`. To serve a new commit, check
-     it out and run the same command again.
+   Serve a production build: a dev server loads each module in its own
+   request and holds a hot-reload websocket, and behind the Coder proxy
+   lazy chunks fail, pages reload, and Coder rejects the websocket.
+   - **Project preview command:** when the project or the user's agent
+     instructions document a preview command, use it, and read its log
+     until it reports the preview ready.
    - **Static build** (Storybook, `vite build`): build into a directory inside
      the project, because `/tmp` is cleared when the workspace restarts. With
      Fleet, build with `fleet heavy -- <build command>`, so the build lands
@@ -92,38 +86,45 @@ below, `fleet` means whichever exists. With Fleet, a worktree has a lease when
      `python3 -m http.server <port> --bind 127.0.0.1 --directory <build-dir>`,
      with `<build-dir>` relative to the project.
    - **App with its own server:** the project's production mode, such as
-     `vite build && vite preview --port <port>`. Run its dev server only when
-     the user asks for hot reload, and allow the Coder host name then: Vite
-     `server.allowedHosts: [".<wildcard-host>"]`.
+     `vite build && vite preview --host 127.0.0.1 --port <port>`. Allow the
+     Coder host name: Vite `server.allowedHosts: [".<wildcard-host>"]`,
+     which `vite preview` reads too. Run the dev server only when the user
+     asks for hot reload.
 3. Check the link in a headless browser signed in to Coder. A page whose
    scripts fail still returns 200, so only a browser shows a broken
-   preview. Send the Coder session token as the `Coder-Session-Token`
-   header on every request: `$CODER_SESSION_TOKEN` when it is set, else
-   `coder login token`. Sign in to the app first when it has a login,
-   then open the entry page and two or three pages the user will click
-   through. With `agent-browser` (add `--args --no-sandbox` to each
-   command on a Linux workspace):
+   preview. The Coder token is `$CODER_SESSION_TOKEN` when it is set, else
+   `coder login token`; when `$PREVIEW_CHECK_HOST` is set, read it there
+   with `ssh "$PREVIEW_CHECK_HOST" coder login token`. Below, `<link>` has
+   no trailing slash and `<page>` is a path such as `/insights`. With
+   `agent-browser` (on a Linux workspace, `export AGENT_BROWSER_ARGS=--no-sandbox`
+   first):
 
    ```sh
-   agent-browser set headers '{"Coder-Session-Token":"<token>"}'
-   agent-browser open <link><page>    # then `agent-browser wait --load networkidle`, for each page
+   agent-browser open <link>/ --headers '{"Coder-Session-Token":"<token>"}'
+   # Sign in to the app when it has a login, then clear the logs:
+   agent-browser network requests --clear; agent-browser console --clear; agent-browser errors --clear
+   # For the entry page and two or three pages the user will click through:
+   agent-browser open <link><page>; agent-browser wait --load networkidle
+   # After the last page, the three checks:
    agent-browser --json network requests | jq -r --arg link "<link>" \
      '.data.requests[] | select(.url | startswith($link)) | select(.status >= 400) | "\(.status) \(.url)"'
    agent-browser --json console | jq -r '.data.messages[] | select(.type == "error") | .text'
    agent-browser errors
    ```
 
-   The check passes when all three print nothing: no error response from
-   the preview, no console error (a request that fails to load logs
+   The `--headers` option sends the token to the preview's host only. The
+   check passes when the three checks print nothing: no error response
+   from the preview, no console error (a request that fails to load logs
    one), and no page error. A request without a status is not a failure
    by itself: the log shows cache hits that way. Fix each failure the
-   preview causes, then check again. A failure that the same commit also
-   shows in local development is a bug in the app: name it to the user
-   beside the link. When `$PREVIEW_CHECK_HOST` is set, run the check
-   there: `ssh "$PREVIEW_CHECK_HOST" '<command>'`. A request without the
-   token returns 303 to Coder sign-in, which shows the port is private.
-   If no signed-in `coder` CLI, token, or headless browser is available,
-   tell the user which check was skipped. Then give the user the link.
+   preview causes, then check again. A failure that the project's preview
+   docs list as known, or that local development of the same commit also
+   shows, is a bug in the app: name it to the user beside the link.
+   Confirm that the port is private:
+   `curl -s -o /dev/null -w '%{http_code}\n' <link>/` returns 303, a
+   redirect to Coder sign-in. If no token or headless browser is
+   available, tell the user which check was skipped. Then give the user
+   the link.
 
 Keep the port private: change no port sharing in Coder. Stop previews that are
 no longer needed: `fleet heavy --stop preview-<name>` with Fleet, else
