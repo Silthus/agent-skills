@@ -205,7 +205,8 @@ Report to the user, then stop:
 - **Follow-ups**: real problems outside the goal.
 - **Gaps**: each owed proof that could not run, as a Decision for the user;
   a lane that failed and its substitute; a skipped Team lane; a silent bot;
-  a gate step that could not run.
+  a gate step that could not run, as a Decision unless a gating check on
+  HEAD runs that step.
 
 When the user's agent instructions ask for a Slack message at the end of a
 PR, end with it, formatted by the `slack-pr-update` skill. When the user asks

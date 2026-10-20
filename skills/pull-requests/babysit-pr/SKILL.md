@@ -57,8 +57,8 @@ finish it with `fleet proof review-finish ... --round final <findings file>`
 when the CLI is available, else in the ledger. After the PR's second final
 read, start each final read with `--override` and the source the push
 answers: the thread URL, the failed check, or the rebase onto the base SHA.
-Past the cap, a finding from a babysit final read has no such source, so it
-becomes a Decision instead of a push. Follow the PR workflow and model
+Past the cap, a Fix or Call item from a babysit final read has no such
+source, so it becomes a Decision instead of a push. Follow the PR workflow and model
 selection policy in the user's agent instructions.
 
 Keep the branch mergeable. Rebase on the base branch when it conflicts, or

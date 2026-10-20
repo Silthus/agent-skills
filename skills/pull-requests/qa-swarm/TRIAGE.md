@@ -32,8 +32,8 @@ still exists at HEAD. A finding that a commit of this run already fixed is
   weighs an observed failure, not a predicted one.
 - **Follow-up**: the problem is real but outside the goal or in code the PR
   does not touch. A final-read finding whose cause the fix diff did not
-  introduce is a Follow-up; a sibling of a cause the fix closed follows
-  [Repeat causes](#repeat-causes). Record it for the handoff.
+  introduce is a Follow-up, except a sibling site the fix missed, which
+  reopens that fix's item as a Fix. Record it for the handoff.
 - **Reject**: the premise is wrong; the code, a caller, or the framework
   already prevents it; the input cannot occur at the call sites; or it asks
   to add abstraction, configuration, or defensive checks with no bug behind
