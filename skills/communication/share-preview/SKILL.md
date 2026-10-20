@@ -66,12 +66,24 @@ below, `fleet` means whichever exists. With Fleet, a worktree has a lease when
      it fails twice, go on. If the preview then serves from another
      workspace, tell the user that the old link can show the old work until
      the box stops. A preview on the box stops with the box: after
-     `fleet lease release`, or when Coder stops the idle box.
+     `fleet lease release`, or 24 hours after the last `--service` start.
+     Run the `--service` command again to keep it longer.
    - **Without Fleet:** run
      `systemd-run --user --unit=preview-<name> --working-directory="$PWD" <command>`
      from the project.
 
-   The command:
+   The command serves a production build. A dev server loads each module
+   in its own request and holds a hot-reload websocket, and behind the
+   Coder proxy that breaks: lazy chunks fail, pages reload, and Coder
+   rejects the websocket.
+   - **PostHog with Fleet:** run
+     `fleet heavy --service preview-<name> -- ~/dev/fleet/fleet posthog-preview <port>`
+     from the checkout root. It builds the frontend, starts the backend and
+     every service the browser calls, and logs `ready at <link>` after
+     several minutes: read the log with
+     `fleet heavy -- journalctl --user -u preview-<name> -n 20`. The app
+     login is `test@posthog.com` / `12345678`. To serve a new commit, check
+     it out and run the same command again.
    - **Static build** (Storybook, `vite build`): build into a directory inside
      the project, because `/tmp` is cleared when the workspace restarts. With
      Fleet, build with `fleet heavy -- <build command>`, so the build lands
@@ -79,18 +91,39 @@ below, `fleet` means whichever exists. With Fleet, a worktree has a lease when
      build output. Serve it with
      `python3 -m http.server <port> --bind 127.0.0.1 --directory <build-dir>`,
      with `<build-dir>` relative to the project.
-   - **Dev server:** the project's dev command. Coder forwards its own host
-     name, so allow it: Vite `server.allowedHosts: [".<wildcard-host>"]`.
-3. Check the link. The page and one of its scripts or stylesheets return 200
-   with a Coder session token:
-   `curl -s -o /dev/null -w "%{http_code}\n" -H "Coder-Session-Token: $(coder login token)" <url>`.
-   Use `$CODER_SESSION_TOKEN` instead of `$(coder login token)` when it is
-   set. When `$PREVIEW_CHECK_HOST` is set, run the same command there:
-   `ssh "$PREVIEW_CHECK_HOST" '<command>'`.
-   A request without the token returns 303 to Coder sign-in, which shows the
-   port is private. If no signed-in `coder` CLI or token is available, run
-   only the request without the token, and tell the user that the 200 check
-   was skipped. Then give the user the link.
+   - **App with its own server:** the project's production mode, such as
+     `vite build && vite preview --port <port>`. Run its dev server only when
+     the user asks for hot reload, and allow the Coder host name then: Vite
+     `server.allowedHosts: [".<wildcard-host>"]`.
+3. Check the link in a headless browser signed in to Coder. A page whose
+   scripts fail still returns 200, so only a browser shows a broken
+   preview. Send the Coder session token as the `Coder-Session-Token`
+   header on every request: `$CODER_SESSION_TOKEN` when it is set, else
+   `coder login token`. Sign in to the app first when it has a login,
+   then open the entry page and two or three pages the user will click
+   through. With `agent-browser` (add `--args --no-sandbox` to each
+   command on a Linux workspace):
+
+   ```sh
+   agent-browser set headers '{"Coder-Session-Token":"<token>"}'
+   agent-browser open <link><page>    # then `agent-browser wait --load networkidle`, for each page
+   agent-browser --json network requests | jq -r --arg link "<link>" \
+     '.data.requests[] | select(.url | startswith($link)) | select(.status >= 400) | "\(.status) \(.url)"'
+   agent-browser --json console | jq -r '.data.messages[] | select(.type == "error") | .text'
+   agent-browser errors
+   ```
+
+   The check passes when all three print nothing: no error response from
+   the preview, no console error (a request that fails to load logs
+   one), and no page error. A request without a status is not a failure
+   by itself: the log shows cache hits that way. Fix each failure the
+   preview causes, then check again. A failure that the same commit also
+   shows in local development is a bug in the app: name it to the user
+   beside the link. When `$PREVIEW_CHECK_HOST` is set, run the check
+   there: `ssh "$PREVIEW_CHECK_HOST" '<command>'`. A request without the
+   token returns 303 to Coder sign-in, which shows the port is private.
+   If no signed-in `coder` CLI, token, or headless browser is available,
+   tell the user which check was skipped. Then give the user the link.
 
 Keep the port private: change no port sharing in Coder. Stop previews that are
 no longer needed: `fleet heavy --stop preview-<name>` with Fleet, else
