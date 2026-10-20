@@ -26,7 +26,7 @@ Every claim is an artifact linked from the ticket, never a sentence:
 - **red** — the test that reproduces the bug or expresses the missing behaviour, failing on the tree before the change;
 - **green** — that same test passing after it, every assertion intact and no test skipped;
 - the repo's full local gate green on the landed tree;
-- for any user-facing surface, the `ui-walk` proof from the `qa-swarm` skill's `PROOF.md`.
+- for any change to a browser UI, the `ui-walk` proof from the `qa-swarm` skill's `PROOF.md`.
 
 An artifact the worker cannot produce is a park, recorded as the one pending question for the human.
 

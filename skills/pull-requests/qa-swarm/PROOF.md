@@ -24,11 +24,12 @@ saved for HEAD's behavior.
 
 ### UI walk
 
-Owed by every PR that changes what a user sees: a screen, a component, copy.
+Owed by every PR that changes a browser UI: a screen, a component, or its
+copy.
 
-Serve HEAD with the `share-preview` skill as a production build on seeded
-demo data. A Storybook story or a single rendered state shows appearance
-only. In a browser signed in to the preview, walk every stage of the changed
+Serve HEAD as a production build on seeded demo data, on a remote workspace
+with the `share-preview` skill. A Storybook story or a single rendered state
+shows appearance only. In a browser signed in to the preview, walk every stage of the changed
 journey from entry to result and take a screenshot of each stage. Walk copy
 or controls that depend on state twice: on data that has the state and on
 data that lacks it, such as a project with a verified sender and one
@@ -37,7 +38,8 @@ prototype, put each screen beside the prototype's screenshot of it and tick
 every `build` row the walk shows. A `build` row the walk lacks is a finding
 until the user's words re-mark it `later` or `cut`.
 
-Done when every stage and every `build` row has a screenshot of HEAD.
+Done when every stage, both sides of every state-dependent stage, and every
+`build` row have a screenshot of HEAD.
 
 ### Prod shape
 
