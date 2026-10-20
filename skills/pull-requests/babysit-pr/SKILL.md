@@ -54,7 +54,9 @@ behavior, and your own `git range-diff` check for a rebase or a reworded
 fix. Record it: start it with
 `fleet proof review-start ... --scope final --base <last reviewed SHA>` and
 finish it with `fleet proof review-finish ... --round final <findings file>`
-when the CLI is available, else in the ledger. Follow the PR workflow and
+when the CLI is available, else in the ledger. After the PR's second final
+read, start each one with `--override` and the user's words that asked for
+the push, such as the babysit request. Follow the PR workflow and
 model selection policy in the user's agent instructions.
 
 Keep the branch mergeable. Rebase on the base branch when it conflicts, or

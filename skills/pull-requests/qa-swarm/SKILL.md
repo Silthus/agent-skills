@@ -75,8 +75,10 @@ Done when all six are written down.
 1. Run the [design pass](PANEL.md#design-pass) when no PR exists yet, and fix
    what holds before anything else.
 2. Run the repo's local gate: the formatter, lint, typecheck, and tests that
-   its agent docs, scripts, and CI configuration name. Done when the gate is
-   green.
+   its agent docs, scripts, and CI configuration name. A step that times out
+   fails the gate: rerun it on the changed files only, such as `semgrep` on
+   `git diff --name-only origin/<base>...HEAD`. A step that still cannot run
+   is a gap in the handoff, never green. Done when the gate is green.
 3. Run every owed proof before review, the live run first, and save its
    evidence. For UI changes, follow
    [UI evidence](../pr-description/references/ui-evidence.md) and capture
@@ -144,14 +146,16 @@ for the bots and checks, and goes straight to the final read.
 
 Round two is the last panel. Fix what it finds and push. Every commit after
 the last reviewed one then gets a **final read**: one fresh reviewer from the
-review lane reads the fix diff since that commit, with the lens brief of the
-findings those fixes close. With the `fleet` CLI, reserve it with
+review lane reads the fix diff since that commit, `git diff <last reviewed SHA>...HEAD`,
+in place of the full diff, with the lens brief of the findings those fixes
+close. With the `fleet` CLI, reserve it with
 `fleet proof review-start ... --scope final --base <last reviewed SHA>` and
 complete it with `fleet proof review-finish ... --round final <findings file>`.
 A final read never counts toward the two-round budget. A fix from a final read
 is a new commit, so it gets its own final read; a finding from that second
-final read becomes a Decision. Skip the final read when the last panel
-reviewed HEAD. A Fix item you cannot close becomes a Decision, and the handoff
+final read becomes a Decision, and `fleet proof` rejects a third final read
+until the user answers it; record the answer with `--override`. Skip the final
+read when a review already covered HEAD. A Fix item you cannot close becomes a Decision, and the handoff
 is Blocked.
 
 Done when every ledger item is fixed, rejected, or a Decision, and every

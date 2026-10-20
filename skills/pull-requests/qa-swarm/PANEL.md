@@ -77,8 +77,8 @@ Goal: <goal>
 Stack: <the PRs below this one, or none>
 Base: origin/<base>. Head: <sha>. The diff is below.
 
-Read each changed hunk with its surrounding code, callers, and types before
-you judge it. Report a finding only when you can name its concrete trigger and
+Read the changed files whole. Open another file only to follow a symbol that
+a changed hunk defines, calls, or changes. Report a finding only when you can name its concrete trigger and
 its concrete consequence under intended use. A Design finding names, in
 place of a trigger and a consequence, the concepts that exist now and the
 concepts the restructuring deletes. When one cause breaks the same rule at
