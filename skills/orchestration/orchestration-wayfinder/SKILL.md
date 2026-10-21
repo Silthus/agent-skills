@@ -27,7 +27,7 @@ The **conductor owns map-level coordination**: query and mutate map structure, b
 
 The **ticket worker owns one ticket's resolution**: mutate only that ticket's assignment, comments, labels, resolution, and closure — plus, for an implementation ticket, its own branch and its landing on the integration branch, and for a `ship` ticket, the spec's pull request and merge; use its prescribed skill; and stop after closing it. A worker never mutates other tickets or map-level orchestration state and never dispatches downstream work. The conductor never supplies the human side of a HITL decision or answers a ticket's substantive question.
 
-Charting is the sole undispatched act, apart from its **Prior-art sweeps**. With no map, chart it live through Wayfinder's Chart mode in the **Map tracker**, apply the **Charting rules**, and declare in **Notes** that execution remains inside the map.
+Charting is the sole undispatched act, apart from its **Prior-art sweeps** and **Usage sweep**. With no map, chart it live through Wayfinder's Chart mode in the **Map tracker**, apply the **Charting rules**, and declare in **Notes** that execution remains inside the map.
 
 ## Map tracker
 
@@ -72,6 +72,12 @@ When charting starts from a loose idea instead of an existing map or ticket, dis
 Each sweep returns an inventory, not an analysis. Every entry carries its link, date, author or team, and one line on how it relates. A sweep with no matches, or whose source is unreachable, says so. Give each sweep a 15-minute cap; sweeps are read-only.
 
 Raise each finding at the grilling question it bears on. When the map exists, post both inventories as one **Prior art** comment on the map and link it from **Notes**. In a public repository, that comment keeps only public links; chat findings and other private findings go to a private note, outside every public repository, that the comment names.
+
+## Usage sweep
+
+When the idea changes an existing product surface (a scene, view, interaction, MCP tool, or API), dispatch a third background sweep beside the prior-art sweeps. Its worker runs the `usage-brief` skill at map scope for the surfaces the idea concerns and returns the brief. Give it a 25-minute cap; it is read-only.
+
+Raise its flags at the grilling questions and the `impact` round they bear on. When the map exists, post the brief as one **Usage** comment on the map and link it from **Notes**. In a public map tracker, the brief goes to a private note outside every public repository, and the comment names that note.
 
 ## One map, root to leaves
 
