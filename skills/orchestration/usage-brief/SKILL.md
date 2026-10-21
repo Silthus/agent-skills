@@ -60,6 +60,6 @@ Flags:
 
 One row per source, all eight. The calling skill decides where the brief goes.
 
-The brief holds usage numbers and customer data, so it goes only to private places, such as a private map tracker or private note. Pull requests, commits, branches, and public issues carry the decision it supports and a note that a usage brief informed it.
+The brief holds usage numbers and customer data, so it goes only to private places, such as a private map tracker or private note. Pull requests, commits, branches, and public issues carry the decision it supports and a note that a usage brief informed it. The one exception: a prototype variant's label may name the flags it trips and their controls, without numbers.
 
 Done when every source has a finding, `not available`, or at element scope `see map brief`; every finding links its source; and each of the five flags is raised with its numbers or ruled out.
