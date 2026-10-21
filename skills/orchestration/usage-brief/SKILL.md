@@ -43,7 +43,7 @@ Check each flag against the sources together. Raise it with the numbers behind i
 - **Known pain**: errors, rage clicks, support tickets, or negative feedback gather on the surface, and the change can ease or worsen them.
 - **Channel shift**: most use comes through a different channel than the one the work changes, such as agents rather than the UI.
 
-The human sets the bar for each flag. Use a confirmed bar when the caller gives one. Otherwise, propose a bar from the numbers, such as "low use: under 5% of the surface's weekly users", and mark it `proposed`.
+The human sets the bar for each flag. Use a confirmed bar when the caller gives one. Otherwise, propose a bar as a share, such as "low use: under 5% of the surface's weekly users", and mark it `proposed`.
 
 ## Write the brief
 

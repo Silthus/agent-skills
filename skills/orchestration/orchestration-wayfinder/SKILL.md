@@ -75,9 +75,11 @@ Raise each finding at the grilling question it bears on. When the map exists, po
 
 ## Usage sweep
 
-Dispatch a usage sweep at the first chart, and again whenever fog graduates into tickets that change an existing product surface the map has not briefed yet: a scene, view, interaction, MCP tool, or API. Its worker runs the `usage-brief` skill at map scope for those surfaces and returns the brief. Before dispatch, take the analytics project from the user's agent instructions, or ask the human for it, and put it in the prompt. Give the sweep a 25-minute cap. It writes only the queries it saves in the analytics project.
+When the first chart, or a later graduation of fog, adds tickets that change an existing product surface the map has not briefed yet (a scene, view, interaction, MCP tool, or API), dispatch a usage sweep. Its worker runs the `usage-brief` skill at map scope for those surfaces and returns the brief. Give it a 25-minute cap. It writes only the queries it saves in the analytics project.
 
-Until the brief lands, mark the **Size** of the map's Impact section `pending usage brief`, then size the move from the brief. Raise each flag and each proposed bar at the grilling question it bears on, and record each bar the human confirms in **Notes** as `Usage bar: <flag>: <bar>`. When the map exists, post the brief as one **Usage** comment on the map and link it from **Notes**. In a public map tracker, the brief goes to a private note outside every public repository, and the comment names that note.
+Take the analytics project from the user's agent instructions, or ask the human for it once, and record it in **Notes** as `Analytics project: <project>`. Every usage sweep and element pass prompt carries it.
+
+When the map has an Impact section, mark its expected move `pending usage brief` until the brief lands. Then size the move from the brief and run the **Push back** step of `impact` before the next dispatch of a non-research ticket. Raise each flag and each proposed bar at the grilling question it bears on, and record each bar the human confirms in **Notes** as `Usage bar: <flag>: <bar>`, stated as a share, never as a count. When the map exists, post the brief as one **Usage** comment on the map and link it from **Notes**. In a public map tracker, the brief goes to a private note outside every public repository, and the comment names that note.
 
 ## One map, root to leaves
 
