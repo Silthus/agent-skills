@@ -44,8 +44,10 @@ still exists at HEAD. A finding that a commit of this run already fixed is
 A Design or Anti-Overengineering finding has no bug behind it; judge it by
 what it deletes. These rules come before the buckets above. A replacement
 that the pinned version lacks, or that drops a part of the goal, is a
-Reject. A replacement with an installed dependency, the standard library, or
-a module of the repo is a Fix. A restructuring inside the files the PR
+Reject. A replacement with a module of the repo, the standard library, the
+framework or platform, or an installed dependency is a Fix, unless it
+changes behavior users see, stored data, or a contract read outside the
+repository; then it is a Decision. A restructuring inside the files the PR
 touches and the module that owns the concept, which deletes more concepts
 than it adds, is a Fix, or a Call when it has more than one defensible shape.
 It is a Decision only when it changes behavior users see, stored data, or a
