@@ -39,10 +39,24 @@ still exists at HEAD. A finding that a commit of this run already fixed is
   to add abstraction, configuration, or defensive checks with no bug behind
   it. Record the reason with the evidence: the file and line that prevents it.
 
+## Kept by the spec
+
+This rule comes before every other rule here. In the review of code that
+builds a spec, a finding from any source that cuts, replaces, or narrows a
+part that a **Complexity** reason of the [spec pass](SPEC.md) keeps is a
+Reject, except for what the code builds beyond what the reason keeps. Triage
+a bug in a kept part as usual, and fix it inside the kept part; a fix that
+cuts, replaces, or narrows the part is a Decision.
+
 ## Design findings
 
-A Design finding has no bug behind it; judge it by what it deletes. These
-rules come before the buckets above. A restructuring inside the files the PR
+A Design or Anti-Overengineering finding has no bug behind it; judge it by
+what it deletes. These rules come before the buckets above. A replacement
+that the pinned version lacks, or that drops a part of the goal, is a
+Reject. A replacement with a module of the repo, the standard library, the
+framework or platform, or an installed dependency is a Fix, unless it
+changes behavior users see, stored data, or a contract read outside the
+repository; then it is a Decision. A restructuring inside the files the PR
 touches and the module that owns the concept, which deletes more concepts
 than it adds, is a Fix, or a Call when it has more than one defensible shape.
 It is a Decision only when it changes behavior users see, stored data, or a

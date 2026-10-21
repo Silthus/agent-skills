@@ -91,13 +91,13 @@ Planning and execution share one tree. A resolved spec publishes its spec child 
 | ----------- | --------------- | ----------------------------------------- | ------------------------------------------- |
 | `grilling`  | live throughout | serial, one at a time                     | `grilling` + `domain-modeling`              |
 | `prototype` | decision at end | parallel AFK stretch, then park           | `prototype`, or `architecture` for an architecture prototype; throwaway |
-| `spec`      | decision at end | parallel AFK stretch, then park           | `to-spec` + `to-tickets`                    |
+| `spec`      | decision at end | parallel AFK stretch, then park           | `to-spec` + spec pass + `to-tickets`        |
 | `research`  | none            | parallel                                  | `research`, throwaway                       |
 | `task`      | as required     | parallel when AFK                         | prerequisite work for a decision            |
 | `implement` | none            | parallel, one worktree each               | `tdd`, landed on the integration branch per [`SHIP.md`](SHIP.md) |
 | `ship`      | on an open review decision | one per spec, after its implementations   | reviewed draft pull request per [`SHIP.md`](SHIP.md) |
 
-Backticked names in the Resolution column are skills. One grilling ticket is one live exchange, and the `grilling` skill works it in rounds: the whole answerable frontier goes to the human at once, then the tree reshapes. Serial applies to the ticket, not to its questions.
+Backticked names in the Resolution column are skills. A `spec` worker writes the `to-spec` draft as a comment on its ticket and runs the spec pass in `SPEC.md` of the `qa-swarm` skill on it before it publishes the spec. The park's one question asks the human to approve the draft and carries the pass's Decisions, each with its recommended answer. The worker publishes after the human answers. One grilling ticket is one live exchange, and the `grilling` skill works it in rounds: the whole answerable frontier goes to the human at once, then the tree reshapes. Serial applies to the ticket, not to its questions.
 
 Some prescribed skills, such as `to-spec` and `to-tickets`, set `disable-model-invocation`, so the Skill tool refuses them inside a worker. Every worker prompt says: when the Skill tool refuses a prescribed skill, read that skill's `SKILL.md` file and follow it directly.
 

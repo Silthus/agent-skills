@@ -6,7 +6,7 @@ agent instructions, or with the runtime defaults when there is no policy:
 
 - **Review lane**: the policy's **Review** model for the change's author, or
   a strong model from the other family. It runs Correctness, Risk, Design,
-  and Systems.
+  Anti-Overengineering, and Systems.
 - **Fresh-eyes lane**: the policy's **fresh-eyes** model, or a strong model
   from the author's family. It runs Fresh eyes and UI, with UI cast by the
   policy's UI defaults when it has them.
@@ -66,8 +66,9 @@ received.
 ## Brief
 
 Every brief carries the same text and the full diff first, so the lanes share
-a prompt cache. The Design lens gets no Context block: it judges the design
-from the goal and the code alone, so the author's framing cannot settle it.
+a prompt cache. The Design and Anti-Overengineering lenses get no Context
+block: they judge the design from the goal and the code alone, so the author's
+framing cannot settle it.
 
 ```md
 You review a pull request. You did not write it. Review only: do not edit
@@ -79,12 +80,17 @@ Base: origin/<base>. Head: <sha>. The diff is below.
 
 Read the changed files whole. Open another file only to follow a symbol that
 a changed hunk defines, calls, or changes: to its definition, its callers, and
-its types. Design may also search for a module that already owns a concept
-the diff adds, and Systems traces callers up to their entry paths. Report a
+its types. Design and Anti-Overengineering may also search for a module that
+already owns a concept the diff adds, Anti-Overengineering reads the
+manifests, lockfiles, and installed sources of the packages the diff uses,
+and Systems traces
+callers up to their entry paths. Report a
 finding only when you can name its concrete trigger and its concrete
 consequence under intended use. A Design finding names, in
 place of a trigger and a consequence, the concepts that exist now and the
-concepts the restructuring deletes. When one cause breaks the same rule at
+concepts the restructuring deletes. An Anti-Overengineering finding names
+the rung and the replacement, and why the replacement still meets the goal.
+When one cause breaks the same rule at
 more than one site, report it once and list every site.
 
 Style counts only when it breaks a named standard: the repo's documented rules
@@ -96,6 +102,7 @@ End with:
 FINDINGS:
 - <file>:<line> | <blocker|major|minor|nit> | <lens> | <trigger> -> <consequence> | <fix> | sites: <file:line, ...>
 - Design form: <file>:<line> | <severity> | Design | <concepts now> -> deletes <concepts> | <restructuring> | sites: <file:line, ...>
+- Anti-Overengineering form: <file>:<line> | <severity> | Anti-Overengineering | <rung>: <what the diff builds> -> <replacement, and why it still meets the goal> | <cut> | sites: <file:line, ...>
 (or "(none)")
 COVERED: <every changed file you cleared or flagged>
 
@@ -106,8 +113,12 @@ hunting ground of your lens.
 
 Settled: <ledger entries that are fixed, rejected, or decided>. Raise one
 again only when the code under it changed.
+Kept by the spec: <each Complexity reason of the spec the change builds, or
+none>. Raise a finding that cuts, replaces, or narrows a kept part only
+against what the code builds beyond the reason. Report a bug in a kept part
+as usual.
 
-Context (every lens except Design):
+Context (every lens except Design and Anti-Overengineering):
 Approach: <approach, or none>
 Danger areas: <hunks>
 PR description: <current body, without its merge-risk callout>
@@ -121,8 +132,9 @@ Lens: <lens name and hunting grounds>
 
 ## Design pass
 
-Before a PR opens, one reviewer reads the branch with the Design lens, so the
-design is settled before a person reads it. Cast it on the Review lane and
+Before a PR opens, one reviewer reads the branch with the Design and
+Anti-Overengineering lenses, so the design is settled before a person reads
+it. Cast it on the Review lane and
 give it the brief above for the branch diff against the base, with no Context
 block. Triage each finding per [`TRIAGE.md`](TRIAGE.md), fix the Fix and Call
 items, and keep the findings in a ledger file outside the repository. When
@@ -237,28 +249,20 @@ its place. End with the sketch as a `SKETCH:` block after `COVERED`.
 - **Data over code**: a callback, hook, or generic mechanism that hides a
   simple data fact, such as which URL parameter a page reads. Declare the fact
   and build the behavior once.
-- **Speculative scope**: every new branch, flag, fallback, alias, mode,
-  parameter, or contract field that the goal does not need, including one
-  that serves a consumer no PR in the stack adds. The fix is to delete it.
-- **Canonical layer**: logic that re-derives a concept another module owns,
-  such as a second parsing rule beside the parser, and feature logic in a
-  shared path.
+- **Canonical layer**: feature logic in a shared path.
 - **Boundaries**: optional parameters, boolean or nullable modes, `any`, and
   casts that let one function serve callers with different needs. Two needs
   are two contracts.
 - **Spaghetti growth**: special cases bolted onto an existing flow, and
   repeated conditionals on one concept that signal a missing model.
-- **Indirection**: thin wrappers, pass-through helpers, and identity
-  abstractions.
 - **Size**: a file the diff pushes from under 1000 lines to over 1000 lines.
 - The coding preferences in the user's agent instructions, when they exist,
-  such as names and small methods that explain the code instead of comments,
-  type safety, and YAGNI.
+  such as type safety and names and small methods that explain the code
+  instead of comments.
 - The smell baseline in step 3 of the `code-review` skill, and coupling:
   parallel arrays and circular dependencies.
 - Naming: names that hide what a thing holds or does, negated booleans, stale
   copied names.
-- Fit: the idioms, helpers, and patterns of the surrounding code.
 
 Restructure the code the diff adds and the modules that own the concepts it
 touches, and leave unrelated code as it is. Prefer the move that deletes a
@@ -277,6 +281,53 @@ Tests:
 - Flaky constructs: real time, randomness, ordering, shared state between
   tests.
 - Repeated test bodies that want one parameterized test.
+
+### Anti-Overengineering
+
+Does the change build something that the goal does not need, or that the
+codebase, the platform, or an installed dependency already provides, and does
+it use each tool the way the tool intends?
+
+For each concept the diff adds, such as a function, a type, a module, a
+parameter, an option, a fallback, or a dependency, climb the ladder. Stop at
+the first rung that meets the goal; the rung names the finding. A concept
+that the goal needs and no rung replaces is **kept**, with no finding.
+
+1. **delete**: the goal works without it. This covers every new branch, flag,
+   fallback, alias, mode, parameter, or contract field that the goal does not
+   need, including one that serves a consumer no PR in the stack adds.
+2. **reuse**: a module of this repo already does it. Use it the way the
+   surrounding code does, with its idioms, helpers, and patterns. This
+   covers logic that re-derives a concept another module owns, such as a
+   second parsing rule beside the parser. A house component beats a native
+   widget.
+3. **native**: the language's standard library, the runtime, the framework,
+   or the platform does it at the version the repo pins, such as a browser
+   API, a database constraint, or a CI feature. Read the version in the
+   manifest or lockfile. Code
+   that works around the tool's own mechanism belongs here too, such as a
+   manual cache beside the framework's cache, or a hand-written retry loop
+   where the client has a retry option.
+4. **existing-dep**: an installed dependency does it. A new dependency that
+   replaces a few lines is a **delete** finding.
+5. **shrink**: less code says the same at a glance. This covers thin
+   wrappers, pass-through helpers, identity abstractions, and extension
+   points with one caller or one implementation.
+
+Each finding cites its replacement: the file and line for **reuse**, and for
+**native** and **existing-dep** the installed source, type definitions, or
+changelog of the pinned version, or its docs page when you can open the web.
+Without a citation, mark the finding `unverified: <API>` so triage checks it.
+A
+replacement must read at a glance and keep one concept per name; a dense
+one-liner that a reader must decode is a longer read, not a shorter one.
+Keep, at full strength, validation at a trust boundary, error handling that
+prevents data loss, security controls, accessibility, and everything the
+goal asks for.
+
+Grade a finding by what the cut removes: a dependency, a contract, or a
+layer is `major`, a helper, a branch, or a parameter is `minor`, and lines
+alone are a `nit`. Rank findings by that payoff.
 
 ### Systems
 
