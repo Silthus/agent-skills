@@ -52,14 +52,16 @@ each one per `TRIAGE.md`. Every push you make gets a final read of its
 diff: one review from the other model family for a fix that changes
 behavior, and your own `git range-diff` check for a rebase or a reworded
 fix. Record it: start it with
-`fleet proof review-start ... --scope final --base <last reviewed SHA>` and
-finish it with `fleet proof review-finish ... --round final <findings file>`
-when the CLI is available, else in the ledger. After the PR's second final
-read, start each final read with `--override` and the source the push
-answers: the thread URL, the failed check, or the rebase onto the base SHA.
-Past the cap, a Fix or Call item from a babysit final read has no such
-source, so it becomes a Decision instead of a push. Follow the PR workflow and model
-selection policy in the user's agent instructions.
+`fleet proof review-start ... --scope final --base <last reviewed SHA> --phase babysit`
+and finish it with
+`fleet proof review-finish ... --round final <findings file>` when the CLI
+is available, else in the ledger. `--phase babysit` gives this phase its own
+final-read cap. When `fleet proof` refuses a final read past that cap, start
+it with `--override` and the source the push answers: the thread URL, the
+failed check, or the rebase onto the base SHA. A Fix or Call item from a
+final read has no such source, so past the cap it becomes a Decision instead
+of a push. Follow the PR workflow and model selection policy in the user's
+agent instructions.
 
 Keep the branch mergeable. Rebase on the base branch when it conflicts, or
 when the repo requires an up-to-date branch outside a merge queue. When an
