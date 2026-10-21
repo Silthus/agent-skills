@@ -53,10 +53,10 @@ Use this order: an `:emoji: Topic title` header, the greeting, the context, `- `
 list items, a `:point_right::skin-tone-2:` call to action, and a pointer to the
 thread or link.
 
-## PR ready for review
+## Slack message about a PR
 
-When Michael asks for a Slack message about a PR, or a PR is ready for review,
-end the reply with the message as normal text, not in a code block.
+When Michael asks for a Slack message about a PR, end the reply with the
+message as normal text, not in a code block.
 
 - Lead with the PR number as a Markdown link:
   `[#123](https://github.com/org/repo/pull/123)`.
