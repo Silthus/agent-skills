@@ -157,8 +157,8 @@ and complete it with
 `fleet proof review-finish ... --round final <findings file>`. A final read
 never counts toward the two-round budget. A fix from a final read is a new
 commit, so it gets its own final read; a Fix or Call item from that second
-final read becomes a Decision. `fleet proof` counts this cap for the review
-phase only; when it refuses a final read, record the user's answer with
+final read becomes a Decision. `fleet proof` refuses a third final read in
+this phase until the user answers that Decision; record the answer with
 `--override`. Skip the final read when a review already covered HEAD. A Fix
 item you cannot close becomes a Decision, and the handoff is Blocked.
 

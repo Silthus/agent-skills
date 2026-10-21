@@ -56,7 +56,7 @@ fix. Record it: start it with
 and finish it with
 `fleet proof review-finish ... --round final <findings file>` when the CLI
 is available, else in the ledger. `--phase babysit` gives this phase its own
-final-read cap. When `fleet proof` refuses a final read past that cap, start
+two final reads. When `fleet proof` refuses a third, start
 it with `--override` and the source the push answers: the thread URL, the
 failed check, or the rebase onto the base SHA. A Fix or Call item from a
 final read has no such source, so past the cap it becomes a Decision instead

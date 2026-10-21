@@ -58,8 +58,8 @@ to move the rule into the module that owns the concept, such as the parser,
 the type, or the shared boundary, delete the local patches, and cover the
 cases through that module. Within the round budget it is a Fix, and the next
 review of it runs the Systems lens. Once the budget is spent, it is a
-Decision with that move as the recommended answer. A sibling site a fix
-missed reopens that fix's item instead.
+Decision with that move as the recommended answer, except a sibling site a
+fix missed, which reopens that fix's item as a Fix.
 
 ## Sources
 
