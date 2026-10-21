@@ -1,8 +1,10 @@
 ---
 name: qa-swarm
 description: >-
-  Take a PR to review-ready with a cross-model reviewer panel. Use when the
-  user asks for a QA swarm, or when the diff touches a merge-risk danger area.
+  Take a PR to review-ready with a cross-model reviewer panel, and review
+  draft specs for overengineering. Use when the user asks for a QA swarm,
+  when the diff touches a merge-risk danger area, or before a spec is
+  published.
 metadata:
   credits:
     - skill: qa-swarm and review-triage
@@ -32,6 +34,8 @@ The bar: the user finds nothing that a reviewer, a review bot, or CI would have
 found. Fresh reviewers from two model families review the change, you fix what
 holds, and a second, narrow round reviews your fixes. The budget is two
 rounds, because a third panel costs as much as the first and mostly finds churn.
+
+For a draft spec, run the [spec pass](SPEC.md) instead of the steps below.
 
 ## Rules
 

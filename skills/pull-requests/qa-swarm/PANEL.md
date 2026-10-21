@@ -82,7 +82,8 @@ Read the changed files whole. Open another file only to follow a symbol that
 a changed hunk defines, calls, or changes: to its definition, its callers, and
 its types. Design and Anti-Overengineering may also search for a module that
 already owns a concept the diff adds, Anti-Overengineering reads the
-manifests, lockfiles, and the docs of the pinned versions, and Systems traces
+manifests, lockfiles, and installed sources of the packages the diff uses,
+and Systems traces
 callers up to their entry paths. Report a
 finding only when you can name its concrete trigger and its concrete
 consequence under intended use. A Design finding names, in
@@ -137,60 +138,6 @@ the PR opens, copy them into its ledger, so the first review sees them as
 settled. The pass runs once, before and outside the round budget and
 `fleet proof`; the review that follows reads its fixes. Done when every
 finding has a bucket and every Fix and Call item is committed.
-
-## Spec pass
-
-Before a spec is published, one fresh reviewer reads the draft with the
-Anti-Overengineering lens, so the plan is lean before anyone builds it. Cast
-it on the Review lane for the spec's author, and give it this brief:
-
-```md
-You review a draft spec. You did not write it. Review only: do not edit
-files, publish the spec, or post anywhere.
-
-Problem: <the spec's problem statement>
-Repo: <path> at <sha>.
-
-Read the spec whole. Read the code that its implementation decisions touch,
-the repo's manifests and lockfiles, and the docs of the pinned versions. Run
-the lens on every concept the spec adds: each user story, module, interface,
-schema change, contract field, option, and dependency. Also check the gates
-below. A gate the spec fails without a written reason is a finding. Report a
-finding only when you can name the rung and the replacement, and why the
-replacement still solves the problem.
-
-Gates:
-- Platform: the spec uses each framework and platform feature directly and
-  in the way its docs intend.
-- One model: each concept has one representation across the modules, the
-  schema, and the contracts.
-- Out of scope: the spec names what it leaves out on purpose, including each
-  extension a reader would expect next.
-
-End with:
-
-FINDINGS:
-- <spec section> | <major|minor|nit> | Anti-Overengineering | <rung or gate>: <what the spec adds> -> <replacement, and why it still solves the problem> | <spec edit>
-(or "(none)")
-COVERED: <every spec section>
-LEAN: -<N> concepts, -<M> dependencies, or "none"
-
-You are done when every concept the spec adds has a rung and every gate is
-passed or flagged.
-
-Lens: <the Anti-Overengineering lens>
-
-<the draft spec>
-```
-
-Triage each finding per [`TRIAGE.md`](TRIAGE.md), with the spec in place of
-the diff. A Fix or Call item is an edit to the draft. A part that the author
-keeps against a finding keeps a one-line reason in the spec's notes, under
-**Complexity**, so the code review reads the choice as settled. Keep the
-findings in a ledger file outside the repository. The pass runs once, before
-and outside the round budget and `fleet proof`. Done when every finding has
-a bucket, every Fix and Call edit is in the draft, and every Decision is
-written as a question for the user with your recommended answer.
 
 ## Lenses
 
@@ -298,9 +245,7 @@ its place. End with the sketch as a `SKETCH:` block after `COVERED`.
 - **Data over code**: a callback, hook, or generic mechanism that hides a
   simple data fact, such as which URL parameter a page reads. Declare the fact
   and build the behavior once.
-- **Canonical layer**: logic that re-derives a concept another module owns,
-  such as a second parsing rule beside the parser, and feature logic in a
-  shared path.
+- **Canonical layer**: feature logic in a shared path.
 - **Boundaries**: optional parameters, boolean or nullable modes, `any`, and
   casts that let one function serve callers with different needs. Two needs
   are two contracts.
@@ -341,18 +286,21 @@ it use each tool the way the tool intends?
 
 For each concept the diff adds, such as a function, a type, a module, a
 parameter, an option, a fallback, or a dependency, climb the ladder. Stop at
-the first rung that meets the goal. The rung names the finding:
+the first rung that meets the goal; the rung names the finding. A concept
+that the goal needs and no rung replaces is **kept**, with no finding.
 
 1. **delete**: the goal works without it. This covers every new branch, flag,
    fallback, alias, mode, parameter, or contract field that the goal does not
    need, including one that serves a consumer no PR in the stack adds.
 2. **reuse**: a module of this repo already does it. Use it the way the
-   surrounding code does, with its idioms, helpers, and patterns. A house
-   component beats a native widget.
+   surrounding code does, with its idioms, helpers, and patterns. This
+   covers logic that re-derives a concept another module owns, such as a
+   second parsing rule beside the parser. A house component beats a native
+   widget.
 3. **native**: the language's standard library, the runtime, the framework,
    or the platform does it at the version the repo pins, such as a browser
    API, a database constraint, or a CI feature. Read the version in the
-   manifest or lockfile and the feature in the docs for that version. Code
+   manifest or lockfile. Code
    that works around the tool's own mechanism belongs here too, such as a
    manual cache beside the framework's cache, or a hand-written retry loop
    where the client has a retry option.
@@ -362,8 +310,11 @@ the first rung that meets the goal. The rung names the finding:
    wrappers, pass-through helpers, identity abstractions, and extension
    points with one caller or one implementation.
 
-Each finding cites its replacement: the file and line for **reuse**, and the
-docs page for the pinned version for **native** and **existing-dep**. A
+Each finding cites its replacement: the file and line for **reuse**, and for
+**native** and **existing-dep** the installed source, type definitions, or
+changelog of the pinned version, or its docs page when you can open the web.
+Without a citation, mark the finding `unverified: <API>` so triage checks it.
+A
 replacement must read at a glance and keep one concept per name; a dense
 one-liner that a reader must decode is a longer read, not a shorter one.
 Keep, at full strength, validation at a trust boundary, error handling that
@@ -372,9 +323,7 @@ goal asks for.
 
 Grade a finding by what the cut removes: a dependency, a contract, or a
 layer is `major`, a helper, a branch, or a parameter is `minor`, and lines
-alone are a `nit`. Rank findings by that payoff. End with a
-`LEAN: -<N> lines, -<M> files, -<K> dependencies` line after `COVERED`, or
-`LEAN: none`.
+alone are a `nit`. Rank findings by that payoff.
 
 ### Systems
 
