@@ -17,7 +17,9 @@ and the repo's manifests, lockfiles, and installed sources of the packages
 it names. Run the lens on every concept the spec adds: each module,
 interface, schema change, contract field, option, and dependency, and each
 user story that asks for behavior the problem does not need. Where the lens
-says diff, read the spec; this brief's FINDINGS format wins.
+says diff, read the spec; where it says goal, read the problem; where it
+says a PR in the stack, read a user story or ticket of this spec. This
+brief's FINDINGS format wins.
 
 Gates:
 - Platform: the spec uses each framework and platform feature directly and
@@ -47,11 +49,11 @@ Lens: <the Anti-Overengineering lens>
 ```
 
 Triage each finding per [`TRIAGE.md`](TRIAGE.md), with the spec in place of
-the diff. A Fix or Call item is an edit to the draft. A part that the author
-keeps against a finding keeps a one-line reason in the spec's **Further
-Notes**, under **Complexity**. When a PR builds the spec, copy each
-Complexity reason into its ledger as a settled entry, so its review reads
-the choice as decided. Keep the findings in a ledger file outside the
+the diff. A Fix or Call item is an edit to the draft. A part that the
+author or the user keeps against a finding keeps a one-line reason in the
+spec's **Further Notes**, under **Complexity**. Every panel brief for code
+that builds the spec carries those reasons as settled, per
+[`PANEL.md`](PANEL.md#brief). Keep the findings in a ledger file outside the
 repository. The pass runs once, outside the round budget and `fleet proof`.
 
 Done when every finding has a bucket, every Fix and Call edit is in the

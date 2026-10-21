@@ -19,7 +19,7 @@ metadata:
     - skill: ponytail and ponytail-review, the ladder and the keep list of the Anti-Overengineering lens
       author: Dietrich Gebert (MIT)
       url: "https://github.com/DietrichGebert/ponytail"
-    - skill: overengineering-review, the payoff ranking and the LEAN footer
+    - skill: overengineering-review, the payoff ranking
       author: markoblogo
       url: "https://github.com/markoblogo/abvx-agent-skills"
     - skill: spec-kit constitution gates, the gates of the spec pass
