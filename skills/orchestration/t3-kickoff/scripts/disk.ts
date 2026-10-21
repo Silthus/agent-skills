@@ -2,7 +2,7 @@ import { statfsSync } from "node:fs";
 import { homedir } from "node:os";
 
 const gigabyte = 1024 ** 3;
-/** One worktree of a large repository, such as PostHog, takes 5 to 8 GB. Below this, one more can fill the disk. */
+/** One worktree of a large repository, such as PostHog, takes 5 to 8 GB, more after a build. Below this, one more can fill the disk. */
 const minFreeGigabytes = 10;
 
 export function freeBytes(path = homedir()): number {
