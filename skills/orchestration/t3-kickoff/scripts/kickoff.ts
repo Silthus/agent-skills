@@ -9,6 +9,7 @@ import { join } from "node:path";
 import { callingThread, handoffPrompt, matchProjects, modelFlags, projectRepository, remoteCommand, type Project } from "./handoff.ts";
 import { authHeaders, discoverServer, runServerCli, type Server } from "./server.ts";
 import { assertProviderAvailable } from "./availability.ts";
+import { assertDiskRoom } from "./disk.ts";
 import { readSettings } from "./settings.ts";
 import { assertWorkspaceSafe } from "./workspace-safety.ts";
 import { shellThreadStatus, turnEndedAfter, turnStarted, type ThreadStatus } from "./threads.ts";
@@ -271,6 +272,7 @@ async function create(flags: Flags): Promise<void> {
       }
 
       assertProviderAvailable(model);
+      if (worktree === "new") assertDiskRoom();
       const workspaceStrategy =
         worktree === "new" ? { type: "worktree", baseRef: base, startFromOrigin: !flags["no-origin"] } : { type: "root" };
       const launch = {
@@ -312,6 +314,7 @@ function addProject(server: Server, cloneUrl: string): void {
   const name = cloneUrl.replace(/\.git$/, "").split(/[/:]/).pop()!;
   const path = join(homedir(), "dev", name);
   if (!existsSync(path)) {
+    assertDiskRoom();
     log(`cloning ${cloneUrl} into ${path}`);
     const clone = spawnSync("git", ["clone", cloneUrl, path], { encoding: "utf8" });
     if (clone.status !== 0) fail(`git clone failed: ${clone.stderr.trim().slice(0, 500)}`);
