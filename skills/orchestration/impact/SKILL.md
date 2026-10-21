@@ -23,7 +23,7 @@ Answer each question from the goals, the work, and the code:
 1. **Goal.** Which objective does the work pay into?
 2. **Scope.** Does the payoff land inside the objective's Scope line in the goals file? Revenue or usage moved in from outside the scope counts as zero. When an objective with a revenue or usage target has no Scope line, ask which lines it counts.
 3. **Metric.** Which metric shows the needle moving? Prefer a leading metric from the goals file that rolls up to the target over the target itself.
-4. **Size.** Is the move small, medium, or large, compared with the other work that the goals file or the team's open issues list for that objective?
+4. **Size.** Is the move small, medium, or large, compared with the other work that the goals file or the team's open issues list for that objective? When a usage brief covers the work, size the move from its reach and flags.
 5. **Cost.** When the work moves usage onto another engine or path, what does each unit cost to run there, compared with the path it replaces? Otherwise the cost is `n/a`.
 6. **Measure.** Which insight, dashboard, or query measures the metric today? Link it.
 7. **Gap.** When nothing measures it yet, which instrumentation would?

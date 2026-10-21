@@ -27,7 +27,7 @@ The **conductor owns map-level coordination**: query and mutate map structure, b
 
 The **ticket worker owns one ticket's resolution**: mutate only that ticket's assignment, comments, labels, resolution, and closure — plus, for an implementation ticket, its own branch and its landing on the integration branch, and for a `ship` ticket, the spec's pull request and merge; use its prescribed skill; and stop after closing it. A worker never mutates other tickets or map-level orchestration state and never dispatches downstream work. The conductor never supplies the human side of a HITL decision or answers a ticket's substantive question.
 
-Charting is the sole undispatched act, apart from its **Prior-art sweeps**. With no map, chart it live through Wayfinder's Chart mode in the **Map tracker**, apply the **Charting rules**, and declare in **Notes** that execution remains inside the map.
+Charting is the sole undispatched act, apart from its **Prior-art sweeps** and **Usage sweep**. With no map, chart it live through Wayfinder's Chart mode in the **Map tracker**, apply the **Charting rules**, and declare in **Notes** that execution remains inside the map.
 
 ## Map tracker
 
@@ -72,6 +72,14 @@ When charting starts from a loose idea instead of an existing map or ticket, dis
 Each sweep returns an inventory, not an analysis. Every entry carries its link, date, author or team, and one line on how it relates. A sweep with no matches, or whose source is unreachable, says so. Give each sweep a 15-minute cap; sweeps are read-only.
 
 Raise each finding at the grilling question it bears on. When the map exists, post both inventories as one **Prior art** comment on the map and link it from **Notes**. In a public repository, that comment keeps only public links; chat findings and other private findings go to a private note, outside every public repository, that the comment names.
+
+## Usage sweep
+
+When the first chart, or a later graduation of fog, adds tickets that change an existing product surface the map has not briefed yet (a scene, view, interaction, MCP tool, or API), dispatch a usage sweep. Its worker runs the `usage-brief` skill at map scope for those surfaces and returns the brief. Give it a 25-minute cap. It writes only the queries it saves in the analytics project.
+
+Take the analytics project from the user's agent instructions, or ask the human for it once, and record it in **Notes** as `Analytics project: <project>`. Every usage sweep and element pass prompt carries it.
+
+When the map has an Impact section, mark its expected move `pending usage brief` until the brief lands. Then size the move from the brief and, unless the work is pushback-exempt, run the **Push back** step of `impact` before the next dispatch of a non-research ticket. When Impact is pending a grilling ticket instead, dispatch that ticket with the brief's link, so it sizes the move from the brief. Raise each flag and each proposed bar at the grilling question it bears on, and record each bar the human confirms in **Notes** as `Usage bar: <flag>: <bar>`, stated as a share, never as a count. When the map exists, post the brief as one **Usage** comment on the map and link it from **Notes**. In a public map tracker, the brief goes to a private note outside every public repository, and the comment names that note.
 
 ## One map, root to leaves
 
