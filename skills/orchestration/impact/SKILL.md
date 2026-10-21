@@ -21,16 +21,18 @@ Name metrics and link the insight or dashboard that measures them. Targets and r
 Answer each question from the goals, the work, and the code:
 
 1. **Goal.** Which objective does the work pay into?
-2. **Metric.** Which metric shows the needle moving? Prefer a leading metric from the goals file that rolls up to the target over the target itself.
-3. **Size.** Is the move small, medium, or large, compared with the other work that the goals file or the team's open issues list for that objective?
-4. **Measure.** Which insight, dashboard, or query measures the metric today? Link it.
-5. **Gap.** When nothing measures it yet, which instrumentation would?
+2. **Scope.** Does the payoff land inside the objective's Scope line in the goals file? Revenue or usage moved in from outside the scope counts as zero. When an objective with a revenue or usage target has no Scope line, ask which lines it counts.
+3. **Metric.** Which metric shows the needle moving? Prefer a leading metric from the goals file that rolls up to the target over the target itself.
+4. **Size.** Is the move small, medium, or large, compared with the other work that the goals file or the team's open issues list for that objective?
+5. **Cost.** When the work moves usage onto another engine or path, what does each unit cost to run there, compared with the path it replaces? Otherwise the cost is `n/a`.
+6. **Measure.** Which insight, dashboard, or query measures the metric today? Link it.
+7. **Gap.** When nothing measures it yet, which instrumentation would?
 
 Put every question you cannot settle to the user in one short round with the `grilling` skill. Keep grilling until the questions are settled or the calling skill's round limit is reached. At the limit, hand the open questions back to the calling skill.
 
 ## Push back
 
-Push back before you go on when the work pays into no objective, or when it moves its metric clearly less than open work it would delay. Say which objective the work pays into, or that it pays into none. Name the higher-impact work when you can see it. Offer three choices: carry on, reshape, or drop. The user decides. Record the choice as a decision line (see `pr-description`).
+Push back before you go on when the work pays into no objective, when its payoff falls outside the objective's scope, when it costs more to run than the path it replaces without in-scope revenue that covers the extra cost, or when it moves its metric clearly less than open work it would delay. Say which objective the work pays into, or that it pays into none. Name the higher-impact work when you can see it. Offer three choices: carry on, reshape, or drop. The user decides. Record the choice as a decision line (see `pr-description`).
 
 ## Record
 
@@ -39,7 +41,7 @@ Write the result as an Impact section. The calling skill decides where it goes.
 ```markdown
 ## Impact
 
-Pays into <objective> through <metric> ([measured here](<link>)). Expected move: <small, medium, or large>, <up or down>.
+Pays into <objective> through <metric> ([measured here](<link>)). In scope: <the scope item the payoff lands on>. Expected move: <small, medium, or large>, <up or down>. Run cost: <per unit moved, against the path it replaces, or n/a>.
 ```
 
 When nothing measures the metric yet, replace the link with `not measured yet: <the instrumentation it needs>`.
