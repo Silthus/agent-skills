@@ -17,7 +17,9 @@ still exists at HEAD. A finding that a commit of this run already fixed is
   Make the smallest honest fix and close every sibling site with it. Prefer
   deleting an unneeded path to hardening it. A nit that breaks a named
   standard, such as a documented repo rule, is a Fix: it is cheap and it
-  shortens the user's review. A Risk lens `GRADE` above the merge-risk
+  shortens the user's review. Copy that contradicts the decided design or its
+  own heading is a Fix, though users see it: the design already decided it.
+  A Risk lens `GRADE` above the merge-risk
   callout's grade is a Fix, and the higher grade wins.
 - **Call**: the problem is real and has more than one defensible fix. Pick
   one, fix it, and record the alternative and your reason for the handoff.
@@ -29,7 +31,9 @@ still exists at HEAD. A finding that a commit of this run already fixed is
   the failure: the input, what broke, and the saved evidence, so the user
   weighs an observed failure, not a predicted one.
 - **Follow-up**: the problem is real but outside the goal or in code the PR
-  does not touch. Record it for the handoff.
+  does not touch. A final-read finding whose cause the fix diff did not
+  introduce is a Follow-up, except a sibling site the fix missed, which
+  reopens that fix's item as a Fix. Record it for the handoff.
 - **Reject**: the premise is wrong; the code, a caller, or the framework
   already prevents it; the input cannot occur at the call sites; or it asks
   to add abstraction, configuration, or defensive checks with no bug behind
@@ -54,7 +58,8 @@ to move the rule into the module that owns the concept, such as the parser,
 the type, or the shared boundary, delete the local patches, and cover the
 cases through that module. Within the round budget it is a Fix, and the next
 review of it runs the Systems lens. Once the budget is spent, it is a
-Decision with that move as the recommended answer.
+Decision with that move as the recommended answer, except a sibling site a
+fix missed, which reopens that fix's item as a Fix.
 
 ## Sources
 
