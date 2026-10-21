@@ -14,6 +14,15 @@ metadata:
     - skill: thermo-nuclear-code-quality-review, the code judo rubric of the Design lens
       author: Cursor (MIT)
       url: "https://github.com/cursor/plugins/tree/main/thermos"
+    - skill: ponytail and ponytail-review, the ladder and the keep list of the Anti-Overengineering lens
+      author: Dietrich Gebert (MIT)
+      url: "https://github.com/DietrichGebert/ponytail"
+    - skill: overengineering-review, the payoff ranking and the LEAN footer
+      author: markoblogo
+      url: "https://github.com/markoblogo/abvx-agent-skills"
+    - skill: spec-kit constitution gates, the gates of the spec pass
+      author: GitHub (MIT)
+      url: "https://github.com/github/spec-kit"
 ---
 
 # QA swarm
