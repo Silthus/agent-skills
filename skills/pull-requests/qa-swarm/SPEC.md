@@ -52,8 +52,9 @@ Triage each finding per [`TRIAGE.md`](TRIAGE.md), with the spec in place of
 the diff. A Fix or Call item is an edit to the draft. A part that the
 author or the user keeps against a finding keeps a one-line reason in the
 spec's **Further Notes**, under **Complexity**. Every panel brief for code
-that builds the spec carries those reasons as settled, per
-[`PANEL.md`](PANEL.md#brief). Keep the findings in a ledger file outside the
+that builds the spec carries those reasons on its `Kept by the spec:` line,
+per [`PANEL.md`](PANEL.md#brief), and triage rejects a finding against
+them per [`TRIAGE.md`](TRIAGE.md#design-findings). Keep the findings in a ledger file outside the
 repository. The pass runs once, outside the round budget and `fleet proof`.
 
 Done when every finding has a bucket, every Fix and Call edit is in the
