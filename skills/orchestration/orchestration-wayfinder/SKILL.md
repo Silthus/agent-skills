@@ -23,7 +23,7 @@ The addenda contain only task/session mechanics. Load only the matching runtime 
 
 ## Ownership
 
-The **conductor owns map-level coordination**: query and mutate map structure, blockers, frontier, dispatch, recovery, and projected human-attention state. It may record and close an invalidated ticket as scope reconciliation, but it never performs a worker's substantive ticket-resolution mutations.
+The **conductor owns map-level coordination**: query and mutate map structure, blockers, frontier, dispatch, recovery, and projected human-attention state. It may record and close an invalidated ticket as scope reconciliation, but it never performs a worker's substantive ticket-resolution mutations. It does no ticket work itself: browser checks, seeding, screenshots, and pull request bodies go to a worker.
 
 The **ticket worker owns one ticket's resolution**: mutate only that ticket's assignment, comments, labels, resolution, and closure — plus, for an implementation ticket, its own branch and its landing on the integration branch, and for a `ship` ticket, the spec's pull request and merge; use its prescribed skill; and stop after closing it. A worker never mutates other tickets or map-level orchestration state and never dispatches downstream work. The conductor never supplies the human side of a HITL decision or answers a ticket's substantive question.
 
@@ -103,7 +103,7 @@ T3 threads cast per [`T3.md`](T3.md).
 
 Review follows [`SHIP.md`](SHIP.md). Review calls are calls the worker waits on and that fail visibly, so the retired-cast rule binds workers, not review calls.
 
-A conductor's cast binds only the worker it spawns, so restate **Casting** inside every worker prompt.
+Record the cast in the map's **Notes**: provider, model, and effort per ticket type and for review. Copy it into every dispatch's model and effort fields, and restate **Casting** in the prompt, since a conductor's cast binds only the worker it spawns.
 
 ## Ship
 
@@ -119,7 +119,7 @@ The worker earns its handoff through the proof gate and the review in [`SHIP.md`
 - Give every worker a wall-time cap and require a durable report before idle: its resolution, or the exact one question awaiting the human.
 - Every worker prompt carries **leave nothing running**: the worker runs each wait it needs in the foreground and ends every turn, a park included, with nothing it started still live: no background command such as `kickoff wait`, watcher, monitor, subagent, or child task. In T3 Code, anything left live keeps the worker's thread, and the conductor that started it, on the Working shelf, so the park never reaches the human's inbox.
 - Give every worker that writes files, commits, or checks out a branch its own worktree. A worker in the conductor's checkout can switch the conductor's branch. Serialize shared-file work.
-- Send a ticket's follow-up work, such as review fixes, to its existing worker instead of dispatching a new one.
+- While a ticket is open, send its follow-up work, such as review fixes, to its existing worker when it touches the same files. Chart every other follow-up, including those in a resolution comment, as its own ticket and dispatch that ticket.
 - When a review provider has an **outage** (a 429 or a usage limit), record it and its reset date once in the map's **Notes**, and state it in every dispatch until the reset.
 - Reserve one of three map-level CodeRabbit slots before dispatching a `ship` ticket. Hold the slot through review; release it when the ticket is shipped or parked.
 - Treat the tracker as semantic truth. Runtime workers and human-attention affordances are projections, never substitutes.
@@ -135,7 +135,7 @@ The worker earns its handoff through the proof gate and the review in [`SHIP.md`
 3. On each conductor wake and before completion, health-check lanes whose last durable activity is older than 15 minutes; do not create a polling lane.
 4. A lane reports durably before idle; no report means orphaned, not done. Reconcile durable ticket state before any redispatch.
 5. Reap every lane and remove its worktree before declaring the map complete, then release the map's compute lease per **Compute lease**.
-6. The conductor owns waits as event/state transitions, never background pollers or chained blocking waits. The T3 hold in [`T3.md`](T3.md) is neither: it reads no state and only keeps a waiting conductor out of the human's inbox.
+6. The conductor owns waits as event/state transitions, never background pollers or chained blocking waits. The T3 hold in [`T3.md`](T3.md) is neither: it reads no state and only keeps a waiting conductor out of the human's inbox. A compaction ends every background shell and monitor the conductor started, so the conductor waits on worker notifications.
 7. The map has exactly three CodeRabbit slots shared by its `ship` lanes.
 
 ## Wake law
@@ -147,16 +147,15 @@ On any worker notification, read the tracker per **Reading the frontier** (with 
 - **Open + assigned, no awaiting label** → active, queued, or orphaned. Use the runtime addendum to distinguish them without interrogating the worker.
 - **Invalidated by another resolution** → record why, stop or retire its runtime worker, clear its human-attention state, and update or close the ticket through Wayfinder's scope rules.
 
-The ticket is durable state; a worker is a cache. Recovery starts from the map, ticket comments, assignment, labels, and recorded runtime locator.
+The ticket is durable state; a worker and the conductor's own context are caches. The runtime compacts the conductor's context automatically. Treat a compaction as a resume: reload the map and its **Notes**, re-read the runtime addendum, and [`T3.md`](T3.md) in T3 Code, and run their **Recovery**, then query the frontier per **Conductor loop** before you dispatch. In T3 Code, the old hold is gone; end each turn per **Wait out of the inbox** in [`T3.md`](T3.md). Recovery starts from the map, ticket comments, assignment, labels, and recorded runtime locator.
 
 ## Conductor loop
 
-1. Past about 200k tokens of context, hand the map to a fresh conductor with the `handoff` skill before the next dispatch.
-2. Load the map's low-resolution body.
-3. Query open child state and compute the unblocked, unclaimed frontier per **Reading the frontier**. `fleet frontier`, when available, returns both in one call.
-4. Dispatch per ticket type and runtime addendum.
-5. On every tracker transition, reconcile attention state and dispatch newly unblocked work.
-6. Graduate newly sharp fog into tickets. Keep the canonical decision lookup index on the map, per **Decision lines on the map**, while preserving ticket comments as the durable evidence for each decision.
+1. Load the map's low-resolution body.
+2. Query open child state and compute the unblocked, unclaimed frontier per **Reading the frontier**. `fleet frontier`, when available, returns both in one call.
+3. Dispatch per ticket type and runtime addendum.
+4. On every tracker transition, reconcile attention state and dispatch newly unblocked work.
+5. Graduate newly sharp fog into tickets. Keep the canonical decision lookup index on the map, per **Decision lines on the map**, while preserving ticket comments as the durable evidence for each decision.
 
 Done means **every in-scope ticket is closed, every spec is shipped, every dispatch setup and worker is terminal, no runtime worker remains on the attention rail, and the map's compute lease is released**. An empty frontier alone is not completion: claimed, blocked, and parked tickets are deliberately absent from it.
 
