@@ -14,7 +14,7 @@ When several of a spec's tickets need the same exploration, one research worker 
 
 ## Implementation ticket
 
-A ticket without a spec skips these steps and ships per **Per-ticket pull requests** below.
+A ticket without a spec has no integration branch. It works in its own worktree on a branch off the default branch, or off its blocker's pull request branch while that pull request is open, follows step 2, and ships per **Per-ticket pull requests** below in place of Land.
 
 1. Work in an own worktree on `spec/<slug>-<n>`, where `<n>` is the ticket's issue number, branched from the integration branch tip. `spec/<slug>` is already a ref, so Git can't create a branch beneath it. Confirm that base before the first edit.
 2. Build with the `tdd` skill and gather the proof bundle below.
@@ -50,7 +50,7 @@ The terminal is the reviewed draft pull request with every finding fixed or reje
 
 ## Per-ticket pull requests
 
-A spec whose implementation tickets already opened their own pull requests finishes that way and gets no `ship` ticket. Each remaining ticket opens a draft pull request with the `pr-description` skill from its own branch, stacked on its blocker's pull request branch, and runs the Review and Handoff above itself. An `implement` ticket without a spec ships the same way, from a branch off the default branch.
+A spec whose implementation tickets already opened their own pull requests finishes that way and gets no `ship` ticket. Each remaining ticket opens a draft pull request with the `pr-description` skill from its own branch, stacked on its blocker's pull request branch, and runs the Review and Handoff above itself. An `implement` ticket without a spec ships the same way.
 
 ## Merge, when the map grants it
 
