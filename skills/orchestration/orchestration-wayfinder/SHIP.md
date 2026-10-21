@@ -14,6 +14,8 @@ When several of a spec's tickets need the same exploration, one research worker 
 
 ## Implementation ticket
 
+A ticket without a spec has no integration branch. It works in its own worktree on a branch off the default branch, or off its blocker's pull request branch while that pull request is open, follows step 2, and in place of steps 3 and 4 ships per **Per-ticket pull requests** below, then removes its worktree after the Handoff.
+
 1. Work in an own worktree on `spec/<slug>-<n>`, where `<n>` is the ticket's issue number, branched from the integration branch tip. `spec/<slug>` is already a ref, so Git can't create a branch beneath it. Confirm that base before the first edit.
 2. Build with the `tdd` skill and gather the proof bundle below.
 3. **Land**: merge the integration branch tip into the ticket branch, run the repo's full local gate green, and push to the integration branch as a fast-forward. A rejected push means another ticket landed first: merge again and repeat.
@@ -25,8 +27,8 @@ Every claim is an artifact linked from the ticket, never a sentence:
 
 - **red** — the test that reproduces the bug or expresses the missing behaviour, failing on the tree before the change;
 - **green** — that same test passing after it, every assertion intact and no test skipped;
-- the repo's full local gate green on the landed tree;
-- for any user-facing surface, a screenshot or recording of the behaviour in the running app.
+- the repo's full local gate green on the landed tree, or on the pull request head for a ticket that ships by its own pull request;
+- for any change to a browser UI, the `ui-walk` proof from the `qa-swarm` skill's `PROOF.md`.
 
 An artifact the worker cannot produce is a park, recorded as the one pending question for the human.
 
@@ -48,7 +50,7 @@ The terminal is the reviewed draft pull request with every finding fixed or reje
 
 ## Per-ticket pull requests
 
-A spec whose implementation tickets already opened their own pull requests finishes that way and gets no `ship` ticket. Each remaining ticket opens a draft pull request with the `pr-description` skill from its own branch, stacked on its blocker's pull request branch, and runs the Review and Handoff above itself.
+A spec whose implementation tickets already opened their own pull requests finishes that way and gets no `ship` ticket. Each remaining ticket opens a draft pull request with the `pr-description` skill from its own branch, stacked on its blocker's pull request branch, and runs the Review and Handoff above itself. An `implement` ticket without a spec ships the same way, from the base **Implementation ticket** names.
 
 ## Merge, when the map grants it
 

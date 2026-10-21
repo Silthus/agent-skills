@@ -109,7 +109,7 @@ Record the cast in the map's **Notes**: provider, model, and effort per ticket t
 
 A spec's code reaches the human as one pull request. Each implementation ticket resolves when its commits have **landed** on the spec's integration branch; the spec's `ship` ticket resolves when that branch is **shipped**: a reviewed draft pull request, per [`SHIP.md`](SHIP.md). The human reads it, marks it ready for review, and has it merged through `babysit-pr`. The map's **Notes** are where an effort grants merge authority instead; then shipped means merged into `main`.
 
-**Throwaway stays throwaway.** A prototype or research ticket answers a question: its code and notes live on their own `prototype/<name>` or `research/<name>` branch behind a context pointer from the ticket, and `main` keeps only the decision they settled. Folding a validated decision into real code is an `implement` ticket, built fresh.
+**Throwaway stays throwaway.** A prototype or research ticket answers a question: its code and notes live on their own `prototype/<name>` or `research/<name>` branch behind a context pointer from the ticket, and `main` keeps only the decision they settled. Folding a validated decision into real code is an `implement` ticket, built fresh. When the human accepts a UI prototype and asks to build it, the conductor charts that `implement` ticket under the map, copies the prototype's element checklist with its screenshots into its body, and dispatches it. The ticket's `ui-walk` proof checks the build against it. Without a spec, the ticket ships alone per **Implementation ticket** in [`SHIP.md`](SHIP.md).
 
 The worker earns its handoff through the proof gate and the review in [`SHIP.md`](SHIP.md). Anything it cannot prove there is a HITL park.
 

@@ -5,16 +5,11 @@
 1. List the changed user journey and the changed states and branches that
    affect its outcome, including empty, loading, error, and narrow-layout
    states. Pick the smallest set of scenarios that shows them.
-2. Run those scenarios before you request review, and take the PR captures
-   in the same session. Use the runtime's native browser tools. In T3, start
-   with `preview_status` and open the preview when none is attached. Use
-   another browser only when the native tool is absent or explicitly
-   unavailable, or when the user asks for one.
-3. Capture the running app when the claim involves an integration or a
-   saved result. A Storybook or mock capture shows appearance only. Label
-   its source, and verify backend behavior separately before you claim it
-   works.
-4. Take a still of every changed feature, view, and state. Add a short
+2. Walk those scenarios before you request review, as the `ui-walk` proof
+   in the `qa-swarm` skill's [`PROOF.md`](../../qa-swarm/PROOF.md#ui-walk)
+   describes: on a seeded preview, in a browser signed in to it. Its
+   screenshots are the PR captures.
+3. Take a still of every changed feature, view, and state. Add a short
    recording of the main journey for a larger feature with several steps,
    or when the reader needs the action or its order to understand the
    result. In T3, record with `preview_recording_start` and
@@ -23,7 +18,7 @@
    captures serve verification and the PR. Add another format only when it
    shows something the others miss or the repository requires it. Full QA
    is a separate workflow, run when requested or required.
-5. Use invented data. Inspect each capture: it shows the intended state and
+4. Use invented data. Inspect each capture: it shows the intended state and
    no private information. Check the whole frame before you publish. Keep
    the files and their run context outside source history: the tested
    commit, browser source, relevant flags, scenarios, results, and gaps.

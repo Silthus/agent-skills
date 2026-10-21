@@ -22,6 +22,25 @@ destination or a stored config, and once with data HEAD creates.
 Done when the run's output (requests and responses, log lines, captures) is
 saved for HEAD's behavior.
 
+### UI walk
+
+Owed by every PR that changes a browser UI: a screen, a component, or its
+copy.
+
+Serve HEAD as a production build on seeded demo data, on a remote workspace
+with the `share-preview` skill. A Storybook story or a single rendered state
+shows appearance only. In a browser signed in to the preview, walk every stage of the changed
+journey from entry to result and take a screenshot of each stage. Walk copy
+or controls that depend on state twice: on data that has the state and on
+data that lacks it, such as a project with a verified sender and one
+without. When the ticket carries an element checklist from an accepted
+prototype, put each screen beside the prototype's screenshot of it and tick
+every `build` row the walk shows. A `build` row the walk lacks is a finding
+until the user's words re-mark it `later` or `cut`.
+
+Done when every stage, both sides of every state-dependent stage, and every
+`build` row have a screenshot of HEAD.
+
 ### Prod shape
 
 Owed when the changed path reads persisted inputs: stored rows,
@@ -87,9 +106,10 @@ When the `fleet` CLI is available (on `PATH` or at `~/dev/fleet/fleet`), the
 proof storage enforces this file:
 
 - `fleet proof require --repo <owner/repo> --pr <number> --commit <full SHA> --kinds <kinds>`
-  records the owed kinds: `live-run`, `prod-shape`, `cross-version`,
-  `shadow-diff`, `post-deploy-watch`.
-- `fleet proof save ... --kind <kind> <files>` saves a proof's evidence.
+  records the owed kinds: `live-run`, `ui-walk`, `prod-shape`,
+  `cross-version`, `shadow-diff`, `post-deploy-watch`.
+- `fleet proof save ... --kind <kind> <files>` saves a proof's evidence, and
+  takes only screenshots for `ui-walk`.
 - `fleet proof gap ... --kind <kind> --reason "<reason>"` records a gap, and
   `--accept "<the user's words>"` records the user's acceptance.
 - `fleet proof gate ...` exits 0 when every owed proof has evidence or an
