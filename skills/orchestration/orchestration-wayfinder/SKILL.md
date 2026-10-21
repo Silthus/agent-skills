@@ -75,9 +75,9 @@ Raise each finding at the grilling question it bears on. When the map exists, po
 
 ## Usage sweep
 
-When the idea changes an existing product surface (a scene, view, interaction, MCP tool, or API), dispatch a third background sweep beside the prior-art sweeps. Its worker runs the `usage-brief` skill at map scope for the surfaces the idea concerns and returns the brief. Give it a 25-minute cap; it is read-only.
+Dispatch a usage sweep at the first chart, and again whenever fog graduates into tickets that change an existing product surface the map has not briefed yet: a scene, view, interaction, MCP tool, or API. Its worker runs the `usage-brief` skill at map scope for those surfaces and returns the brief. Before dispatch, take the analytics project from the user's agent instructions, or ask the human for it, and put it in the prompt. Give the sweep a 25-minute cap. It writes only the queries it saves in the analytics project.
 
-Raise its flags at the grilling questions and the `impact` round they bear on. When the map exists, post the brief as one **Usage** comment on the map and link it from **Notes**. In a public map tracker, the brief goes to a private note outside every public repository, and the comment names that note.
+Until the brief lands, mark the **Size** of the map's Impact section `pending usage brief`, then size the move from the brief. Raise each flag and each proposed bar at the grilling question it bears on, and record each bar the human confirms in **Notes** as `Usage bar: <flag>: <bar>`. When the map exists, post the brief as one **Usage** comment on the map and link it from **Notes**. In a public map tracker, the brief goes to a private note outside every public repository, and the comment names that note.
 
 ## One map, root to leaves
 
