@@ -44,8 +44,9 @@ still exists at HEAD. A finding that a commit of this run already fixed is
 This rule comes before every other rule here. In the review of code that
 builds a spec, a finding from any source that cuts, replaces, or narrows a
 part that a **Complexity** reason of the [spec pass](SPEC.md) keeps is a
-Reject, unless the code builds more than the reason keeps. Triage a bug in a
-kept part as usual.
+Reject, except for what the code builds beyond what the reason keeps. Triage
+a bug in a kept part as usual, and fix it inside the kept part; a fix that
+cuts, replaces, or narrows the part is a Decision.
 
 ## Design findings
 
