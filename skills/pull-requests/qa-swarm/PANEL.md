@@ -114,7 +114,9 @@ hunting ground of your lens.
 Settled: <ledger entries that are fixed, rejected, or decided>. Raise one
 again only when the code under it changed.
 Kept by the spec: <each Complexity reason of the spec the change builds, or
-none>. Raise one only when the code builds more than the reason keeps.
+none>. Raise a finding that cuts, replaces, or narrows a kept part only when
+the code builds more than the reason keeps. Report a bug in a kept part as
+usual.
 
 Context (every lens except Design and Anti-Overengineering):
 Approach: <approach, or none>
