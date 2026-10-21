@@ -111,8 +111,9 @@ hunting ground of your lens.
 
 <output of git diff origin/<base>...<sha>>
 
-Settled: <ledger entries that are fixed, rejected, or decided>. Raise one
-again only when the code under it changed.
+Settled: <ledger entries that are fixed, rejected, or decided, and each
+Complexity reason in the spec that the change builds>. Raise one again only
+when the code under it changed.
 
 Context (every lens except Design and Anti-Overengineering):
 Approach: <approach, or none>
