@@ -20,7 +20,7 @@ When the conductor runs inside T3 Code (`T3CODE_HOME` is set), also read [`T3.md
 
 The addenda contain only task/session mechanics. Load only the matching runtime addendum. This file owns the shared tracker and conductor protocol.
 
-Consent in this skill rests on a **user request**: the user asked to conduct a map, typed `/orchestration-wayfinder`, or asked to run this skill by name. Without one, such as when another agent's prompt loaded the skill, ask the user once before the first act that needs consent.
+Consent in this skill rests on a **user request**: the user asked to conduct a map, typed `/orchestration-wayfinder`, or asked to run this skill by name. Without one, such as when another agent's prompt loaded the skill, ask the user once before the first act that needs consent, and name each such act: private chat search and native task creation. A yes counts as a **user request**; a no limits the run to acts that need none.
 
 ## Ownership
 
