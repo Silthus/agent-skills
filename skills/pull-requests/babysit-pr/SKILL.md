@@ -57,8 +57,8 @@ and finish it with
 `fleet proof review-finish ... --round final <findings file>` when the CLI
 is available, else in the ledger. `--phase babysit` counts this phase's
 final reads on their own. From the third, `fleet proof` asks its arbiter
-first, as in `qa-swarm`; only its refusal stops the push, and that refusal is
-a Decision for the user. Follow the PR workflow and model selection policy in
+first, as in `qa-swarm`. Its refusal, or the ceiling of six final reads,
+stops the push and is a Decision for the user. Follow the PR workflow and model selection policy in
 the user's agent instructions.
 
 Keep the branch mergeable. Rebase on the base branch when it conflicts, or

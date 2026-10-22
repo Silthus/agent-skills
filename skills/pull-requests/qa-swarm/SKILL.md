@@ -127,7 +127,7 @@ A round works on one HEAD. Run its steps in order.
 1. **Review.** Reserve the round before dispatch, so a resumed session
    cannot reset the count. With the `fleet` CLI, run
    `fleet proof review-start --repo <owner/repo> --pr <number> --commit <full SHA> --scope full`,
-   or `--scope fixes --base <round 1 SHA>` for round two. On resume, reuse an
+   or `--scope fixes --base <previous round's SHA>` for round two and later. On resume, reuse an
    unfinished reservation. After the panel, complete it with
    `fleet proof review-finish` and its `--round <number>` and findings file.
    Without the CLI, write the round number, scope, and HEAD to the ledger
@@ -136,10 +136,11 @@ A round works on one HEAD. Run its steps in order.
    Past round two, `review-start` asks the arbiter first, a cheap model that
    reads the findings so far. It reserves the round unless a later finding
    contradicts an earlier one or the same finding keeps coming back after its
-   fix; then it refuses with the reason. That refusal is a Decision for the
-   user; record their answer with `--override`. Without the CLI, ask the same
-   question of a one-shot subagent on the cheapest model, give it the ledger's
-   findings, and record its answer there.
+   fix; then it refuses with the reason. At six panel rounds it refuses
+   without asking. Either refusal is a Decision for the user; record their
+   answer with `--override`. Without the CLI, ask the same question of a
+   one-shot subagent cast as a lookup per the user's model selection policy,
+   give it the ledger's findings, and record its answer there.
    Read [`PANEL.md`](PANEL.md) and dispatch the panel on HEAD. While it runs,
    wait at most 15 minutes until the review bots of the repo's recent PRs have
    reviewed HEAD and the **gating checks** on HEAD have finished. Record a bot
@@ -176,7 +177,8 @@ and complete it with
 `fleet proof review-finish ... --round final <findings file>`. A final read
 never counts as a panel round. A fix from a final read is a new commit, so it
 gets its own final read, until a read comes back clean. From the third final
-read on, the arbiter checks each one the same way; its refusal is a Decision.
+read on, the arbiter checks each one the same way, and at six final reads
+`fleet proof` refuses without asking. Either refusal is a Decision.
 Skip the final read when a review already covered HEAD. A Fix item you cannot
 close becomes a Decision, and the handoff is Blocked.
 

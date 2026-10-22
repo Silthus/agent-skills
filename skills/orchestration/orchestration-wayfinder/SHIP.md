@@ -14,13 +14,13 @@ When several of a spec's tickets need the same exploration, one research worker 
 
 ## Strand
 
-One lane builds the strand's slices in the order its checklist gives. A ticket without a spec is a strand of one slice with no integration branch: it works in its own worktree on a branch off the default branch, or off its blocker's pull request branch while that pull request is open, follows step 2, and in place of steps 3 to 5 ships per **Per-ticket pull requests** below, then removes its worktree after the Handoff.
+One lane builds the strand's slices in the order its checklist gives. A ticket without a spec, and every strand of a spec that ships as per-slice pull requests, follows **Per-slice pull requests** below instead.
 
-1. Work in an own worktree on `spec/<slug>-<n>`, where `<n>` is the strand's issue number, branched from the integration branch tip. `spec/<slug>` is already a ref, so Git can't create a branch beneath it. Confirm that base before the first edit, and record it as the strand's **start**.
-2. For each slice in order, build it with the `tdd` skill and gather the proof bundle below. A slice with a `Waits on` line starts only after that slice has landed on the integration branch; build the next independent slice meanwhile.
-3. **Land** each slice: merge the integration branch tip into the strand branch, run the repo's full local gate green, and push to the integration branch as a fast-forward. A rejected push means another strand landed first: merge again and repeat. Tick the slice's checklist item with its landed commit.
-4. **Review** the strand once, after its last slice lands: one review of `git diff <start>...HEAD` from the model family that did not write it, with the spec as the oracle. Its brief also carries the strands that landed since the start, `git log --oneline <start>..<integration branch tip>` and their diff, and asks for **seams**: one concept built twice, a flag one strand reads that another records, a rollback or schema revert that strands another strand's data. Fix what holds red first, land the fixes, and give them a final read per the PR workflow in the user's agent instructions.
-5. Write the resolution comment: the landed commits per slice, the proof, the review findings with their outcomes, its decision lines, and the follow-ups. Close the ticket and remove the worktree.
+1. Work in an own worktree on `spec/<slug>-<n>`, where `<n>` is the strand's issue number, branched from the integration branch tip. `spec/<slug>` is already a ref, so Git can't create a branch beneath it. Confirm that base before the first edit and post it as `Start: <sha>` on the ticket. A successor reuses that start and resumes at the first unticked slice.
+2. For each slice in order, build it with the `tdd` skill and gather the proof bundle below. A slice whose item carries `Waits on: #<strand> slice <n>` starts once that item on the other strand's ticket is ticked with a commit. Wait for it in the foreground, re-reading that ticket every few minutes, up to the wall-time cap. At the cap, post the wait as the lane's durable report and end.
+3. **Land** each slice: merge the integration branch tip into the strand branch, run the repo's full local gate green, and push to the integration branch as a fast-forward. A rejected push means another strand landed first: merge again and repeat. Tick the slice's checklist item with its own commits, `git log --first-parent --no-merges --format=%h <previous tick or start>..HEAD`.
+4. **Review** the strand once, after its last slice lands: one review from the model family that did not write it, with the spec as the oracle. The strand's diff is its own commits, the ticked ones, read with `git show`. As seam context, the brief carries the other strands' commits on the integration branch, `git log --no-merges <integration branch base>..<tip>` without the strand's own, and asks for **seams**: one concept built twice, a flag one strand reads that another records, a rollback or schema revert that strands another strand's data. Fix what holds red first and land each fix. Each landed fix gets one final read of its own commits, until a read comes back clean. A finding that contradicts an earlier one, or comes back after its fix, is a park.
+5. Write the resolution comment: the landed commits per slice, the proof, each review with its findings and their outcomes, its decision lines, and the follow-ups. Close the ticket and remove the worktree.
 
 ## Proof bundle
 
@@ -35,7 +35,7 @@ An artifact the worker cannot produce is a park, recorded as the one pending que
 
 ## Ship ticket
 
-The `ship` ticket unblocks when every strand of its spec has landed. Its worker never built the code, so it reviews with fresh eyes:
+The `ship` ticket unblocks when every strand of its spec has closed. Its worker never built the code, so it reviews with fresh eyes:
 
 1. Open a draft pull request in the code repo from the integration branch with the `pr-description` skill, closing the spec and its tickets, per **Map tracker** in [`SKILL.md`](SKILL.md) when they live in another repo. The Summary maps each strand and its slices to their commits, which are the reading order. The body carries the Decisions block the `pr-description` skill defines: when the `fleet` CLI is available (on `PATH` or at `~/dev/fleet/fleet`), `fleet decisions <map URL>` collects the decision lines of the map and its closed tickets with the Involvement counts; otherwise, copy them by hand from the map's Decisions-so-far and each ticket's resolution comment. The spec stays one pull request; a `qa-swarm` split step keeps it whole.
 2. Review the whole branch against its base, with the spec as the oracle, the way the PR workflow in the user's agent instructions prescribes, when one exists; otherwise one review from the other model family, or the `qa-swarm` skill where those instructions call for it. Two strands or slices that built the same concept twice, such as one field under two names, are a finding. The danger areas are the ones `merge-risk` lists, as written; a docs-only diff has none.
@@ -49,9 +49,9 @@ A review that leaves a decision open is a park: decisions locked plus the one pe
 
 The terminal is the reviewed draft pull request with every finding fixed or rejected. The ship worker links it in the resolution comment with the reviewed head, the proof, its decision lines, and the follow-ups. Then it closes the ticket. The conductor graduates the follow-ups into tickets.
 
-## Per-ticket pull requests
+## Per-slice pull requests
 
-A spec whose slices open their own pull requests, such as one per repository or the stack a repo's reviewers ask for, finishes that way and gets no `ship` ticket. The strand lane opens each slice's draft pull request with the `pr-description` skill, stacked on the previous slice's branch, and the strand's one review in step 4 of **Strand** covers them together. The lane then runs the Handoff above itself. An `implement` ticket without a spec ships the same way, from the base **Strand** names.
+A spec that says `Ships as: per-slice pull requests` has no integration branch and no `ship` ticket; neither does a ticket without a spec. The lane works in its own worktree and builds each slice per step 2 of **Strand**, then opens its draft pull request with the `pr-description` skill: the first on a branch off the default branch, or off its blocker's pull request branch while that pull request is open, and each later slice stacked on the previous slice's branch. Each pull request gets the review the PR workflow in the user's agent instructions prescribes. A strand of several pull requests adds the seam read of step 4 over their combined diff. The lane then runs the Handoff above itself and removes its worktree.
 
 ## Merge, when the map grants it
 

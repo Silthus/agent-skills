@@ -5,7 +5,7 @@ Read this addendum only when Codex drives. [`SKILL.md`](SKILL.md) is the source 
 ## Dispatch surfaces
 
 - Human-enterable HITL work uses native Codex tasks. This includes grilling and the parked phase of prototypes, specs, and HITL tasks.
-- Read-only AFK work uses subagents. Dispatch every writer, implementation included, as an unpinned native worktree task, per the worktree rule in [`SKILL.md`](SKILL.md). Also use an unpinned native task when the user explicitly wants background work visible as a task.
+- Read-only AFK work and strand lanes (`implement`) use subagents, a strand lane in its own worktree. Dispatch every other writer as an unpinned native worktree task, per the worktree rule in [`SKILL.md`](SKILL.md). Also use an unpinned native task when the user explicitly wants background work visible as a task.
 - A **user request**, per **Foundation** in [`SKILL.md`](SKILL.md), authorizes the native tasks its map requires.
 - Prefer native task tools over detached `codex exec`. Use the CLI only when native task tools are unavailable and report that fallback.
 
