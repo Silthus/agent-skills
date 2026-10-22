@@ -71,10 +71,10 @@ already fixed shows that the earlier fix sits in the wrong place. The fix is
 to move the rule into the module that owns the concept, such as the parser,
 the type, or the shared boundary, delete the local patches, and cover the
 cases through that module. It is a Fix, and the next review of it is a panel
-round that runs the Systems lens, past round two too. When you finish the
-review that found it, its findings file names the finding a repeat cause and
-its fix a move to a new place, so the arbiter reads the next round as
-progress. A sibling site a fix
+round that runs the Systems lens, past round two too. Spot repeat causes
+while you write the findings file for `review-finish`: name the finding a
+repeat cause and its fix a move to a new place there, so the arbiter reads
+the next round as progress. A sibling site a fix
 missed reopens that fix's item as a Fix instead.
 
 ## Sources
