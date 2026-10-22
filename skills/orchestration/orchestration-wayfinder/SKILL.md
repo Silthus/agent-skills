@@ -1,7 +1,6 @@
 ---
 name: orchestration-wayfinder
-description: Drive a whole wayfinder map from one session — planning through implementation — by dispatching one worker per frontier ticket.
-disable-model-invocation: true
+description: Conduct a wayfinder map from charting through reviewed pull requests, one worker per frontier ticket. Use when asked to conduct a map end to end, or to dispatch workers across a map's frontier.
 ---
 
 # Orchestration Wayfinder
@@ -66,7 +65,7 @@ When `<fleet> lease help` prints its usage, where `<fleet>` is the path resolved
 
 When charting starts from a loose idea instead of an existing map or ticket, dispatch two background sweeps before the first grilling question. Each sweep finds out whether others already discussed the problem, have the same problem, or started to solve it:
 
-- **Chat**: threads in the team's chat, such as Slack, in every channel the human can see, from any user and team, not only the human's own. Search public and private channels and DMs; invoking this skill grants the consent that private search asks for.
+- **Chat**: threads in the team's chat, such as Slack, in every channel the human can see, from any user and team, not only the human's own. Search public and private channels and DMs; the user's request to run this skill grants the consent that private search asks for.
 - **Issue trackers**: issues and pull requests in every state (open, draft, closed, merged) across the internal and public repositories of the organization the idea concerns. When that organization has a public community forum, search it too.
 
 Each sweep returns an inventory, not an analysis. Every entry carries its link, date, author or team, and one line on how it relates. A sweep with no matches, or whose source is unreachable, says so. Give each sweep a 15-minute cap; sweeps are read-only.

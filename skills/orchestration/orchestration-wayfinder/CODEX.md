@@ -6,7 +6,7 @@ Read this addendum only when Codex drives. [`SKILL.md`](SKILL.md) is the source 
 
 - Human-enterable HITL work uses native Codex tasks. This includes grilling and the parked phase of prototypes, specs, and HITL tasks.
 - Read-only AFK work uses subagents. Dispatch every writer, implementation included, as an unpinned native worktree task, per the worktree rule in [`SKILL.md`](SKILL.md). Also use an unpinned native task when the user explicitly wants background work visible as a task.
-- The explicit user invocation of `/orchestration-wayfinder` authorizes the native tasks required by its map. If the skill was not explicitly invoked or the user did not authorize tasks, ask once before the first creation.
+- The user's request to run this skill, through `/orchestration-wayfinder` or by naming it or its map, authorizes the native tasks required by its map. Otherwise, ask once before the first creation, unless the user authorized tasks.
 - Prefer native task tools over detached `codex exec`. Use the CLI only when native task tools are unavailable and report that fallback.
 
 Follow **Casting** in [`SKILL.md`](SKILL.md).
