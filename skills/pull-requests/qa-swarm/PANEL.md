@@ -139,7 +139,7 @@ give it the brief above for the branch diff against the base, with no Context
 block. Triage each finding per [`TRIAGE.md`](TRIAGE.md), fix the Fix and Call
 items, and keep the findings in a ledger file outside the repository. When
 the PR opens, copy them into its ledger, so the first review sees them as
-settled. The pass runs once, before and outside the round budget and
+settled. The pass runs once, before and outside the round count and
 `fleet proof`; the review that follows reads its fixes. Done when every
 finding has a bucket and every Fix and Call item is committed.
 

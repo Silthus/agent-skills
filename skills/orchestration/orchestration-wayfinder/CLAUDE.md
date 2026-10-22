@@ -12,7 +12,7 @@ Read this addendum only when Claude Code drives. [`SKILL.md`](SKILL.md) is the s
 
 Every worker prompt includes the wall-time cap, report-before-idle requirement, **leave nothing running** (anything left live pins the conductor on T3's Working shelf), ticket claim, prescribed skill and the fallback when the Skill tool refuses it, durable park/resolution protocol, the rule that downstream dispatch belongs to the conductor, and **Casting** from [`SKILL.md`](SKILL.md).
 
-An `implement` or `ship` worker's prompt points to its section of [`SHIP.md`](SHIP.md) and carries the spec's integration branch. A prompt for a ticket that runs code also carries the attach line from **Compute lease** in [`SKILL.md`](SKILL.md) while the map holds a lease.
+An `implement` or `ship` worker's prompt points to its section of [`SHIP.md`](SHIP.md) and carries the spec's integration branch. A prompt for a ticket that runs code also carries the lease line from **Compute lease** in [`SKILL.md`](SKILL.md) while the map's **Notes** record it.
 
 ## Human attention
 

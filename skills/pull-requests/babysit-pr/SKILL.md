@@ -55,13 +55,11 @@ fix. Record it: start it with
 `fleet proof review-start ... --scope final --base <last reviewed SHA> --phase babysit`
 and finish it with
 `fleet proof review-finish ... --round final <findings file>` when the CLI
-is available, else in the ledger. `--phase babysit` gives this phase its own
-two final reads. When `fleet proof` refuses a third, start
-it with `--override` and the source the push answers: the thread URL, the
-failed check, or the rebase onto the base SHA. A Fix or Call item from a
-final read has no such source, so past the cap it becomes a Decision instead
-of a push. Follow the PR workflow and model selection policy in the user's
-agent instructions.
+is available, else in the ledger. `--phase babysit` counts this phase's
+final reads on their own. From the third, `fleet proof` asks its arbiter
+first, as in `qa-swarm`; only its refusal stops the push, and that refusal is
+a Decision for the user. Follow the PR workflow and model selection policy in
+the user's agent instructions.
 
 Keep the branch mergeable. Rebase on the base branch when it conflicts, or
 when the repo requires an up-to-date branch outside a merge queue. When an

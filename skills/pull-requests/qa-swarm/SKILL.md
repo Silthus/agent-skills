@@ -32,8 +32,10 @@ metadata:
 The swarm takes a branch to a draft PR that the user can merge after one read.
 The bar: the user finds nothing that a reviewer, a review bot, or CI would have
 found. Fresh reviewers from two model families review the change, you fix what
-holds, and a second, narrow round reviews your fixes. The budget is two
-rounds, because a third panel costs as much as the first and mostly finds churn.
+holds, and a second, narrow round reviews your fixes. Later fixes get final
+reads until one comes back clean. Past two rounds or two final reads, an
+**arbiter** decides whether the next review runs, so the user decides only
+when reviewers contradict each other or the loop stops converging.
 
 For a draft spec, run the [spec pass](SPEC.md) instead of the steps below.
 
@@ -56,8 +58,8 @@ For a draft spec, run the [spec pass](SPEC.md) instead of the steps below.
 - **Comments.** Panel findings stay in the ledger. Every GitHub comment goes
   through the `leaving-pr-comments` skill.
 - **Fleet.** The `fleet` CLI is on `PATH` or at `~/dev/fleet/fleet`. When it is
-  available, it holds the proof and the round budget. Otherwise, the ledger
-  holds them.
+  available, it holds the proof, counts the rounds, and runs the arbiter.
+  Otherwise, the ledger holds them.
 
 ## 1. Frame
 
@@ -123,7 +125,7 @@ the observed behavior and any verification gaps.
 A round works on one HEAD. Run its steps in order.
 
 1. **Review.** Reserve the round before dispatch, so a resumed session
-   cannot reset the budget. With the `fleet` CLI, run
+   cannot reset the count. With the `fleet` CLI, run
    `fleet proof review-start --repo <owner/repo> --pr <number> --commit <full SHA> --scope full`,
    or `--scope fixes --base <round 1 SHA>` for round two. On resume, reuse an
    unfinished reservation. After the panel, complete it with
@@ -131,9 +133,13 @@ A round works on one HEAD. Run its steps in order.
    Without the CLI, write the round number, scope, and HEAD to the ledger
    before dispatch, mark the round finished after the panel, and count the
    rounds from the ledger on resume.
-   A spent budget ends panel dispatch, and valid findings still get fixed. An
-   extra panel requires the user's explicit request: record it with
-   `--override`, or in the ledger.
+   Past round two, `review-start` asks the arbiter first, a cheap model that
+   reads the findings so far. It reserves the round unless a later finding
+   contradicts an earlier one or the same finding keeps coming back after its
+   fix; then it refuses with the reason. That refusal is a Decision for the
+   user; record their answer with `--override`. Without the CLI, ask the same
+   question of a one-shot subagent on the cheapest model, give it the ledger's
+   findings, and record its answer there.
    Read [`PANEL.md`](PANEL.md) and dispatch the panel on HEAD. While it runs,
    wait at most 15 minutes until the review bots of the repo's recent PRs have
    reviewed HEAD and the **gating checks** on HEAD have finished. Record a bot
@@ -160,7 +166,7 @@ trigger in [`PANEL.md`](PANEL.md) holds, and their briefs carry the fix diff,
 only renamed, reworded, or reformatted code, round two skips the panel, waits
 for the bots and checks, and goes straight to the final read.
 
-Round two is the last panel. Fix what it finds and push. Every commit after
+Round two is the last planned panel. Fix what it finds and push. Every commit after
 the last reviewed one then gets a **final read**: one fresh reviewer from the
 review lane reads the fix diff since that commit,
 `git diff <last reviewed SHA>...HEAD`, in place of the full diff, with the
@@ -168,11 +174,9 @@ lens brief of the findings those fixes close. With the `fleet` CLI, reserve it
 with `fleet proof review-start ... --scope final --base <last reviewed SHA>`
 and complete it with
 `fleet proof review-finish ... --round final <findings file>`. A final read
-never counts toward the two-round budget. A fix from a final read is a new
-commit, so it gets its own final read; a Fix or Call item from that second
-final read becomes a Decision, and so does any later Fix or Call item that
-would need a third final read. `fleet proof` refuses that third read in the review phase,
-its default, until the user answers; record the answer with `--override`.
+never counts as a panel round. A fix from a final read is a new commit, so it
+gets its own final read, until a read comes back clean. From the third final
+read on, the arbiter checks each one the same way; its refusal is a Decision.
 Skip the final read when a review already covered HEAD. A Fix item you cannot
 close becomes a Decision, and the handoff is Blocked.
 
@@ -188,8 +192,8 @@ failure. A repo without CI relies on the local gate; name that as a gap.
    [UI evidence](../pr-description/references/ui-evidence.md).
    Keep the evidence for the final reviewed commit in the proof storage from
    step 2, and record the original run of any reused evidence.
-2. A failed proof is a Fix item in the ledger, inside the remaining round
-   budget. Once the budget is spent, an unresolved proof blocks the handoff.
+2. A failed proof is a Fix item in the ledger, and its fix gets a final read
+   like any other. An unresolved proof blocks the handoff.
 3. Update the description with `pr-description`. Its evidence and gaps
    describe the final behavior, its merge risk matches the final diff, and its
    Decisions block carries the same decisions and calls as the handoff, with

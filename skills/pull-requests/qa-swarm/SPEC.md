@@ -56,7 +56,7 @@ that builds the spec carries those reasons on its `Kept by the spec:` line,
 per [`PANEL.md`](PANEL.md#brief), and triage protects them per
 [Kept by the spec](TRIAGE.md#kept-by-the-spec). Keep the findings in a
 ledger file outside the repository. The pass runs once, outside the round
-budget and `fleet proof`.
+count and `fleet proof`.
 
 Done when every finding has a bucket, every Fix and Call edit is in the
 draft, and the Decisions are written as one question for the user, with a

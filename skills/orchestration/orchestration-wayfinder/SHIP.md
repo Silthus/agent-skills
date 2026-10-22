@@ -2,24 +2,25 @@
 
 Read this before a spec's first implementation dispatch. [`SKILL.md`](SKILL.md) owns _when_ work ships; this file owns how it lands and what earns the handoff.
 
-A spec ships as one **integration branch**, `spec/<slug>`. Each implementation ticket **lands** its commits there; the spec's `ship` ticket turns the branch into one reviewed draft pull request.
+A spec ships as one **integration branch**, `spec/<slug>`. Each strand, an `implement` ticket per **Strands** in [`SKILL.md`](SKILL.md), **lands** its slices there one by one; the spec's `ship` ticket turns the branch into one reviewed draft pull request.
 
 ## Integration branch
 
-When a spec publishes its implementation tickets, the conductor creates `spec/<slug>` from `main`, or from the integration branch of a spec it is blocked by whose pull request is still open, so the two pull requests form a stack. It records the branch on the `ship` ticket and in the map's decision index.
+When a spec publishes its strands, the conductor creates `spec/<slug>` from `main`, or from the integration branch of a spec it is blocked by whose pull request is still open, so the two pull requests form a stack. It records the branch on the `ship` ticket and in the map's decision index.
 
 ## Shared notes
 
 When several of a spec's tickets need the same exploration, one research worker does it first and saves its notes in `$(git rev-parse --git-common-dir)/wayfinder/<map>/notes/`, outside the tree and shared by every worktree. Worker prompts carry **context pointers**: the spec, the ticket, those notes, and earlier commits, never a restatement of them.
 
-## Implementation ticket
+## Strand
 
-A ticket without a spec has no integration branch. It works in its own worktree on a branch off the default branch, or off its blocker's pull request branch while that pull request is open, follows step 2, and in place of steps 3 and 4 ships per **Per-ticket pull requests** below, then removes its worktree after the Handoff.
+One lane builds the strand's slices in the order its checklist gives. A ticket without a spec is a strand of one slice with no integration branch: it works in its own worktree on a branch off the default branch, or off its blocker's pull request branch while that pull request is open, follows step 2, and in place of steps 3 to 5 ships per **Per-ticket pull requests** below, then removes its worktree after the Handoff.
 
-1. Work in an own worktree on `spec/<slug>-<n>`, where `<n>` is the ticket's issue number, branched from the integration branch tip. `spec/<slug>` is already a ref, so Git can't create a branch beneath it. Confirm that base before the first edit.
-2. Build with the `tdd` skill and gather the proof bundle below.
-3. **Land**: merge the integration branch tip into the ticket branch, run the repo's full local gate green, and push to the integration branch as a fast-forward. A rejected push means another ticket landed first: merge again and repeat.
-4. Write the resolution comment: the landed commit, the proof, its decision lines, and the follow-ups. Close the ticket and remove the worktree.
+1. Work in an own worktree on `spec/<slug>-<n>`, where `<n>` is the strand's issue number, branched from the integration branch tip. `spec/<slug>` is already a ref, so Git can't create a branch beneath it. Confirm that base before the first edit, and record it as the strand's **start**.
+2. For each slice in order, build it with the `tdd` skill and gather the proof bundle below. A slice with a `Waits on` line starts only after that slice has landed on the integration branch; build the next independent slice meanwhile.
+3. **Land** each slice: merge the integration branch tip into the strand branch, run the repo's full local gate green, and push to the integration branch as a fast-forward. A rejected push means another strand landed first: merge again and repeat. Tick the slice's checklist item with its landed commit.
+4. **Review** the strand once, after its last slice lands: one review of `git diff <start>...HEAD` from the model family that did not write it, with the spec as the oracle. Its brief also carries the strands that landed since the start, `git log --oneline <start>..<integration branch tip>` and their diff, and asks for **seams**: one concept built twice, a flag one strand reads that another records, a rollback or schema revert that strands another strand's data. Fix what holds red first, land the fixes, and give them a final read per the PR workflow in the user's agent instructions.
+5. Write the resolution comment: the landed commits per slice, the proof, the review findings with their outcomes, its decision lines, and the follow-ups. Close the ticket and remove the worktree.
 
 ## Proof bundle
 
@@ -34,10 +35,10 @@ An artifact the worker cannot produce is a park, recorded as the one pending que
 
 ## Ship ticket
 
-The `ship` ticket unblocks when every implementation ticket of its spec has landed. Its worker never built the code, so it reviews with fresh eyes:
+The `ship` ticket unblocks when every strand of its spec has landed. Its worker never built the code, so it reviews with fresh eyes:
 
-1. Open a draft pull request in the code repo from the integration branch with the `pr-description` skill, closing the spec and its tickets, per **Map tracker** in [`SKILL.md`](SKILL.md) when they live in another repo. The Summary maps each ticket to its commits, which are the reading order. The body carries the Decisions block the `pr-description` skill defines: when the `fleet` CLI is available (on `PATH` or at `~/dev/fleet/fleet`), `fleet decisions <map URL>` collects the decision lines of the map and its closed tickets with the Involvement counts; otherwise, copy them by hand from the map's Decisions-so-far and each ticket's resolution comment. The spec stays one pull request; a `qa-swarm` split step keeps it whole.
-2. Review the whole branch against its base, with the spec as the oracle, the way the PR workflow in the user's agent instructions prescribes, when one exists; otherwise one review from the other model family, or the `qa-swarm` skill where those instructions call for it. Two tickets that built the same concept twice, such as one field under two names, are a finding. The danger areas are the ones `merge-risk` lists, as written; a docs-only diff has none.
+1. Open a draft pull request in the code repo from the integration branch with the `pr-description` skill, closing the spec and its tickets, per **Map tracker** in [`SKILL.md`](SKILL.md) when they live in another repo. The Summary maps each strand and its slices to their commits, which are the reading order. The body carries the Decisions block the `pr-description` skill defines: when the `fleet` CLI is available (on `PATH` or at `~/dev/fleet/fleet`), `fleet decisions <map URL>` collects the decision lines of the map and its closed tickets with the Involvement counts; otherwise, copy them by hand from the map's Decisions-so-far and each ticket's resolution comment. The spec stays one pull request; a `qa-swarm` split step keeps it whole.
+2. Review the whole branch against its base, with the spec as the oracle, the way the PR workflow in the user's agent instructions prescribes, when one exists; otherwise one review from the other model family, or the `qa-swarm` skill where those instructions call for it. Two strands or slices that built the same concept twice, such as one field under two names, are a finding. The danger areas are the ones `merge-risk` lists, as written; a docs-only diff has none.
 3. Fix every finding that holds in this one worker, gate green, and push. Append each load-bearing call you made during the review as a row of the Decisions block, marked per `pr-description`. A question you leave for the human goes on its Open line. Add the reviews run to its Involvement line.
 
 ## Review
@@ -50,7 +51,7 @@ The terminal is the reviewed draft pull request with every finding fixed or reje
 
 ## Per-ticket pull requests
 
-A spec whose implementation tickets already opened their own pull requests finishes that way and gets no `ship` ticket. Each remaining ticket opens a draft pull request with the `pr-description` skill from its own branch, stacked on its blocker's pull request branch, and runs the Review and Handoff above itself. An `implement` ticket without a spec ships the same way, from the base **Implementation ticket** names.
+A spec whose slices open their own pull requests, such as one per repository or the stack a repo's reviewers ask for, finishes that way and gets no `ship` ticket. The strand lane opens each slice's draft pull request with the `pr-description` skill, stacked on the previous slice's branch, and the strand's one review in step 4 of **Strand** covers them together. The lane then runs the Handoff above itself. An `implement` ticket without a spec ships the same way, from the base **Strand** names.
 
 ## Merge, when the map grants it
 
