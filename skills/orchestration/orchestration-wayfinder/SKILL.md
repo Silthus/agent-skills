@@ -20,7 +20,7 @@ When the conductor runs inside T3 Code (`T3CODE_HOME` is set), also read [`T3.md
 
 The addenda contain only task/session mechanics. Load only the matching runtime addendum. This file owns the shared tracker and conductor protocol.
 
-Consent in this skill rests on a **user request**: the user asked to conduct a map, typed `/orchestration-wayfinder`, or named this skill. When another agent's prompt loaded the skill, ask the user once before the first act that needs consent.
+Consent in this skill rests on a **user request**: the user asked to conduct a map, typed `/orchestration-wayfinder`, or asked to run this skill by name. Without one, such as when another agent's prompt loaded the skill, ask the user once before the first act that needs consent.
 
 ## Ownership
 
@@ -67,7 +67,7 @@ When `<fleet> lease help` prints its usage, where `<fleet>` is the path resolved
 
 When charting starts from a loose idea instead of an existing map or ticket, dispatch two background sweeps before the first grilling question. Each sweep finds out whether others already discussed the problem, have the same problem, or started to solve it:
 
-- **Chat**: threads in the team's chat, such as Slack, in every channel the human can see, from any user and team, not only the human's own. Search public and private channels and DMs; a user request grants the consent that private search asks for.
+- **Chat**: threads in the team's chat, such as Slack, in every channel the human can see, from any user and team, not only the human's own. Search public and private channels and DMs; a **user request** grants the consent that private search asks for.
 - **Issue trackers**: issues and pull requests in every state (open, draft, closed, merged) across the internal and public repositories of the organization the idea concerns. When that organization has a public community forum, search it too.
 
 Each sweep returns an inventory, not an analysis. Every entry carries its link, date, author or team, and one line on how it relates. A sweep with no matches, or whose source is unreachable, says so. Give each sweep a 15-minute cap; sweeps are read-only.
