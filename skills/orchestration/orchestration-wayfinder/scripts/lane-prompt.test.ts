@@ -21,8 +21,15 @@ test("finds a ticket in a gh command with quotes, flags before it, or tabs", () 
 });
 
 test("reads numbers in gh prose and option values as no ticket", () => {
-  const prose = "Resolve #155. Use gh issue commands and stop after 30 minutes. Run `gh issue list --limit 20`.";
+  const prose = "Resolve #155. Use gh issue commands and stop after 30 minutes. Run `gh issue list --limit 20` and `gh pr checks --watch --interval 20`.";
   expect(renderLanePrompt(prose, { ticket: "155" }, [])).toBe(prose);
+});
+
+test("checks a long run of flags without backtracking for seconds", () => {
+  const started = performance.now();
+  const flags = `Resolve #155: gh issue view ${"--flag ".repeat(40)}no-ticket`;
+  expect(renderLanePrompt(flags, { ticket: "155" }, [])).toBe(flags);
+  expect(performance.now() - started).toBeLessThan(100);
 });
 
 test("finds a ticket in a strand branch and a lease name", () => {

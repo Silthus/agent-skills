@@ -2,9 +2,10 @@ import { readFileSync } from "node:fs";
 import { parseArgs } from "node:util";
 
 const ticketLink = /(?:#|\b(?:issues|pull)\/|\bspec\/[\w.-]+-|\bmap-[\w.-]+-\d+-)(\d+)\b/g;
-const ghOption = String.raw`--?[\w-]+(?:[ \t=](?:"[^"\n]*"|'[^'\n]*'|(?!-)[^\s"'\x60]+))?`;
+const ghOption = String.raw`--?\w[\w-]*(?:[ \t=](?:"[^"\n]*"|'[^'\n]*'|(?!-)[^\s"'\x60]+))?`;
+const ghNumericOption = "--interval|--limit|-L";
 const ghTicketVerb = "view|edit|close|reopen|comment|delete|lock|unlock|pin|unpin|transfer|develop|checks|diff|merge|checkout|ready|review";
-const ghTicketCommand = new RegExp(String.raw`\bgh[ \t]+(?:issue|pr)(?:[ \t]+${ghOption})*[ \t]+(?:${ghTicketVerb})(?:[ \t]+${ghOption})*?[ \t]+["']?(\d+)\b`, "g");
+const ghTicketCommand = new RegExp(String.raw`\bgh[ \t]+(?:issue|pr)(?:[ \t]+${ghOption})*[ \t]+(?:${ghTicketVerb})(?:[ \t]+${ghOption})*?(?<!${ghNumericOption})[ \t]+["']?(\d+)\b`, "g");
 const placeholder = /\{\{(\w+)\}\}/g;
 
 type LaneArguments = { templateFile: string; values: Record<string, string>; allowed: number[] };
