@@ -37,7 +37,7 @@ An artifact the worker cannot produce is a park, recorded as the one pending que
 
 The `ship` ticket unblocks when every `implement` ticket of its spec has closed. Its worker never built the code, so it reviews with fresh eyes:
 
-1. Open a draft pull request in the code repo from the integration branch with the `pr-description` skill, closing the spec and its tickets, per **Map tracker** in [`SKILL.md`](SKILL.md) when they live in another repo. The Summary maps each strand and its slices to their commits, which are the reading order. The body carries the Decisions block the `pr-description` skill defines: when the `fleet` CLI is available, `fleet decisions <map URL>` collects the decision lines of the map and its closed tickets with the Involvement counts; otherwise, copy them by hand from the map's Decisions-so-far and each ticket's resolution comment. The spec stays one pull request; a `qa-swarm` split step keeps it whole.
+1. Open a draft pull request in the code repo from the integration branch with the `pr-description` skill, closing the spec and its tickets, per **Map tracker** in [`SKILL.md`](SKILL.md) when they live in another repo. The Summary maps each strand and its slices to their commits, which are the reading order. The body carries the Decisions block the `pr-description` skill defines: when the `fleet` CLI is available (on `PATH` or at `~/dev/fleet/fleet`), `fleet decisions <map URL>` collects the decision lines of the map and its closed tickets with the Involvement counts; otherwise, copy them by hand from the map's Decisions-so-far and each ticket's resolution comment. The spec stays one pull request; a `qa-swarm` split step keeps it whole.
 2. Review the whole branch against its base, with the spec as the oracle, the way the PR workflow in the user's agent instructions prescribes, when one exists; otherwise one review from the other model family, or the `qa-swarm` skill where those instructions call for it. Two strands or slices that built the same concept twice, such as one field under two names, are a finding. The danger areas are the ones `merge-risk` lists, as written; a docs-only diff has none.
 3. Fix every finding that holds in this one worker, gate green, and push. Append each load-bearing call you made during the review as a row of the Decisions block, marked per `pr-description`. A question you leave for the human goes on its Open line. Add the reviews run to its Involvement line.
 
@@ -47,7 +47,7 @@ A review that leaves a decision open is a park: decisions locked plus the one pe
 
 ## Handoff
 
-The terminal is the reviewed draft pull request with every finding fixed or rejected. The ship worker links it in the resolution comment with the reviewed head, the proof, its decision lines, and the follow-ups. Then it closes the ticket. The conductor graduates the follow-ups into tickets.
+The terminal is the reviewed draft pull request with every finding fixed or rejected and every gating CI check green on its head. The ship worker links it in the resolution comment with the reviewed head, the proof, its decision lines, and the follow-ups. Then it closes the ticket. The conductor graduates the follow-ups into tickets.
 
 ## Per-slice pull requests
 

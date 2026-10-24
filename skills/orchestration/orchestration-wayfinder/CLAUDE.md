@@ -10,7 +10,7 @@ Read this addendum only when Claude Code drives. [`SKILL.md`](SKILL.md) is the s
 - Pass `isolation: "worktree"` to every worker that writes files, commits, or checks out a branch.
 - Record the worker name and transcript path in the ticket's claim comment as soon as they are available.
 
-Render every worker prompt per [`LANE.md`](LANE.md).
+Render every ticket worker's prompt per [`LANE.md`](LANE.md).
 
 ## Human attention
 

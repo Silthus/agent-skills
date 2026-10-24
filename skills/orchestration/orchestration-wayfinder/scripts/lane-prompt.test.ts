@@ -20,6 +20,14 @@ test("finds a ticket in a gh command with quotes, flags before it, or tabs", () 
   }
 });
 
+test("finds a ticket in a strand branch and a lease name", () => {
+  expect(() => renderLanePrompt("Resolve #155 on spec/export-145.", { ticket: "155" }, [])).toThrow("names #145");
+  expect(() => renderLanePrompt("Resolve #155. Run `fleet lease map-personal-95-145`.", { ticket: "155" }, [95])).toThrow("names #145");
+  expect(renderLanePrompt("Resolve #{{ticket}} on spec/export-{{ticket}} with lease map-personal-95-{{ticket}}.", { ticket: "155" }, [95])).toBe(
+    "Resolve #155 on spec/export-155 with lease map-personal-95-155.",
+  );
+});
+
 test("accepts numbers on the allow-list", () => {
   expect(renderLanePrompt("Resolve #{{ticket}}; #140 is its sibling.", { ticket: "155" }, [140])).toBe("Resolve #155; #140 is its sibling.");
 });

@@ -18,8 +18,6 @@ Before the first dispatch, recovery, or attention-state action, identify the run
 
 When the conductor runs inside T3 Code (`T3CODE_HOME` is set), also read [`T3.md`](T3.md) before the first dispatch: grilling, prototype, spec, HITL task, and ship tickets get their own T3 threads.
 
-The addenda contain only task/session mechanics. Load only the matching runtime addendum. This file owns the shared tracker and conductor protocol.
-
 Consent in this skill rests on a **user request**: the user asked to conduct a map, typed `/orchestration-wayfinder`, or asked to run this skill by name. Without one, such as when another agent's prompt loaded the skill, ask the user once before the first act that needs consent, and name each such act: private chat search and native task creation. A yes counts as a **user request**; a no limits the run to acts that need none.
 
 ## Ownership
@@ -131,7 +129,7 @@ The worker earns its handoff through the proof gate and the review in [`SHIP.md`
 ## Dispatch contract
 
 - Fan out every unblocked, unclaimed non-grilling frontier ticket. If any grilling ticket is already open and claimed, dispatch no other grilling. Dispatch the next grilling only after the active one closes.
-- Render every worker prompt from the map's template per [`LANE.md`](LANE.md).
+- Render every ticket worker's prompt from the map's template per [`LANE.md`](LANE.md).
 - Every prompt for a `prototype` ticket that changes an existing UI carries the **element pass**: before drafting variants, run the `usage-brief` skill at element scope for the controls and flows the variants touch, with the map's analytics project, **Usage** comment, and confirmed bars as the start. Post the brief as a ticket comment, or in a public map tracker as a private note the comment names. Add the name of each flag a variant trips and the control it trips on to that variant's switcher label, such as `B (Overflow menu) · low use: Export`. Flag names and controls, without numbers, are the one usage finding a prototype branch in a public code repo may carry.
 - Give every worker that writes files, commits, or checks out a branch its own worktree. A worker in the conductor's checkout can switch the conductor's branch. Serialize shared-file work: it belongs in one strand.
 - Before each dispatch that creates a worktree, run `<fleet> disk` when the `fleet` CLI is available. Worktrees live on this machine even under a compute lease. `Disk is critical` with exit 1 means this machine is too full for one more worktree: record a durable orchestration blocker in the map's **Notes** with that message, cue the human once to free space, and dispatch only work that needs no new worktree. Remove the blocker when `<fleet> disk` prints `Disk: …G free.` again. Any other output means the check is unavailable; dispatch as usual. `t3-kickoff` checks its own launches either way.
@@ -161,7 +159,7 @@ On any worker notification, read the tracker per **Reading the frontier** (with 
 - **Open + assigned, no awaiting label** → active, queued, or orphaned. Use the runtime addendum to distinguish them without interrogating the worker.
 - **Invalidated by another resolution** → record why, stop or retire its runtime worker, clear its human-attention state, and update or close the ticket through Wayfinder's scope rules.
 
-The tracker is semantic truth; a worker, a human-attention affordance, and the conductor's own context are caches. The runtime compacts the conductor's context automatically. Treat a compaction as a resume: reload the map and its **Notes**, re-read the runtime addendum, and [`T3.md`](T3.md) in T3 Code, and run their **Recovery**, then query the frontier per **Conductor loop** before you dispatch. Recovery starts from the map, ticket comments, assignment, labels, and recorded runtime locator.
+The tracker is semantic truth; a worker, a human-attention affordance, and the conductor's own context are caches. Treat a compaction as a resume: reload the map and its **Notes**, re-read the runtime addendum, and [`T3.md`](T3.md) in T3 Code, and run their **Recovery**, then query the frontier per **Conductor loop** before you dispatch.
 
 ## Conductor loop
 

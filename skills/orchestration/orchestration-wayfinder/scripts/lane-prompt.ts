@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { parseArgs } from "node:util";
 
-const ticketLink = /(?:#|\b(?:issues|pull)\/)(\d+)\b/g;
+const ticketLink = /(?:#|\b(?:issues|pull)\/|\bspec\/[\w.-]+-|\bmap-[\w.-]+-\d+-)(\d+)\b/g;
 const ghTicketCommand = /\bgh[ \t]+(?:issue|pr)(?:[ \t]+(?:--?[\w-]+(?:[ \t=](?!-)[^\s"'`]+)?|[a-z-]+))+?[ \t]+["']?(\d+)\b/g;
 const placeholder = /\{\{(\w+)\}\}/g;
 
