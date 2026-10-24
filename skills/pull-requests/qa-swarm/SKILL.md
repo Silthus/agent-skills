@@ -214,10 +214,11 @@ Decisions block. With the `fleet` CLI, `fleet proof gate` also exits 0 or 3.
 Report to the user, then stop:
 
 - The PR link and its outcome. **Ready**: every ledger item is fixed or
-  rejected on `<short sha>`, the full gate is green, every owed proof has
-  evidence or an accepted gap (`fleet proof gate` exits 0), and no Decision is
-  open. **Blocked**: anything else, with what blocks it: the open Decisions,
-  the unaccepted gaps, or a red check.
+  rejected on `<short sha>`, the full gate is green (in CI, or the full local
+  gate when the repo has no CI), every owed proof has evidence or an accepted
+  gap (`fleet proof gate` exits 0), and no Decision is open. **Blocked**:
+  anything else, with what blocks it: the open Decisions, the unaccepted gaps,
+  or a red check.
 - The merge risk and its first bullet.
 - The rounds, and the number of fixed and rejected items per source.
 - **Decisions**: each load-bearing question with your recommended answer.
@@ -228,8 +229,8 @@ Report to the user, then stop:
 - **Follow-ups**: real problems outside the goal.
 - **Gaps**: each owed proof that could not run, as a Decision for the user;
   a lane that failed and its substitute; a skipped Team lane; a silent bot;
-  a step of the lane gate that could not run, as a Decision unless the full
-  gate on HEAD runs that step.
+  a repo without CI; a step of the lane gate that could not run, as a
+  Decision unless the full gate on HEAD runs that step.
 
 When the user's agent instructions ask for a Slack message at the end of a
 PR, end with it, formatted by the `slack-pr-update` skill. When the user asks
