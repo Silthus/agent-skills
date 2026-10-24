@@ -36,7 +36,6 @@ The map and its tickets live in the **map tracker**: the tracker the user's agen
 
 - Record `Code repo: <owner/repo>` in the map's **Notes** when you chart it.
 - Name the map tracker in every tracker command: `-R <owner/repo>` on `gh issue`, and the map tracker's `repos/<owner>/<repo>/...` path or GraphQL variables on `gh api`, which rejects `-R`. Inside a checkout of the code repo, `gh` infers the code repo.
-- Every worker prompt carries the map URL and the code repo.
 - Cross-repo references use the full form, `<owner/repo>#<n>`: a ticket links its pull request, and a pull request links its tickets.
 - When the map tracker is private and the code repo is public, everything written to the code repo keeps only public context: pull request bodies, comments, commits, and branch names carry the decision and the ticket link, while the numbers, customer data, and internal findings behind it stay on the map.
 
@@ -104,12 +103,10 @@ A spec reaches the frontier as **strands**, not one ticket per slice. A strand i
 | `spec`      | decision at end | parallel AFK stretch, then park           | `to-spec` + spec pass + `to-tickets`, cut into **Strands** |
 | `research`  | none            | parallel                                  | `research`, throwaway                       |
 | `task`      | as required     | parallel when AFK                         | prerequisite work for a decision            |
-| `implement` | none            | parallel across strands, one nested subagent and worktree each | one strand: `tdd` per slice, each landed on the integration branch in order, per [`SHIP.md`](SHIP.md) |
+| `implement` | none            | parallel across strands, one nested subagent and worktree each | one strand: each slice test-first, landed on the integration branch in order, per [`SHIP.md`](SHIP.md) |
 | `ship`      | on an open review decision | one per spec, after its strands           | reviewed draft pull request per [`SHIP.md`](SHIP.md) |
 
 Backticked names in the Resolution column are skills. A `spec` worker writes the `to-spec` draft as a comment on its ticket and runs the spec pass in `SPEC.md` of the `qa-swarm` skill on it before it publishes the spec. The park's one question asks the human to approve the draft and carries the pass's Decisions, each with its recommended answer. The worker publishes after the human answers. One grilling ticket is one live exchange, and the `grilling` skill works it in rounds: the whole answerable frontier goes to the human at once, then the tree reshapes. Serial applies to the ticket, not to its questions.
-
-Some prescribed skills, such as `to-spec` and `to-tickets`, set `disable-model-invocation`, so the Skill tool refuses them inside a worker. Every worker prompt says: when the Skill tool refuses a prescribed skill, read that skill's `SKILL.md` file and follow it directly.
 
 ## Casting
 
@@ -134,15 +131,13 @@ The worker earns its handoff through the proof gate and the review in [`SHIP.md`
 ## Dispatch contract
 
 - Fan out every unblocked, unclaimed non-grilling frontier ticket. If any grilling ticket is already open and claimed, dispatch no other grilling. Dispatch the next grilling only after the active one closes.
-- Give every worker a wall-time cap and require a durable report before idle: its resolution, or the exact one question awaiting the human.
-- Every worker prompt carries **leave nothing running**: the worker runs each wait it needs in the foreground and ends every turn, a park included, with nothing it started still live: no background command such as `kickoff wait`, watcher, monitor, subagent, or child task. In T3 Code, anything left live keeps the worker's thread, and the conductor that started it, on the Working shelf, so the park never reaches the human's inbox.
+- Render every worker prompt from the map's template per [`LANE.md`](LANE.md).
 - Every prompt for a `prototype` ticket that changes an existing UI carries the **element pass**: before drafting variants, run the `usage-brief` skill at element scope for the controls and flows the variants touch, with the map's analytics project, **Usage** comment, and confirmed bars as the start. Post the brief as a ticket comment, or in a public map tracker as a private note the comment names. Add the name of each flag a variant trips and the control it trips on to that variant's switcher label, such as `B (Overflow menu) · low use: Export`. Flag names and controls, without numbers, are the one usage finding a prototype branch in a public code repo may carry.
 - Give every worker that writes files, commits, or checks out a branch its own worktree. A worker in the conductor's checkout can switch the conductor's branch. Serialize shared-file work: it belongs in one strand.
 - Before each dispatch that creates a worktree, run `<fleet> disk` when the `fleet` CLI is available. Worktrees live on this machine even under a compute lease. `Disk is critical` with exit 1 means this machine is too full for one more worktree: record a durable orchestration blocker in the map's **Notes** with that message, cue the human once to free space, and dispatch only work that needs no new worktree. Remove the blocker when `<fleet> disk` prints `Disk: …G free.` again. Any other output means the check is unavailable; dispatch as usual. `t3-kickoff` checks its own launches either way.
 - While a ticket is open, send its follow-up work, such as review fixes, to its existing worker when it touches the same files. Chart every other follow-up, including those in a resolution comment, as its own ticket and dispatch that ticket.
 - When a review provider has an **outage** (a 429 or a usage limit), record it and its reset date once in the map's **Notes**, and state it in every dispatch until the reset.
 - Reserve one of three map-level CodeRabbit slots before dispatching a lane that opens a pull request: a `ship` ticket, or a strand that ships per-slice pull requests. Hold the slot through review; release it when the ticket is shipped or parked.
-- Treat the tracker as semantic truth. Runtime workers and human-attention affordances are projections, never substitutes.
 - Keep ordinary AFK work off the human's attention rail. A prototype or spec doing its AFK stretch is also background work until it parks.
 - A HITL park is complete only when the ticket has a comment containing the decisions locked as decision lines plus one pending question, and `wayfinder:awaiting-human` is present.
 - Every resolution comment records each load-bearing decision the ticket settled as a decision line (see `pr-description`): the human's answers and the worker's own calls.
@@ -155,8 +150,7 @@ The worker earns its handoff through the proof gate and the review in [`SHIP.md`
 3. On each conductor wake and before completion, health-check lanes whose last durable activity is older than 15 minutes; do not create a polling lane.
 4. A lane reports durably before idle; no report means orphaned, not done. Reconcile durable ticket state before any redispatch.
 5. Reap every lane and remove its worktree before declaring the map complete. A lane that died with its compute lease still held gets `<fleet> lease release` in its worktree before the removal.
-6. The conductor owns waits as event/state transitions, never background pollers or chained blocking waits. The T3 hold in [`T3.md`](T3.md) is neither: it reads no state and only keeps a waiting conductor out of the human's inbox. A compaction ends every background shell and monitor the conductor started, so the conductor waits on worker notifications.
-7. The map has exactly three CodeRabbit slots shared by its lanes that open pull requests.
+6. The conductor owns waits as event/state transitions, never background pollers or chained blocking waits; the T3 hold in [`T3.md`](T3.md) is neither. A compaction ends every background shell and monitor the conductor started, so the conductor waits on worker notifications.
 
 ## Wake law
 
@@ -167,7 +161,7 @@ On any worker notification, read the tracker per **Reading the frontier** (with 
 - **Open + assigned, no awaiting label** → active, queued, or orphaned. Use the runtime addendum to distinguish them without interrogating the worker.
 - **Invalidated by another resolution** → record why, stop or retire its runtime worker, clear its human-attention state, and update or close the ticket through Wayfinder's scope rules.
 
-The ticket is durable state; a worker and the conductor's own context are caches. The runtime compacts the conductor's context automatically. Treat a compaction as a resume: reload the map and its **Notes**, re-read the runtime addendum, and [`T3.md`](T3.md) in T3 Code, and run their **Recovery**, then query the frontier per **Conductor loop** before you dispatch. In T3 Code, the old hold is gone; end each turn per **Wait out of the inbox** in [`T3.md`](T3.md). Recovery starts from the map, ticket comments, assignment, labels, and recorded runtime locator.
+The tracker is semantic truth; a worker, a human-attention affordance, and the conductor's own context are caches. The runtime compacts the conductor's context automatically. Treat a compaction as a resume: reload the map and its **Notes**, re-read the runtime addendum, and [`T3.md`](T3.md) in T3 Code, and run their **Recovery**, then query the frontier per **Conductor loop** before you dispatch. Recovery starts from the map, ticket comments, assignment, labels, and recorded runtime locator.
 
 ## Conductor loop
 
