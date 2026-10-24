@@ -90,11 +90,11 @@ Done when all six are written down.
 1. Run the [design pass](PANEL.md#design-pass) when no PR exists yet, and fix
    what holds before anything else.
 2. Run the **lane gate** that the user's agent instructions or the repo's
-   agent docs name. When they name none, run the repo's full local gate: the
-   formatter, lint, typecheck, and tests that its agent docs, scripts, and CI
-   configuration name. A step that times out
-   fails. Rerun a per-file step, such as a linter, a formatter, or `semgrep`,
-   on the changed files only:
+   agent docs name. When they name none, the repo's full local gate is the
+   lane gate: the formatter, lint, typecheck, and tests that its agent docs,
+   scripts, and CI configuration name. A step that times out fails. Rerun a
+   per-file step, such as a linter, a formatter, or `semgrep`, on the changed
+   files only:
    `git diff --name-only --diff-filter=d origin/<base>...HEAD`. Every other
    step that times out, and a per-file step that times out again, records a
    gap. Every later run of the lane gate follows the same rule. Done when
@@ -214,7 +214,7 @@ Decisions block. With the `fleet` CLI, `fleet proof gate` also exits 0 or 3.
 Report to the user, then stop:
 
 - The PR link and its outcome. **Ready**: every ledger item is fixed or
-  rejected on `<short sha>`, the full gate is green in CI, every owed proof has
+  rejected on `<short sha>`, the full gate is green, every owed proof has
   evidence or an accepted gap (`fleet proof gate` exits 0), and no Decision is
   open. **Blocked**: anything else, with what blocks it: the open Decisions,
   the unaccepted gaps, or a red check.
