@@ -17,8 +17,8 @@ When several of a spec's tickets need the same exploration, one research worker 
 One lane builds the strand's slices in the order its checklist gives. A ticket without a spec, and every strand of a spec that ships as per-slice pull requests, follows **Per-slice pull requests** below instead.
 
 1. Work in an own worktree on `spec/<slug>-<n>`, where `<n>` is the issue number of the `implement` ticket you work. `spec/<slug>` is already a ref, so Git can't create a branch beneath it. First, if a previous lane's worktree for this ticket is still on this machine, remove it with `git worktree remove --force`, so nothing it left uncommitted carries over. Then run `git fetch origin`. When `origin/spec/<slug>-<n>` exists, a previous lane pushed it: run `git switch -C spec/<slug>-<n> origin/spec/<slug>-<n>` in your own worktree. A slice whose commits already sit on `origin/spec/<slug>` but whose item is unticked has landed: tick it. Commits on the strand branch that are not yet on `origin/spec/<slug>` were built and gated but not landed: land them per step 3, then tick. Then resume at the first unticked slice. Otherwise run `git switch -C spec/<slug>-<n> origin/spec/<slug>`, and post that commit as `Start: <sha>` on the ticket. A new `Start` replaces any earlier one; the tick range in step 3 uses the newest `Start` on the ticket. Confirm the base before the first edit.
-2. For each slice in order, build it with the `tdd` skill and gather the proof bundle below.
-3. **Land** each slice: merge the integration branch tip into the strand branch, run the repo's full local gate green, push the strand branch to origin, then push it to the integration branch as a fast-forward. A rejected integration push means another strand landed first: merge again and repeat. Tick the slice's checklist item with its own commits, `git log --first-parent --no-merges --format=%h <newest commit of the previous tick, or the start>..HEAD`.
+2. For each slice in order, build it test-first and gather the proof bundle below.
+3. **Land** each slice: merge the integration branch tip into the strand branch, run the repo's lane gate green, per the **lane rules** in [`LANE.md`](LANE.md), push the strand branch to origin, then push it to the integration branch as a fast-forward. A rejected integration push means another strand landed first: merge again and repeat. Tick the slice's checklist item with its own commits, `git log --first-parent --no-merges --format=%h <newest commit of the previous tick, or the start>..HEAD`.
 4. **Review** the strand once, after its last slice lands: one review from the model family that did not write it, with the spec as the oracle. The strand's diff is its own commits, the ticked ones, read with `git show`, plus each of its merge commits whose resolution changed a file, read with `git show --remerge-diff`. As seam context, the brief carries the other strands' commits on the integration branch, `git log --no-merges <Base>..<tip>` without the strand's own, and asks for **seams**: one concept built twice, a flag one strand reads that another records, a rollback or schema revert that strands another strand's data. Post each review's findings and outcomes on the ticket as it finishes. Fix what holds red first and land each fix. Each landed fix gets one final read of its own commits, until a read comes back clean. A finding that contradicts an earlier one, or comes back after its fix, is a park.
 5. Write the resolution comment: the landed commits per slice, the proof, each review with its findings and their outcomes, its decision lines, and the follow-ups. Close the ticket and remove the worktree.
 
@@ -28,7 +28,7 @@ Every claim is an artifact linked from the ticket, never a sentence:
 
 - **red** — the test that reproduces the bug or expresses the missing behaviour, failing on the tree before the change;
 - **green** — that same test passing after it, every assertion intact and no test skipped;
-- the repo's full local gate green on the landed tree, or on the pull request head for a ticket that ships by its own pull request;
+- the repo's lane gate green on the landed tree, or on the pull request head for a ticket that ships by its own pull request;
 - for any change to a browser UI, the `ui-walk` proof from the `qa-swarm` skill's `PROOF.md`.
 
 An artifact the worker cannot produce is a park, recorded as the one pending question for the human.
@@ -47,7 +47,7 @@ A review that leaves a decision open is a park: decisions locked plus the one pe
 
 ## Handoff
 
-The terminal is the reviewed draft pull request with every finding fixed or rejected. The ship worker links it in the resolution comment with the reviewed head, the proof, its decision lines, and the follow-ups. Then it closes the ticket. The conductor graduates the follow-ups into tickets.
+The terminal is the reviewed draft pull request with every finding fixed or rejected and every gating CI check green on its head. The ship worker links it in the resolution comment with the reviewed head, the proof, its decision lines, and the follow-ups. Then it closes the ticket. The conductor graduates the follow-ups into tickets.
 
 ## Per-slice pull requests
 
