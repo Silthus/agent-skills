@@ -15,9 +15,14 @@ test("refuses a prompt that names a ticket outside its own and the allow-list", 
 });
 
 test("finds a ticket in a gh command with quotes, flags before it, or tabs", () => {
-  for (const command of ['gh issue view "145" -R acme/maps', "gh issue view --repo acme/maps 145", "gh issue -R acme/maps view 145", "gh issue\tedit\t145"]) {
+  for (const command of ['gh issue view "145" -R acme/maps', "gh issue view --repo acme/maps 145", 'gh issue view --repo "acme/maps" 145', 'gh issue view --repo="acme/maps" 145', "gh issue -R acme/maps view 145", "gh issue\tedit\t145", "gh pr view --comments 145"]) {
     expect(() => renderLanePrompt(`Resolve #155: ${command}`, { ticket: "155" }, [])).toThrow("names #145");
   }
+});
+
+test("reads numbers in gh prose and option values as no ticket", () => {
+  const prose = "Resolve #155. Use gh issue commands and stop after 30 minutes. Run `gh issue list --limit 20`.";
+  expect(renderLanePrompt(prose, { ticket: "155" }, [])).toBe(prose);
 });
 
 test("finds a ticket in a strand branch and a lease name", () => {
