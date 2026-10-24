@@ -89,13 +89,15 @@ Done when all six are written down.
 
 1. Run the [design pass](PANEL.md#design-pass) when no PR exists yet, and fix
    what holds before anything else.
-2. Run the repo's local gate: the formatter, lint, typecheck, and tests that
-   its agent docs, scripts, and CI configuration name. A step that times out
+2. Run the **lane gate** the user's agent instructions define. Without one,
+   run the repo's lane command, such as `pnpm gate:lane`, or else its
+   typecheck, lint, guard tests, and the tests of every module the diff
+   changes, as its agent docs and scripts name them. A step that times out
    fails. Rerun a per-file step, such as a linter, a formatter, or `semgrep`,
    on the changed files only:
    `git diff --name-only --diff-filter=d origin/<base>...HEAD`. Every other
    step that times out, and a per-file step that times out again, records a
-   gap. Every later run of the local gate follows the same rule. Done when
+   gap. Every later run of the lane gate follows the same rule. Done when
    every step is green or recorded as a gap.
 3. Run every owed proof before review, the live run first, and save its
    evidence. For UI changes, the [UI walk](PROOF.md#ui-walk) captures the
@@ -144,15 +146,15 @@ A round works on one HEAD. Run its steps in order.
    Read [`PANEL.md`](PANEL.md) and dispatch the panel on HEAD. While it runs,
    wait at most 15 minutes until the review bots of the repo's recent PRs have
    reviewed HEAD and the **gating checks** on HEAD have finished. Record a bot
-   that stays silent. The gating checks are the required checks
-   (`gh pr checks --required`), or every check when the repo marks none as
-   required.
+   that stays silent. The gating checks are the repo's **full gate**: the
+   required checks (`gh pr checks --required`), or every check when the repo
+   marks none as required.
 2. **Triage** every panel finding, unresolved review thread, bot comment on
    HEAD, and failed check per [`TRIAGE.md`](TRIAGE.md). Done when each one is
    in the ledger with exactly one bucket.
 3. **Fix** every Fix and Call item. Fix a bug red first with the `tdd` skill:
    a test that fails on the bug, then the fix. Close the sibling sites a
-   finding names in the same commit. Run the local gate, verify the behavior
+   finding names in the same commit. Run the lane gate, verify the behavior
    the fixes affect, commit, and push. Refresh the description with
    `pr-description` before another panel reads it. Then answer the threads per
    the Sources in [`TRIAGE.md`](TRIAGE.md).
@@ -182,10 +184,10 @@ read on, the arbiter checks each one the same way, and at six final reads
 Skip the final read when a review already covered HEAD. A Fix item you cannot
 close becomes a Decision, and the handoff is Blocked.
 
-Done when every ledger item is fixed, rejected, or a Decision, and every
-gating check on HEAD is green. A check that has not reported yet is not green.
+Done when every ledger item is fixed, rejected, or a Decision, and the full
+gate is green in CI on HEAD. A check that has not reported yet is not green.
 A check that waits for a maintainer to approve the run is a gap, not a
-failure. A repo without CI relies on the local gate; name that as a gap.
+failure. A repo without CI relies on its local full gate; name that as a gap.
 
 ## 4. Refresh proof
 
@@ -211,7 +213,7 @@ Decisions block. With the `fleet` CLI, `fleet proof gate` also exits 0 or 3.
 Report to the user, then stop:
 
 - The PR link and its outcome. **Ready**: every ledger item is fixed or
-  rejected on `<short sha>`, the gating checks are green, every owed proof has
+  rejected on `<short sha>`, the full gate is green, every owed proof has
   evidence or an accepted gap (`fleet proof gate` exits 0), and no Decision is
   open. **Blocked**: anything else, with what blocks it: the open Decisions,
   the unaccepted gaps, or a red check.
@@ -225,7 +227,7 @@ Report to the user, then stop:
 - **Follow-ups**: real problems outside the goal.
 - **Gaps**: each owed proof that could not run, as a Decision for the user;
   a lane that failed and its substitute; a skipped Team lane; a silent bot;
-  a gate step that could not run, as a Decision unless a gating check on
+  a lane gate step that could not run, as a Decision unless the full gate on
   HEAD runs that step.
 
 When the user's agent instructions ask for a Slack message at the end of a
