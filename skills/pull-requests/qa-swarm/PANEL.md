@@ -15,8 +15,18 @@ agent instructions, or with the runtime defaults when there is no policy:
 
 ## Lanes
 
-Every lens runs as a subagent of the current thread. Launch each lens with the
-column for its model's family.
+With the `fleet` CLI, `fleet proof review --lens <name>` runs each lens: the
+names are the headings under [Lenses](#lenses) in lower case, such as
+`fresh-eyes` or `anti-overengineering`. It fills the [Brief](#brief) itself
+and casts each lens on its lane's family; `:same` or `:other` after the name
+picks the family. Pass the repo knowledge of a lens with
+`--knowledge <lens>=<file>`, and each Team perspective as
+`--lens <perspective> --knowledge <perspective>=<file with its body>`. The CLI
+applies the lane failure rules below, and a rerun with `:same` or `:other`
+moves a lens off a family in an outage.
+
+Without the CLI, every lens runs as a subagent of the current thread. Launch
+each lens with the column for its model's family.
 
 | Runtime     | GPT model                                                 | Claude model                                        |
 | ----------- | --------------------------------------------------------- | --------------------------------------------------- |

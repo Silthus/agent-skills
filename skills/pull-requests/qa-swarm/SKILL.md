@@ -127,18 +127,22 @@ the observed behavior and any verification gaps.
 
 A round works on one HEAD. Run its steps in order.
 
-1. **Review.** Reserve the round before dispatch, so a resumed session
-   cannot reset the count. With the `fleet` CLI, run
-   `fleet proof review-start --repo <owner/repo> --pr <number> --commit <full SHA> --scope full`,
-   or `--scope fixes --base <previous round's SHA>` for round two and later. On resume, reuse an
-   unfinished reservation. After the panel, complete it with
-   `fleet proof review-finish`, its `--round <number>`, `--reviewer <model>`,
-   and the reviewers' findings file. Keep your triage in the ledger, not in the
-   findings file.
-   Without the CLI, write the round number, scope, and HEAD to the ledger
-   before dispatch, mark the round finished after the panel, and count the
-   rounds from the ledger on resume.
-   Past round two, `review-start` asks the arbiter first, a cheap model that
+1. **Review.** Read [`PANEL.md`](PANEL.md) and pick the round's lenses. With
+   the `fleet` CLI, start the panel on HEAD with one `--lens` per lens:
+   `fleet proof review --repo <owner/repo> --pr <number> --commit <full SHA> --lens <lens> --lens <lens> ...`,
+   plus `--scope fixes --base <previous round's SHA>` for round two and later.
+   The CLI reserves the round, so a resumed session cannot reset the count,
+   starts one reviewer per lens in the background, and returns. Then wait in
+   one call with `fleet proof review --wait`, and call it again while it exits
+   2. `fleet proof show` prints each lens with its model and raw answer. Exit 1
+   names a lens that failed twice: run the same `review --lens` command, which
+   reruns only the failed lenses. The same command resumes an unfinished
+   round. The CLI saves the joined answers as the round's findings; keep your
+   triage in the ledger.
+   Without the CLI, write the round number, scope, and HEAD to the ledger,
+   dispatch the panel per the Lanes of [`PANEL.md`](PANEL.md), mark the round
+   finished after the panel, and count the rounds from the ledger on resume.
+   Past round two, `fleet proof review` asks the arbiter first, a cheap model that
    reads the findings so far. It reserves the round unless a later finding
    contradicts an earlier one or the same finding keeps coming back after its
    fix; then it refuses with the reason. At six panel rounds it refuses
@@ -147,7 +151,7 @@ A round works on one HEAD. Run its steps in order.
    `--thread <the T3 thread where they answered>`. Without the CLI, ask the same question of a
    one-shot subagent cast as a lookup per the user's model selection policy,
    give it the ledger's findings, and record its answer there.
-   Read [`PANEL.md`](PANEL.md) and dispatch the panel on HEAD. While it runs,
+   While the panel runs,
    wait at most 15 minutes until the review bots of the repo's recent PRs have
    reviewed HEAD and the **gating checks** on HEAD have finished. Record a bot
    that stays silent. The gating checks are the repo's **full gate** in CI:
