@@ -44,8 +44,14 @@ Then start monitoring.
 
 ## Monitor
 
-Use the harness's PR-monitoring tools when it has them. Otherwise, poll the
-PR for new reviews, comments, and checks.
+Use the harness's PR-monitoring tools when it has them, and end the turn
+until they wake you. Otherwise, wait in one command that blocks until the
+checks finish: `gh pr checks <number> --watch`, with the shell tool's timeout
+near its maximum. Run it again when the tool times out first or no checks
+are reported yet. Then read the new reviews and comments. When only a review
+is pending, end the turn and report that the PR waits on review, or run one
+`until <new review>; do sleep 60; done` command with a timeout. Never repeat
+`sleep N; <check>` across turns: every turn reads the whole context again.
 
 Act on reviews, comments, and checks newer than the latest push, and triage
 each one per `TRIAGE.md`. Every push you make gets a final read of its
@@ -103,8 +109,11 @@ head, from `gh pr view <number> --json headRefOid`, never the merge commit.
 
 1. Find when the merge commit reached production from the repo's deploy
    signal, such as the PostHog `checking-deploy-timing` skill, a deploy
-   workflow run, or a release tag. When no deploy of the merge commit shows
-   up within 24 hours of the merge, record a gap and stop waiting.
+   workflow run, or a release tag. Once a deploy run exists, wait on it
+   with `gh run watch <id> --exit-status`. Until then, and for the one-hour
+   check, schedule a wake with the harness's scheduler as in step 5, or end
+   the turn. When no deploy of the merge commit shows up within 24 hours of
+   the merge, record a gap and stop waiting.
 2. Map each changed path to its signals: the services, error groups, log
    sources, and metrics that carry it. Record the map in the ledger for the
    second check. The map is done when every changed path has at least one
