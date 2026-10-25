@@ -60,7 +60,7 @@ behavior, and your own `git range-diff` check for a rebase or a reworded
 fix. Record it: start it with
 `fleet proof review-start ... --scope final --base <last reviewed SHA> --phase babysit`
 and finish it with
-`fleet proof review-finish ... --round final <findings file>` when the CLI
+`fleet proof review-finish ... --round final --reviewer <model> <findings file>` when the CLI
 is available, else in the ledger. `--phase babysit` counts this phase's
 final reads on their own. From the third, `fleet proof` asks its arbiter
 first, as in `qa-swarm`. Its refusal, or the ceiling of six final reads,
@@ -133,8 +133,10 @@ head, from `gh pr view <number> --json headRefOid`, never the merge commit.
 6. Run `fleet proof gate ... --landed` after the 24-hour check is saved, or
    once a gap or a revert ends the watch early. Exit 0 means the watch is
    done. Exit 3 means gaps wait for acceptance: ask the user to accept them.
-   Exit 1 means a proof is missing or the head is unreviewed. Fix a missing
-   proof; record an unreviewed head on a merged PR as a gap for the user.
+   Exit 1 means a proof is missing, the head is unreviewed, or CI on the head
+   is not green; its lines name which. Fix a missing proof; record an
+   unreviewed head on a merged PR as a gap for the user. The watch's evidence
+   is the queries and their results, not a note about them.
 
 The watch is done when `gate --landed` exits 0, or exits 3 with the gaps put
 to the user. Then close its scheduled or parked entry.

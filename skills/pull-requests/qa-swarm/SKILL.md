@@ -106,7 +106,8 @@ Done when all six are written down.
    cannot run.
 4. Push. When no PR exists, open a draft with `gh pr create --draft` and write
    the description with the `pr-description` skill. Once the PR number exists,
-   register the owed proofs with `fleet proof require`, then save the evidence
+   register the owed proofs with `fleet proof require`, or `--none` with the
+   reason when the PR owes none, then save the evidence
    and gaps from step 3 under it, as [Record](PROOF.md#record) describes.
 5. Keep the proof and the ledger in storage that outlives the worktree and
    stays out of source history. The **ledger** holds every finding, thread,
@@ -131,7 +132,9 @@ A round works on one HEAD. Run its steps in order.
    `fleet proof review-start --repo <owner/repo> --pr <number> --commit <full SHA> --scope full`,
    or `--scope fixes --base <previous round's SHA>` for round two and later. On resume, reuse an
    unfinished reservation. After the panel, complete it with
-   `fleet proof review-finish` and its `--round <number>` and findings file.
+   `fleet proof review-finish`, its `--round <number>`, `--reviewer <model>`,
+   and the reviewers' findings file. Keep your triage in the ledger, not in the
+   findings file.
    Without the CLI, write the round number, scope, and HEAD to the ledger
    before dispatch, mark the round finished after the panel, and count the
    rounds from the ledger on resume.
@@ -176,7 +179,7 @@ review lane reads the fix diff since that commit,
 lens brief of the findings those fixes close. With the `fleet` CLI, reserve it
 with `fleet proof review-start ... --scope final --base <last reviewed SHA>`
 and complete it with
-`fleet proof review-finish ... --round final <findings file>`. A final read
+`fleet proof review-finish ... --round final --reviewer <model> <findings file>`. A final read
 never counts as a panel round. A fix from a final read is a new commit, so it
 gets its own final read, until a read comes back clean. From the third final
 read on, the arbiter checks each one the same way, and at six final reads
@@ -196,7 +199,8 @@ that as a gap.
    changes, use the refresh rules in
    [UI evidence](../pr-description/references/ui-evidence.md).
    Keep the evidence for the final reviewed commit in the proof storage from
-   step 2, and record the original run of any reused evidence.
+   step 2. Evidence you reuse from an earlier commit gets
+   `fleet proof save ... --kind <kind> --reuse-from <sha> --reason "<why>"`.
 2. A failed proof is a Fix item in the ledger, and its fix gets a final read
    like any other. An unresolved proof blocks the handoff.
 3. Update the description with `pr-description`. Its evidence and gaps
@@ -214,11 +218,13 @@ Decisions block. With the `fleet` CLI, `fleet proof gate` also exits 0 or 3.
 Report to the user, then stop:
 
 - The PR link and its outcome. **Ready**: every ledger item is fixed or
-  rejected on `<short sha>`, the full gate is green (in CI, or the full local
-  gate when the repo has no CI), every owed proof has evidence or an accepted
-  gap (`fleet proof gate` exits 0), and no Decision is open. **Blocked**:
-  anything else, with what blocks it: the open Decisions, the unaccepted gaps,
-  or a red check.
+  rejected on `<short sha>`, the lane gate is green locally, the full gate is
+  green (in CI, or the full local gate when the repo has no CI), every owed
+  proof has evidence or an accepted gap, and no Decision is open. Report them
+  in that order: lane gate, full gate, proofs. With the `fleet` CLI, quote the
+  verdict line of `fleet proof gate` for the proofs; it checks records, not
+  quality. **Blocked**: anything else, with what blocks it: the open
+  Decisions, the unaccepted gaps, or a red check.
 - The merge risk and its first bullet.
 - The rounds, and the number of fixed and rejected items per source.
 - **Decisions**: each load-bearing question with your recommended answer.

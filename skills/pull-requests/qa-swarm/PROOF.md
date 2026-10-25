@@ -97,8 +97,10 @@ Done when both checks ran and their results are saved.
 
 A **gap** is an owed proof that could not run. It names the proof, the reason,
 and what stays unknown. A gap is a Decision for the user, so the handoff stays
-Blocked until the user accepts it. The user's agent instructions may already
-name a gap, such as a proof that waits for access.
+Blocked until the user accepts it in answer to that gap. The user's agent
+instructions may hold a standing rule that accepts every gap of one kind, such
+as a proof that waits for access; that rule is the acceptance, recorded as a
+standing rule, never as the user's words.
 
 ## Record
 
@@ -107,12 +109,19 @@ proof storage enforces this file:
 
 - `fleet proof require --repo <owner/repo> --pr <number> --commit <full SHA> --kinds <kinds>`
   records the owed kinds: `live-run`, `ui-walk`, `prod-shape`,
-  `cross-version`, `shadow-diff`, `post-deploy-watch`.
-- `fleet proof save ... --kind <kind> <files>` saves a proof's evidence, and
-  takes only screenshots for `ui-walk`.
+  `cross-version`, `shadow-diff`, `post-deploy-watch`. A PR whose conditions
+  above all fail records `--none --reason "<why>"` instead.
+- `fleet proof save ... --kind <kind> <files>` saves a proof's evidence for
+  HEAD, and takes only screenshots for `ui-walk`. Evidence proves its own
+  commit; after a new commit, save new evidence, or record
+  `--reuse-from <sha> --reason "<why it still proves HEAD>"`.
 - `fleet proof gap ... --kind <kind> --reason "<reason>"` records a gap, and
-  `--accept "<the user's words>"` records the user's acceptance.
-- `fleet proof gate ...` exits 0 when every owed proof has evidence or an
-  accepted gap and HEAD is reviewed. Add `--landed` after the merge.
+  `--accept "<date> \"<the user's answer to this gap>\""` records the user's
+  acceptance. A standing rule of the agent instructions is recorded once with
+  `fleet proof standing --kind <kind> --until <date> --rule "<the rule, word for word>"`.
+- `fleet proof gate ...` exits 0 when the owed proofs are recorded, each has
+  evidence or an accepted gap, HEAD is reviewed, and CI on HEAD is green or
+  has an accepted `ci` gap. Add `--landed` after the merge. The gate checks
+  records, not quality: a handoff reports the lane gate and CI first.
 
 Otherwise, keep the owed kinds, evidence paths, and gaps in the ledger.

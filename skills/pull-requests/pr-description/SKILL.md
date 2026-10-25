@@ -50,9 +50,11 @@ metadata:
    For UI changes, read [UI evidence](references/ui-evidence.md) to
    capture, caption, and refresh media. For a flow diagram, read
    [implementation views](references/implementation-views.md).
-6. Name the test seams, the checks you ran, and the material gaps. When the
-   work ran proofs per [`PROOF.md`](../qa-swarm/PROOF.md) of the `qa-swarm`
-   skill, list each owed proof with its evidence or its gap. Add a
+6. Name the test seams, the checks you ran, and the material gaps. Report the
+   lane gate and CI on the head first. When the work ran proofs per
+   [`PROOF.md`](../qa-swarm/PROOF.md) of the `qa-swarm` skill, list each owed
+   proof with its evidence or its gap. A line that `fleet proof gate` passes
+   reports records, not quality: link the evidence beside it. Add a
    verification command and its expected result when it helps a reviewer
    reproduce the behavior. Put long output and process history in a
    collapsed block or in proof storage.
