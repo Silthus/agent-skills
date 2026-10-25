@@ -57,11 +57,12 @@ Act on reviews, comments, and checks newer than the latest push, and triage
 each one per `TRIAGE.md`. Every push you make gets a final read of its
 diff: one review from the other model family for a fix that changes
 behavior, and your own `git range-diff` check for a rebase or a reworded
-fix. Record it: start it with
-`fleet proof review-start ... --scope final --base <last reviewed SHA> --phase babysit`
-and finish it with
-`fleet proof review-finish ... --round final --reviewer <model> <findings file>` when the CLI
-is available, else in the ledger. `--phase babysit` counts this phase's
+fix. When the CLI is available, run the review with
+`fleet proof review ... --scope final --base <last reviewed SHA> --phase babysit`,
+which runs the other family's reviewer and records its findings, and answer
+them with `fleet proof respond ... --round final <responses file>`. Record a
+`range-diff` check with `review-start` and `review-finish` in the same phase.
+Without the CLI, record both in the ledger. `--phase babysit` counts this phase's
 final reads on their own. From the third, `fleet proof` asks its arbiter
 first, as in `qa-swarm`. Its refusal, or the ceiling of six final reads,
 stops the push and is a Decision for the user. Follow the PR workflow and model selection policy in
@@ -133,8 +134,8 @@ head, from `gh pr view <number> --json headRefOid`, never the merge commit.
 6. Run `fleet proof gate ... --landed` after the 24-hour check is saved, or
    once a gap or a revert ends the watch early. Exit 0 means the watch is
    done. Exit 3 means gaps wait for acceptance: ask the user to accept them.
-   Exit 1 means a proof is missing, the head is unreviewed, or CI on the head
-   is not green; its lines name which. Fix a missing proof; record an
+   Exit 1 means a proof is missing, the head is unreviewed, CI on the head
+   is not green, or the judge failed or was unavailable; its lines name which. Fix a missing proof; record an
    unreviewed head on a merged PR as a gap for the user. The watch's evidence
    is the queries and their results, not a note about them.
 

@@ -143,7 +143,8 @@ A round works on one HEAD. Run its steps in order.
    contradicts an earlier one or the same finding keeps coming back after its
    fix; then it refuses with the reason. At six panel rounds it refuses
    without asking. Either refusal is a Decision for the user; record their
-   answer with `--override`. Without the CLI, ask the same question of a
+   answer with `--override "<date> \"<their words>\""` and
+   `--thread <the T3 thread where they answered>`. Without the CLI, ask the same question of a
    one-shot subagent cast as a lookup per the user's model selection policy,
    give it the ledger's findings, and record its answer there.
    Read [`PANEL.md`](PANEL.md) and dispatch the panel on HEAD. While it runs,
@@ -154,7 +155,10 @@ A round works on one HEAD. Run its steps in order.
    repo marks none as required.
 2. **Triage** every panel finding, unresolved review thread, bot comment on
    HEAD, and failed check per [`TRIAGE.md`](TRIAGE.md). Done when each one is
-   in the ledger with exactly one bucket.
+   in the ledger with exactly one bucket. With the `fleet` CLI, also record
+   your answer to each finding of the round with
+   `fleet proof respond ... --round <number> <responses file>`: fixed in which
+   commit, or rejected and why. The gate's judge checks each answer against HEAD.
 3. **Fix** every Fix and Call item. Fix a bug red first with the `tdd` skill:
    a test that fails on the bug, then the fix. Close the sibling sites a
    finding names in the same commit. Run the lane gate, verify the behavior
@@ -176,10 +180,10 @@ Round two is the last planned panel. Fix what it finds and push. Every commit af
 the last reviewed one then gets a **final read**: one fresh reviewer from the
 review lane reads the fix diff since that commit,
 `git diff <last reviewed SHA>...HEAD`, in place of the full diff, with the
-lens brief of the findings those fixes close. With the `fleet` CLI, reserve it
-with `fleet proof review-start ... --scope final --base <last reviewed SHA>`
-and complete it with
-`fleet proof review-finish ... --round final --reviewer <model> <findings file>`. A final read
+lens brief of the findings those fixes close. With the `fleet` CLI, run it
+with `fleet proof review ... --scope final --base <last reviewed SHA>`: the CLI
+runs the other family's reviewer on the fix diff, records its findings, and
+prints them; answer them with `fleet proof respond ... --round final`. A final read
 never counts as a panel round. A fix from a final read is a new commit, so it
 gets its own final read, until a read comes back clean. From the third final
 read on, the arbiter checks each one the same way, and at six final reads
@@ -222,8 +226,9 @@ Report to the user, then stop:
   green (in CI, or the full local gate when the repo has no CI), every owed
   proof has evidence or an accepted gap, and no Decision is open. Report them
   in that order: lane gate, full gate, proofs. With the `fleet` CLI, quote the
-  verdict line of `fleet proof gate` for the proofs; it checks records, not
-  quality. **Blocked**: anything else, with what blocks it: the open
+  verdict line of `fleet proof gate` for the proofs, with its `judge` lines.
+  A judge fail is a Fix item; `judge: unavailable` blocks until a rerun passes.
+  **Blocked**: anything else, with what blocks it: the open
   Decisions, the unaccepted gaps, or a red check.
 - The merge risk and its first bullet.
 - The rounds, and the number of fixed and rejected items per source.

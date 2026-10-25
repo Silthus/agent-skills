@@ -53,8 +53,8 @@ metadata:
 6. Name the test seams, the checks you ran, and the material gaps. Report the
    lane gate and CI on the head first. When the work ran proofs per
    [`PROOF.md`](../qa-swarm/PROOF.md) of the `qa-swarm` skill, list each owed
-   proof with its evidence or its gap. A line that `fleet proof gate` passes
-   reports records, not quality: link the evidence beside it. Add a
+   proof with its evidence or its gap, and link the evidence beside each line
+   that `fleet proof gate` passes. Add a
    verification command and its expected result when it helps a reviewer
    reproduce the behavior. Put long output and process history in a
    collapsed block or in proof storage.

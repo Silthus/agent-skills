@@ -116,12 +116,17 @@ proof storage enforces this file:
   commit; after a new commit, save new evidence, or record
   `--reuse-from <sha> --reason "<why it still proves HEAD>"`.
 - `fleet proof gap ... --kind <kind> --reason "<reason>"` records a gap, and
-  `--accept "<date> \"<the user's answer to this gap>\""` records the user's
-  acceptance. A standing rule of the agent instructions is recorded once with
+  `--accept "<date> \"<the user's answer to this gap>\"" --thread <T3 thread id>`
+  records the user's acceptance. The quoted words must be in a message the
+  user typed in that thread, or in their answer to a question tool. A standing
+  rule of the agent instructions is recorded once with
   `fleet proof standing --kind <kind> --until <date> --rule "<the rule, word for word>"`.
 - `fleet proof gate ...` exits 0 when the owed proofs are recorded, each has
-  evidence or an accepted gap, HEAD is reviewed, and CI on HEAD is green or
-  has an accepted `ci` gap. Add `--landed` after the merge. The gate checks
-  records, not quality: a handoff reports the lane gate and CI first.
+  evidence or an accepted gap, HEAD is reviewed, CI on HEAD is green or has an
+  accepted `ci` gap, and then the **judge** passes HEAD. The judge is the
+  other model family: it weighs the evidence, the owed kinds, the review and
+  its responses, and the code against the user's coding preferences. A failed
+  question or a high quality finding fails the gate. Add `--landed` after the
+  merge. A handoff reports the lane gate and CI first.
 
 Otherwise, keep the owed kinds, evidence paths, and gaps in the ledger.
