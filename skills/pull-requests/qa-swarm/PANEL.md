@@ -298,14 +298,27 @@ Does the change build something that the goal does not need, or that the
 codebase, the platform, or an installed dependency already provides, and does
 it use each tool the way the tool intends?
 
+When the goal is unclear, say so and judge only what does not depend on it.
+An unclear goal alone is no finding.
+
 For each concept the diff adds, such as a function, a type, a module, a
 parameter, an option, a fallback, or a dependency, climb the ladder. Stop at
 the first rung that meets the goal; the rung names the finding. A concept
 that the goal needs and no rung replaces is **kept**, with no finding.
 
+A guard, retry, fallback, cache, index, memo, or compatibility path is
+needed only with evidence of the failure or cost it prevents: an incident, a
+measurement, a documented platform limit, a known caller or stored data
+shape, old and new code side by side during the deploy, or a reachable path
+traced through the current code. "It might fail" is not evidence. Weigh what
+it prevents against the states and failure paths it adds. On uncertain
+evidence, keep the smallest version that can be removed later.
+
 1. **delete**: the goal works without it. This covers every new branch, flag,
    fallback, alias, mode, parameter, or contract field that the goal does not
-   need, including one that serves a consumer no PR in the stack adds.
+   need, including one that serves a consumer no PR in the stack adds. It
+   also covers a test hook, probe, or flag left from a one-off check, and a
+   safeguard or optimization without the evidence above.
 2. **reuse**: a module of this repo already does it. Use it the way the
    surrounding code does, with its idioms, helpers, and patterns. This
    covers logic that re-derives a concept another module owns, such as a
@@ -332,8 +345,9 @@ A
 replacement must read at a glance and keep one concept per name; a dense
 one-liner that a reader must decode is a longer read, not a shorter one.
 Keep, at full strength, validation at a trust boundary, error handling that
-prevents data loss, security controls, accessibility, and everything the
-goal asks for.
+prevents data loss, compatibility that protects stored data, a deploy
+boundary, or a contract read outside the repository, security controls,
+accessibility, and everything the goal asks for.
 
 Grade a finding by what the cut removes: a dependency, a contract, or a
 layer is `major`, a helper, a branch, or a parameter is `minor`, and lines
