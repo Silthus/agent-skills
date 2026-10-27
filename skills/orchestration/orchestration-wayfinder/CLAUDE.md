@@ -5,7 +5,8 @@ Read this addendum only when Claude Code drives. [`SKILL.md`](SKILL.md) is the s
 ## Dispatch surfaces
 
 - Dispatch through named background `Agent` workers. Claude Code's fleet view is the human entry surface for HITL work.
-- Fan out AFK work and prototype/spec AFK stretches. Keep grilling serial.
+- Fan out AFK work, prototype/spec AFK stretches, and stack lanes. Keep grilling serial.
+- A stack lane owns its pull requests and waits on them with the watcher of the `babysit-pr` skill.
 - Name each worker for its ticket and follow **Casting** in [`SKILL.md`](SKILL.md).
 - Pass `isolation: "worktree"` to every worker that writes files, commits, or checks out a branch.
 - Record the worker name and transcript path in the ticket's claim comment as soon as they are available.

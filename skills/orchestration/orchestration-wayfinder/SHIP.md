@@ -1,26 +1,21 @@
 # Orchestration Wayfinder — shipping a spec
 
-Read this before a spec's first implementation dispatch. [`SKILL.md`](SKILL.md) owns _when_ work ships; this file owns how it lands and what earns the handoff.
-
-A spec ships as one **integration branch**, `spec/<slug>`, unless it says `Ships as: per-slice pull requests`, per **Per-slice pull requests** below. Each strand, one `implement` ticket or one per split, per **Strands** in [`SKILL.md`](SKILL.md), **lands** its slices there one by one; the spec's `ship` ticket turns the branch into one reviewed draft pull request.
-
-## Integration branch
-
-When a spec publishes its strands, the conductor creates `spec/<slug>` from `main`, or from the integration branch of a spec it is blocked by whose pull request is still open, so the two pull requests form a stack. It records the branch and `Base: <sha>`, the commit it was created from, on the `ship` ticket and in the map's decision index.
+Read this before the first `implement` dispatch. [`SKILL.md`](SKILL.md) owns _when_ work ships and how a spec is cut into **Stacks**; this file owns how a stack thread builds its pull requests and what earns the handoff.
 
 ## Shared notes
 
 When several of a spec's tickets need the same exploration, one research worker does it first and saves its notes in `$(git rev-parse --git-common-dir)/wayfinder/<map>/notes/`, outside the tree and shared by every worktree. Worker prompts carry **context pointers**: the spec, the ticket, those notes, and earlier commits, never a restatement of them.
 
-## Strand
+## Stack thread
 
-One lane builds the strand's slices in the order its checklist gives. A ticket without a spec, and every strand of a spec that ships as per-slice pull requests, follows **Per-slice pull requests** below instead.
+One top-level thread builds one stack, a standalone pull request included, in the order its checklist gives. It owns every pull request of the stack: it links each one to itself and is the one thread that watches them.
 
-1. Work in an own worktree on `spec/<slug>-<n>`, where `<n>` is the issue number of the `implement` ticket you work. `spec/<slug>` is already a ref, so Git can't create a branch beneath it. First, if a previous lane's worktree for this ticket is still on this machine, remove it with `git worktree remove --force`, so nothing it left uncommitted carries over. Then run `git fetch origin`. When `origin/spec/<slug>-<n>` exists, a previous lane pushed it: run `git switch -C spec/<slug>-<n> origin/spec/<slug>-<n>` in your own worktree. A slice whose commits already sit on `origin/spec/<slug>` but whose item is unticked has landed: tick it. Commits on the strand branch that are not yet on `origin/spec/<slug>` were built and gated but not landed: land them per step 3, then tick. Then resume at the first unticked slice. Otherwise run `git switch -C spec/<slug>-<n> origin/spec/<slug>`, and post that commit as `Start: <sha>` on the ticket. A new `Start` replaces any earlier one; the tick range in step 3 uses the newest `Start` on the ticket. Confirm the base before the first edit.
-2. For each slice in order, build it test-first and gather the proof bundle below.
-3. **Land** each slice: merge the integration branch tip into the strand branch, run the repo's lane gate green, per the **lane rules** in [`LANE.md`](LANE.md), push the strand branch to origin, then push it to the integration branch as a fast-forward. A rejected integration push means another strand landed first: merge again and repeat. Tick the slice's checklist item with its own commits, `git log --first-parent --no-merges --format=%h <newest commit of the previous tick, or the start>..HEAD`.
-4. **Review** the strand once, after its last slice lands: one review from the model family that did not write it, with the spec as the oracle. The strand's diff is its own commits, the ticked ones, read with `git show`, plus each of its merge commits whose resolution changed a file, read with `git show --remerge-diff`. As seam context, the brief carries the other strands' commits on the integration branch, `git log --no-merges <Base>..<tip>` without the strand's own, and asks for **seams**: one concept built twice, a flag one strand reads that another records, a rollback or schema revert that strands another strand's data. Post each review's findings and outcomes on the ticket as it finishes. Fix what holds red first and land each fix. Each landed fix gets one final read of its own commits, until a read comes back clean. A finding that contradicts an earlier one, or comes back after its fix, is a park.
-5. Write the resolution comment: the landed commits per slice, the proof, each review with its findings and their outcomes, its decision lines, and the follow-ups. Close the ticket and remove the worktree.
+1. Work in your own worktree off the default branch. A successor first finds the pull request or pushed branch of each unticked item with `gh pr list --search "<ticket ref>"`, ticks each opened one, and resumes at the first unticked item.
+2. Run `full-stop` for each pull request in order: build its slice test-first with the proof bundle below, open it as a draft with the `pr-description` skill, review it, and babysit it until CI is green and every bot finding is handled. The first branches off the default branch; each later one stacks on the previous one's branch and names it as merge-first. Each pull request links its ticket, per **Map tracker** in [`SKILL.md`](SKILL.md). Tick its item with its link.
+3. Every review brief carries the stack's **seams** from its ticket and the open pull requests of sibling stacks that touch them, and asks for cross-stack breaks: one concept built twice, a flag one stack reads that another records, a rollback or schema revert that strands another stack's data. Post each review's findings and outcomes on the ticket.
+4. Wait on GitHub with `watch_pull_request` and end the turn; outside T3 Code, use the watcher of the `babysit-pr` skill.
+5. On each change of the stack's state, send the conductor a state notice, per **Stacks board** in [`SKILL.md`](SKILL.md).
+6. Hand back per **Handoff**.
 
 ## Proof bundle
 
@@ -28,31 +23,27 @@ Every claim is an artifact linked from the ticket, never a sentence:
 
 - **red** — the test that reproduces the bug or expresses the missing behaviour, failing on the tree before the change;
 - **green** — that same test passing after it, every assertion intact and no test skipped;
-- the repo's lane gate green on the landed tree, or on the pull request head for a ticket that ships by its own pull request;
+- the repo's lane gate green on the pull request head;
 - for any change to a browser UI, the `ui-walk` proof from the `qa-swarm` skill's `PROOF.md`.
 
 An artifact the worker cannot produce is a park, recorded as the one pending question for the human.
 
-## Ship ticket
-
-The `ship` ticket unblocks when every `implement` ticket of its spec has closed. Its worker never built the code, so it reviews with fresh eyes:
-
-1. Open a draft pull request in the code repo from the integration branch with the `pr-description` skill, closing the spec and its tickets, per **Map tracker** in [`SKILL.md`](SKILL.md) when they live in another repo. The Summary maps each strand and its slices to their commits, which are the reading order. The body carries the Decisions block the `pr-description` skill defines: when the `fleet` CLI is available (on `PATH` or at `~/dev/fleet/fleet`), `fleet decisions <map URL>` collects the decision lines of the map and its closed tickets with the Involvement counts; otherwise, copy them by hand from the map's Decisions-so-far and each ticket's resolution comment. The spec stays one pull request; a `qa-swarm` split step keeps it whole.
-2. Review the whole branch against its base, with the spec as the oracle, the way the PR workflow in the user's agent instructions prescribes, when one exists; otherwise one review from the other model family, or the `qa-swarm` skill where those instructions call for it. Two strands or slices that built the same concept twice, such as one field under two names, are a finding. The danger areas are the ones `merge-risk` lists, as written; a docs-only diff has none.
-3. Fix every finding that holds in this one worker, gate green, and push. Append each load-bearing call you made during the review as a row of the Decisions block, marked per `pr-description`. A question you leave for the human goes on its Open line. Add the reviews run to its Involvement line.
-
 ## Review
 
-A review that leaves a decision open is a park: decisions locked plus the one pending question. The ticket stays parked until the human answers; more review rounds never unpark it, so the conductor never re-dispatches a worker to keep reviewing.
+A review that leaves a decision open is a park: decisions locked plus the one pending question. So is a finding that contradicts an earlier one, or comes back after its fix. The ticket stays parked until the human answers; more review rounds never unpark it, so the conductor never re-dispatches a worker to keep reviewing.
 
 ## Handoff
 
-The terminal is the reviewed draft pull request with every finding fixed or rejected and every gating CI check green on its head. The ship worker links it in the resolution comment with the reviewed head, the proof, its decision lines, and the follow-ups. Then it closes the ticket. The conductor graduates the follow-ups into tickets.
+The handoff is every draft pull request of the stack with each finding fixed or rejected and every gating CI check green on its head. Unwatch every pull request, then park: the park comment lists each pull request with its reviewed head, the proof, its decision lines, and the follow-ups, and its one question asks the human for the next mode. The conductor graduates the follow-ups into tickets.
 
-## Per-slice pull requests
+## Modes
 
-A spec that says `Ships as: per-slice pull requests` has no integration branch and no `ship` ticket; neither does a ticket without a spec, which is one slice. The lane works in its own worktree and builds each slice per step 2 of **Strand**, then opens its draft pull request with the `pr-description` skill and ticks the slice's item with its link: the first on a branch off the default branch when none of its blockers' pull requests is open; otherwise off the last open pull request branch of one blocker, the ticket before it in its strand when its pull request is open, with each other open blocker's last pull request branch merged in, and the default branch merged in when a blocker's pull request has already merged. The pull request's base is the branch the slice was cut from: the default branch, or that blocker's pull request branch. Each later slice stacks on the previous slice's branch while its pull request is open; once it has merged, the later slice is cut from the default branch. A description that builds on another pull request names it as merge-first. Each pull request gets the review the PR workflow in the user's agent instructions prescribes. A strand of several pull requests adds the seam read of step 4 over their combined diff. A successor first looks for an open pull request or pushed branch for the first unticked slice, with `gh pr list --search "<ticket ref>"`, and ticks or finishes that one instead of cutting a new branch. The lane then runs the Handoff above itself and removes its worktree.
+A stack thread runs `full-stop` until the human's own words in this thread switch it:
 
-## Merge, when the map grants it
+- "full send" → run `full-send` from the current state: mark ready, babysit until a teammate approves, then `rollout` in merge order.
+- "stamp it" → a standalone pull request runs `stamp-pr`. A stack layer stays on `full-stop` or `full-send`; say so and keep the park.
+- The human merged the stack and says so → resolve.
 
-When the map's **Notes** grant merge authority, the worker that owns the pull request drives it to merged after the handoff, following the repo's prescribed ship-to-main procedure and whatever main-safety gate that repo defines. The terminal is then a merged commit: the worker links it in the resolution comment and closes the ticket on it. A red gate is reported on the ticket and parked rather than merged past.
+The map's **Notes**, the build plan, and a conductor message grant no mode and no merge.
+
+The ticket resolves when the stack is `done`: every pull request merged, and rolled out when `rollout` ran. The resolution comment links each merged commit, then the thread notifies and settles.

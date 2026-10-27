@@ -4,13 +4,13 @@ Read this before the first dispatch. Every ticket worker's prompt, a successor's
 
 ## Template
 
-Write one template per ticket type at `$(git rev-parse --git-common-dir)/wayfinder/<map>/lane-<type>.md` in the conductor's checkout, and one for its successors at `lane-<type>-successor.md`, which adds `{{transcript}}`, the predecessor's transcript path or thread id, and in T3 Code also `{{branch}}`. In T3 Code, split the first by runtime instead: `lane-<type>-<child|thread>.md`. Put `{{ticket}}` wherever the ticket number goes: the title, every `gh issue` command and issue URL, the branch, and the lease name. Each other per-ticket value gets a one-line `{{name}}` placeholder; longer context stays on the ticket, behind a pointer. The template carries:
+Write one template per ticket type at `$(git rev-parse --git-common-dir)/wayfinder/<map>/lane-<type>.md` in the conductor's checkout, and one for its successors at `lane-<type>-successor.md`, which adds `{{transcript}}`, the predecessor's transcript path or thread id, and in T3 Code also `{{branch}}`. In T3 Code, split the first by runtime instead: `lane-<type>-<child|thread>.md`. Put `{{ticket}}` wherever the ticket number goes: the title, every `gh issue` command and issue URL, and the lease name. Each other per-ticket value gets a one-line `{{name}}` placeholder; longer context stays on the ticket, behind a pointer. The template carries:
 
 - the map URL, the code repo, and the ticket, as context pointers per **Shared notes** in [`SHIP.md`](SHIP.md);
 - the wall-time cap, the ticket claim, the durable park and resolution protocol, the report before idle, and that downstream dispatch belongs to the conductor;
 - the prescribed skill, and the order to read its `SKILL.md` directly when the Skill tool refuses it, as it does `to-spec`;
 - **Casting** from [`SKILL.md`](SKILL.md), and the `fleet` CLI's resolved path;
-- for an `implement` or `ship` ticket, its section of [`SHIP.md`](SHIP.md), and the spec's integration branch and its `Base` when it has one;
+- for an `implement` ticket, [`SHIP.md`](SHIP.md) from **Stack thread** on;
 - for a ticket that runs code, the lease line from **Compute lease** in [`SKILL.md`](SKILL.md) while the map's **Notes** record it;
 - each line the **Dispatch contract** in [`SKILL.md`](SKILL.md) adds for the ticket's type, and the review outage while the map's **Notes** record one;
 - the **lane rules** below, verbatim.
@@ -28,8 +28,8 @@ bun <this skill's directory>/scripts/lane-prompt.ts <template> <ticket> --allow 
 ## Lane rules
 
 ```md
-- Wait on a condition with `Monitor` and an `until` loop, or, outside T3 Code, with a background command whose completion notice wakes you; a single foreground call stops at 600 s. In Claude Code, load `Monitor` with `ToolSearch` first. Never repeat `sleep N; <check>` across turns: each turn reads your whole context again.
-- Leave nothing running: before any turn that ends waiting on the human, a park included, and before your last turn, stop everything you started, such as a background `kickoff wait`, a watcher, a monitor, a subagent, or a child task. Anything left live keeps your thread, and the conductor's, off the human's inbox.
+- Wait for an event that wakes you, then end your turn. A thread that owns a pull request waits with `watch_pull_request` in T3 Code, or the watcher of the `babysit-pr` skill elsewhere. A delegated task you started wakes you when it ends. Any other wait is one blocking command that ends on the event. Each turn reads your whole context again, so never poll and never `sleep` across turns.
+- Leave nothing running: before any turn that ends waiting on the human, a park included, and before your last turn, stop everything you started, such as a background `kickoff wait`, a watcher, a monitor, a subagent, or a child task, and call `unwatch_pull_request` on each pull request you watch. Anything left live keeps your thread, and the conductor's, off the human's inbox.
 - Run the lane gate the repo's agent docs name, or its full local gate when they name none; CI runs the full gate on the pull request. The repo's docs own its commands and settings, such as worker counts.
 - Run every gate and check unpiped, or start the same command with `set -o pipefail;`, and read its exit code before you push or merge.
 - `rm` takes literal paths.

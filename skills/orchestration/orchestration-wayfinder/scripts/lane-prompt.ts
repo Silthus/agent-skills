@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { parseArgs } from "node:util";
 
-const ticketLink = /(?:#|\b(?:issues|pull)\/|\bspec\/[\w.-]+-|\bmap-[\w.-]+-\d+-)(\d+)\b/g;
+const ticketLink = /(?:#|\b(?:issues|pull)\/|\bmap-[\w.-]+-\d+-)(\d+)\b/g;
 const ghOption = String.raw`--?\w[\w-]*(?:[ \t=](?:"[^"\n]*"|'[^'\n]*'|(?!-)[^\s"'\x60]+))?`;
 const ghNumericOption = "--interval|--limit|-L";
 const ghTicketVerb = "view|edit|close|reopen|comment|delete|lock|unlock|pin|unpin|transfer|develop|checks|diff|merge|checkout|ready|review";
