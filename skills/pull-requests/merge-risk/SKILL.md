@@ -27,18 +27,46 @@ leaves effects a revert cannot undo: a dropped column, a data migration, a
 sent email, published data, a released public contract. Name the one-way
 effect.
 
+## Worst case
+
+Name the worst thing a bug in the diff does to a user:
+
+- **Silent harm**: nobody sees it happen. Messages are dropped, sent twice, or
+  sent to the wrong person, scheduled work does not run, data is lost or
+  wrong.
+- **Broken core action**: a user sees that the product's main task fails,
+  such as saving or sending.
+- **Cosmetic**: a user sees it, and nothing they need is blocked.
+
+## Reach
+
+Measure how many users the changed surface reaches: the share of active
+teams or users who used it in the last 30 days, from the product analytics
+project the user's agent instructions name. Band it as few, some, or most.
+Code on a path that every request or event runs through reaches most.
+
 ## Grade
 
-Read every danger hunk with its callers. Danger areas, a one-way door, and
-more than about 400 changed production lines raise the grade. A default-off
-feature flag, focused tests on the risky path, and a two-way door lower it.
-Done when every danger hunk and every one-way effect is named and the grade
-follows from them.
+Read every danger hunk with its callers. The worst case sets the floor:
+
+- Silent harm is never low. On a path the user's agent instructions name as
+  critical, it is at least medium even for a pure refactor, and high when
+  behavior changes.
+- A broken core action is medium. It is low only behind a default-off flag
+  with few users reached.
+- Cosmetic is low, even when most users see it.
+
+Danger areas, a one-way door, and more than about 400 changed production
+lines raise the grade. A default-off feature flag, focused tests on the risky
+path, and a two-way door lower it, never below the floor. Done when every
+danger hunk and every one-way effect is named, the worst case and reach are
+named, and the grade follows from them.
 
 ## Callout
 
-Name the concrete risk and what limits it, in one to three bullets. The door
-follows the grade on its line. The grade sets the circle and the callout
+Name the concrete risk, its worst case and reach band, and what limits it, in
+one to three bullets. Never put the measured numbers in the callout: the repo
+may be public. The door follows the grade on its line. The grade sets the circle and the callout
 color:
 
 | Grade  | Circle | Callout       |

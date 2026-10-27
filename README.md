@@ -12,7 +12,7 @@ The skills build on [Matt Pocock's skills](https://github.com/mattpocock/skills)
 | Theme | Skills |
 | --- | --- |
 | [Orchestration](skills/orchestration/README.md) | `orchestration-wayfinder`, `t3-kickoff`, `architecture`, `impact`, `usage-brief` |
-| [Pull requests](skills/pull-requests/README.md) | `pr-description`, `merge-risk`, `qa-swarm`, `babysit-pr`, `modernize-pr`, `leaving-pr-comments`, `review-pr`, `review-pr-setup`, `audit-prs`, `slack-pr-update` |
+| [Pull requests](skills/pull-requests/README.md) | `pr-description`, `merge-risk`, `qa-swarm`, `full-stop`, `full-send`, `stamp-pr`, `babysit-pr`, `rollout`, `modernize-pr`, `leaving-pr-comments`, `review-pr`, `review-pr-setup`, `audit-prs`, `slack-pr-update` |
 | [Communication](skills/communication/README.md) | `explain-diff`, `share-plan`, `share-preview`, `writing-voice` |
 
 Each theme README says what a skill does and what it needs.
@@ -102,4 +102,4 @@ Commit messages follow [Conventional Commits](https://www.conventionalcommits.or
 
 ## License
 
-[MIT](LICENSE). `pr-description` is based on Matt Pocock's `pr` skill, also MIT. Its credits are in its front matter.
+[MIT](LICENSE). `pr-description` is based on Matt Pocock's `pr` skill, also MIT. `full-send`, `full-stop`, `babysit-pr`, and `modernize-pr` are based on Theo Browne's [tstack](https://github.com/t3dotgg/tstack) skills, MIT, Copyright (c) 2026 Theo Browne. Their credits are in their front matter.

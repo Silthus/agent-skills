@@ -3,8 +3,9 @@ name: leaving-pr-comments
 description: >-
   Draft and format every GitHub comment, review reply, or issue comment an
   agent posts on the user's behalf, and get their approval for each one a
-  person reads. Replies to review bots go out without approval. Use before
-  posting any comment from the user's account.
+  person reads. Replies to review bots, one-line acknowledgements, and
+  decision records go out without approval. Use before posting any comment
+  from the user's account.
 ---
 
 # Leaving PR comments
@@ -13,7 +14,7 @@ description: >-
 
 The user approves every comment to a person before it goes out. This covers PR
 comments, review replies, issue comments, and resolving a thread with a reply,
-when a person reads them. Replies to review bots are the exception, below.
+when a person reads them. The exceptions are below.
 
 1. Draft the comment in the format below.
 2. Show the user the target (URL and thread) and the exact text.
@@ -24,6 +25,22 @@ when a person reads them. Replies to review bots are the exception, below.
 A subagent or a loop cannot ask the user. It does not post a comment that
 needs approval. It returns each draft with its target in its summary, and the
 main agent asks the user.
+
+### Short acknowledgements
+
+A reply of a few words, one line at most, that accepts a person's suggestion
+or reports its fix goes out without approval, for example "Good catch, fixed in
+2c76885." Pushing back, disagreeing, asking a question, or anything longer
+waits for the user's approval. Leave the thread open for the person.
+
+### Records and commands
+
+These go out without approval:
+
+- The PR comment that holds the decision lines on the user's own PR, per the
+  `pr-description` skill, and each edit to it.
+- A bare command that a repo's bot reads, such as `/trunk merge`, when a
+  skill's grant covers it. Post the command alone, without the callout.
 
 ### Replies to review bots
 
@@ -50,8 +67,14 @@ each reply you posted.
 
 Draft for the user's approval instead when a person wrote any comment in the
 thread, when you cannot tell, when the reply depends on a decision that is
-still open, or when you are not confident in the reason. A top-level PR
-comment that is not a reply to a bot also needs approval.
+still open, or when you are not confident in the reason. Any other top-level
+PR comment also needs approval.
+
+## Before you post
+
+Check the text for secrets, tokens, internal hostnames, customer names or
+data, and internal numbers. Many repos are public. Remove what you find and
+never post it.
 
 ## Format
 

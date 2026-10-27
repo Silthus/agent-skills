@@ -77,9 +77,12 @@ Fetch the base branch, then write down:
 - **Base** and the diff, `git diff origin/<base>...HEAD`.
 - **Danger areas**: the hunks in the danger areas of the `merge-risk` skill.
 - **Split**: one concern per PR, at most about 400 changed production lines.
-  Split a larger or mixed change into a stack before the first round. Each PR
-  builds only on the PRs below it and carries its own tests. Run the swarm on
-  each PR, bottom up.
+  Split a larger or mixed change before the first round into thin vertical
+  slices: each one delivers something a user can use, and independent slices
+  ship in parallel as separate PRs or short stacks. Stack a PR only on a PR it
+  needs. A stack aims for 5 PRs and never holds more than 10. Each PR builds
+  only on the PRs below it and carries its own tests. Run the swarm on each
+  PR, bottom up.
 - **Proofs**: the proofs the PR owes per [`PROOF.md`](PROOF.md), with the
   persisted inputs and boundary formats the changed path touches.
 
@@ -138,7 +141,8 @@ A round works on one HEAD. Run its steps in order.
    names a lens that failed twice: run the same `review --lens` command, which
    reruns only the failed lenses. The same command resumes an unfinished
    round. The CLI saves the joined answers as the round's findings; keep your
-   triage in the ledger.
+   triage in the ledger. Do not edit the files under review while the panel
+   runs. A timeout, an error, or no reply is not approval.
    Without the CLI, write the round number, scope, and HEAD to the ledger,
    dispatch the panel per the Lanes of [`PANEL.md`](PANEL.md), mark the round
    finished after the panel, and count the rounds from the ledger on resume.
@@ -249,4 +253,5 @@ Report to the user, then stop:
 
 When the user's agent instructions ask for a Slack message at the end of a
 PR, end with it, formatted by the `slack-pr-update` skill. When the user asks
-you to babysit the PR, the `babysit-pr` skill takes over.
+you to babysit the PR, the `babysit-pr` skill takes over; for "full send" or
+"stamp it", that skill does.

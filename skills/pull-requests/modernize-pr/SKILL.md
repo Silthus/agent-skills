@@ -1,48 +1,121 @@
 ---
 name: modernize-pr
 description: >-
-  Bring an old PR up to date with its base branch: check whether newer changes
-  invalidate it, rebase, adapt the code to what changed, verify, and summarize.
-  Use when the user asks to modernize, refresh, or update a stale PR.
+  Bring an old PR up to date with its base branch: decide whether it still
+  belongs, rebase, adapt the code to what changed, verify, and report. Use
+  when the user asks to modernize, refresh, rebase, or update a stale PR.
+metadata:
+  credits:
+    - skill: modernize
+      author: Theo Browne
+      license: MIT
+      url: "https://github.com/t3dotgg/tstack"
 ---
 
 # Modernize PR
 
-A PR drifts while it waits. The base branch renames APIs, moves files, adopts
-new patterns, or merges a PR that solves the same problem. Modernizing makes
-the PR read as if it was written today, with the same goal and no new scope.
+Modernize the idea, not just the branch. A clean rebase does not prove that the
+PR still belongs in the product.
 
-For several PRs, dispatch one subagent per PR. Each subagent works in its own
-worktree and returns the summary from step 6.
+For several PRs, dispatch one subagent per PR. Each works in its own worktree
+and returns its report.
 
-## Steps
+## Guardrails
 
-1. **Check out.** Create a worktree on the PR head:
-   `gh pr view <url> --json headRefName,baseRefName,files,body`, then
-   `git worktree add`. Never change the current checkout. Done when the
-   worktree builds its dependencies.
-2. **Survey drift.** Fetch the base branch and find the merge base. For each
-   file in the PR, list the base commits since the merge base that touch it:
-   `git log --oneline <merge-base>..origin/<base> -- <file>`. Search merged PRs
-   with the same goal: `gh pr list --state merged --search "<key terms>"`.
-   Done when every PR file has a verdict: unchanged upstream, or what changed.
-3. **Decide.** If the base branch already solves the problem, stop. Report the
-   overlapping change and ask the user before closing the PR. If the PR is
-   approved and only waits for CI or a merge, continue only when it has
-   conflicts: a push can dismiss the approval and, in repositories such as
-   `PostHog/posthog`, needs a maintainer to authorize CI again.
-4. **Rebase and adapt.** Rebase onto `origin/<base>`. Resolve each
-   conflict by the intent of both sides, traced to their commits and PRs. Adapt the change to the
-   drift from step 2: renamed APIs, moved files, and the patterns that
-   neighboring code uses now. Keep the PR's goal and size. Done when the diff
-   against the base contains only the PR's intent.
-5. **Verify.** Run the typecheck, lint, and tests for the touched area. For UI
-   changes, refresh the browser verification and media through
-   [UI evidence](../pr-description/references/ui-evidence.md). Update the
-   description with the `pr-description` skill so it describes the current change and its evidence. Done when the
-   checks pass, or a failure also occurs on the base branch, and the body
-   distinguishes verified behavior from remaining gaps. Then push with
-   `git push --force-with-lease`.
-6. **Summarize.** Report per PR: its state now, what changed upstream, what
-   you adapted, the verification result, and the next step. Offer the
-   `babysit-pr` skill to watch the new CI run and review bots.
+- Always check to make sure you have pulled latest origin for your branch, main
+  branch, and any other branch related to your work before starting.
+- Treat existing worktree changes as user-owned. Work in a new worktree on the
+  PR head; never change the current checkout.
+- Modernizing authorizes rebasing and updating the PR branch. It does not
+  authorize merging, closing, changing the base branch, or expanding scope.
+- Never use an unqualified force push. Update a rebased branch with
+  `--force-with-lease=<branch>:<head SHA observed before the rebase>`.
+- Do not post a PR comment unless the user asked for one. Use the
+  `leaving-pr-comments` skill for every comment posted on the user's behalf.
+
+## Establish the PR's intent
+
+Resolve the PR and record its URL, state, base, head repository and branch,
+current head SHA, author, checks, and review state. Read the title, body, linked
+issues, commits, review threads, and complete diff. State the smallest coherent
+goal the PR was trying to accomplish before judging its implementation.
+
+Fetch the latest remote base and PR head. Use the PR's actual base branch
+rather than assuming the local branch is current. Record the merge base so the
+original PR and later base-branch changes can be compared separately.
+
+## Check what changed around it
+
+Inspect commits and diffs added to the base branch since the PR diverged. Search
+merged and open PRs when titles, code paths, or behavior suggest a replacement
+or competing implementation.
+
+Look beyond overlapping lines:
+
+- Has the same user-facing problem already been solved?
+- Did APIs, types, schemas, dependencies, or architectural boundaries change?
+- Do both sides now claim ownership of the same behavior or invariant?
+- Was the code being changed deleted, moved, or intentionally simplified?
+- Would landing the PR restore an old behavior or create two ways to do the
+  same thing?
+- Is the original benefit still large enough to justify the maintenance cost?
+
+Do not describe a PR as current merely because Git reports no conflicts.
+
+## Choose a disposition before pushing
+
+Use one of these recommendations:
+
+- **MODERNIZE**: the goal is still useful and the implementation remains the
+  right shape. Rebase, resolve conflicts, test, and update the branch.
+- **REWORK**: the goal is still useful, but a mechanical rebase would preserve
+  the wrong implementation. Explain the smallest credible rewrite and stop
+  before pushing unless the user also asked for that rework.
+- **CLOSE**: the PR is superseded, obsolete, directionally wrong, or no longer
+  worth its cost. Cite concrete evidence and stop. Do not spend time rebasing an
+  obsolete branch, and do not close it without explicit permission.
+
+Be willing to recommend `CLOSE`. Age alone is not evidence, and sunk effort is
+not a reason to keep a PR alive.
+
+If the PR is approved and only waits for CI or a merge, push only to fix a
+conflict: a push can dismiss the approval, and some repositories need a
+maintainer to authorize CI again.
+
+## Rebase without losing intent
+
+For a `MODERNIZE` disposition:
+
+1. Create a disposable worktree at the recorded PR head.
+2. Rebase its commits onto the freshly fetched base branch.
+3. Resolve each conflict according to the PR's current intent and the base
+   branch's newer invariants. If a conflict reveals a product or architecture
+   disagreement, stop and reconsider the disposition instead of guessing.
+4. Adapt the change to the drift: renamed APIs, moved files, and the patterns
+   that neighboring code uses now. Keep the PR's goal and size.
+5. Compare the pre-rebase and post-rebase commit series with `git range-diff`
+   and inspect the final diff. Confirm that no intentional behavior disappeared
+   and no already-landed behavior was reintroduced.
+6. Run the repository's focused checks for the touched area. Distinguish real
+   failures from pre-existing or infrastructure failures. For UI changes,
+   refresh the browser verification and media through
+   [UI evidence](../pr-description/references/ui-evidence.md).
+7. Push with `--force-with-lease` tied to the previously observed remote head.
+   If the lease fails, fetch and reassess rather than overwriting new work.
+8. Update the description with the `pr-description` skill so it describes the
+   current change and its evidence.
+
+Do not merge the PR.
+
+## Report
+
+Lead with `MODERNIZE`, `REWORK`, or `CLOSE` and the reason. Then summarize:
+
+- meaningful changes on the base branch;
+- conceptual conflicts or confirmation that none were found;
+- the rebase and push result, if performed;
+- checks run and their results;
+- the remaining decision or work, with a link to the PR.
+
+Separate observed facts from judgment. Say what could not be verified instead
+of manufacturing confidence.

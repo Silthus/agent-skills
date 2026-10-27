@@ -4,6 +4,9 @@ Every panel finding, review thread, bot comment, and failed check ends in
 exactly one bucket. The `qa-swarm` and `babysit-pr` skills both triage by
 these rules.
 
+Make the most minimal possible changes to appease the reviewers. Be careful
+of scope creep and don't be scared to push back.
+
 ## Verify
 
 Read the flagged code at HEAD with its callers, types, and validation, then
@@ -87,8 +90,9 @@ missed reopens that fix's item as a Fix instead.
   Fix or Call item, or with the reason for a Reject or Follow-up item. An
   item that waits on a Decision gets its reply after the user decides.
 - **Human thread**: a person wrote any comment in it, or you cannot tell. Fix
-  a Fix or Call item, then draft the reply for the user's approval. Leave the
-  thread open for the person.
+  a Fix or Call item. Reply per `leaving-pr-comments`: a one-line
+  acknowledgement goes out on its own; draft anything longer, and any
+  pushback, for the user's approval. Leave the thread open for the person.
 - **Failed check**: read the failed job's log. A failure that the PR causes is
   a Fix. An infrastructure failure, such as a timeout, a runner loss, or a
   provider error, gets one rerun of the failed jobs on the same HEAD; a second
