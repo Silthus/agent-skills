@@ -56,8 +56,13 @@ one appears.
 Start from the work's current state: no change yet, a local diff, a branch,
 or an open PR. Skip the steps that are already done, and check them.
 
-1. **Finish the change.** Complete the goal from the user's request with the
-   smallest change that works. Fix the case that happened, not every case
+1. **Slice, then finish the change.** Before you write code, cut the goal
+   into thin vertical slices, one PR each. Each slice delivers something a
+   user can use, holds one concern, and has at most about 400 changed
+   production lines. Independent slices ship in parallel as separate PRs.
+   Stack a PR only on a PR it needs; a stack aims for 5 PRs and never holds
+   more than 10. Work from a map's stack ticket builds the slices that ticket
+   lists. Complete each slice with the smallest change that works. Fix the case that happened, not every case
    that could. If you are on the default branch, create a branch first.
    Follow the PR workflow in the user's agent instructions. Put a runtime
    change that `merge-risk` grades medium or high behind a feature flag.

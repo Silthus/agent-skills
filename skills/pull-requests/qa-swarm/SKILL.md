@@ -76,13 +76,11 @@ Fetch the base branch, then write down:
   judge, never a part of the goal.
 - **Base** and the diff, `git diff origin/<base>...HEAD`.
 - **Danger areas**: the hunks in the danger areas of the `merge-risk` skill.
-- **Split**: one concern per PR, at most about 400 changed production lines.
-  Split a larger or mixed change before the first round into thin vertical
-  slices: each one delivers something a user can use, and independent slices
-  ship in parallel as separate PRs or short stacks. Stack a PR only on a PR it
-  needs. A stack aims for 5 PRs and never holds more than 10. Each PR builds
-  only on the PRs below it and carries its own tests. Run the swarm on each
-  PR, bottom up.
+- **Split**: the PR is one slice, cut before the build by step 1 of
+  `full-send` or by the map's stack ticket. A PR with mixed concerns or more
+  than about 400 changed production lines goes to the user with a proposed
+  split before the first round; do not restack it yourself. In a stack, run
+  the swarm on each PR, bottom up.
 - **Proofs**: the proofs the PR owes per [`PROOF.md`](PROOF.md), with the
   persisted inputs and boundary formats the changed path touches.
 
