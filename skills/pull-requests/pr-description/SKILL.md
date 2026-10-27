@@ -87,7 +87,8 @@ metadata:
    one PR comment: the `leaving-pr-comments` callout, then the decision
    lines. On the user's own PR, post it, and each edit that adds or replaces
    a line, without asking; on anyone else's PR, after the user approves it.
-   The row's Where links to the comment. A
+   The row's Where links to the comment, or reads `pending approval` until it
+   is posted. A
    later line for the same question replaces the earlier one, and its row
    replaces the earlier row. Each time work continues on the PR, such as a
    follow-up request, review fixes, or a rebase that changes behavior,

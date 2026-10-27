@@ -53,7 +53,9 @@ branch conflicts.
 Wait in one command that blocks until the checks finish:
 `gh pr checks <number> --watch`, with the shell tool's timeout near its
 maximum. Run it again when it times out first. When only a review is pending,
-end your turn and report that the PR waits on review.
+end your turn and report that the PR waits on review. Under `full-send` or
+`stamp-pr`, ask instead with the question tool, per full-send's "Asking the
+user".
 
 With either watcher: when an event needs no action, end your turn without a
 message. Never post or say "still waiting".
@@ -113,7 +115,7 @@ the ceiling of six final reads, stops the push and is a question for the user.
 ## Base branch
 
 Keep an eye on the base branch and rebase when needed. `watch_pull_request`
-reports conflicts only, so check for BEHIND yourself before you call the PR
+reports conflicts only, so check for BEHIND yourself before you report the PR
 ready. Push a rebase with `--force-with-lease=<branch>:<head SHA before the
 rebase>`. If the lease fails, fetch and reassess rather than overwriting new
 work.
@@ -127,7 +129,8 @@ If nothing has changed, stay quiet rather than posting filler comments.
 ## Done
 
 The skill that called you sets the end. Called alone, babysitting ends when
-the PR is approved, its required checks are green on the latest head, no bot
-thread is open, no human thread waits on you, and the branch is neither
-BEHIND nor DIRTY; or when the PR merges or closes. Report that it is ready to
-merge. Never merge it.
+the PR is approved, or is still a draft, and its required checks are green on
+the latest head, no bot thread is open, no human thread waits on you, and the
+branch is neither BEHIND nor DIRTY; or when the PR merges or closes. Report
+that it is ready to merge, or for a draft, ready for the user's review. Never
+merge it.

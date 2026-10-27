@@ -62,7 +62,8 @@ or an open PR. Skip the steps that are already done, and check them.
    Follow the PR workflow in the user's agent instructions. Put a runtime
    change that `merge-risk` grades medium or high behind a feature flag.
 2. **Prove it.** Get proof for every change you made. See "Proof".
-3. **Get feedback.** Review the change as the user's PR workflow says, and
+3. **Get feedback.** Review the change as the user's PR workflow says, in its
+   order, and
    with `qa-swarm` when the diff touches a danger area of `merge-risk`.
 4. **File the PR** as a draft with the `pr-description` skill. Rebase onto
    the latest default branch first. Add the review and preview labels the
@@ -76,11 +77,13 @@ or an open PR. Skip the steps that are already done, and check them.
 8. **Report** in your final message: the PR link, the merge commit, your
    proof, the rollout state, and each decision you made for the user.
 
-Stay active from step 1 to step 7. If you end your turn while checks, bots, or
-reviewers are pending, the work stops, because nobody will prompt you again.
+Stay active from step 1 to the merge. If you end your turn while checks, bots,
+or reviewers are pending, the work stops, because nobody will prompt you again.
 Wait with the watcher from `babysit-pr`, so something wakes you when the PR
 changes. In T3 Code that is `watch_pull_request`. If you stop before the
-merge, call `unwatch_pull_request` first.
+merge, call `unwatch_pull_request` first. After the merge, `rollout` schedules
+its own checks: send the step 8 report with the rollout state and the next
+check, and `rollout` reports each stage after that.
 
 ## Proof
 

@@ -20,10 +20,10 @@ Read [full-send](../full-send/SKILL.md) and follow its workflow, proof rules,
 review, and babysitting steps 1 to 5. An explicit "full stop" request, or the
 user's agent instructions making full stop the default, authorizes that work
 without a separate "full send" request. That includes full-send's testing
-permission. It is the permission for the test methods Proof needs, even when
-a project file says to ask first, for example before computer use. Use those
-methods directly. Its permissions to mark the PR ready, merge, and roll out do
-not apply. The overrides below take precedence.
+permission. That request, or that default, is the permission for the test
+methods Proof needs, even when a project file says to ask first, for example
+before computer use. Use those methods directly. Its permissions to mark the
+PR ready, merge, and roll out do not apply. The overrides below take precedence.
 
 ## No merging
 

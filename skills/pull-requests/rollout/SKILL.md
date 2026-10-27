@@ -17,12 +17,13 @@ Merge only under a clear grant: `full-send`, `stamp-pr`, or the user's own
 words asking to roll out or merge this PR, such as "babysit and roll out the
 PR". Without one, start at Deploy on a PR that is already merged, or stop. On a
 PR that is not ready, babysit it with `babysit-pr` until full-send's merge gate
-passes.
+passes. If it is a draft, or only approval remains and no grant covers marking
+it ready, stop and report what remains.
 
 The user's agent instructions name the values this skill needs: the project
 that holds the flags and the internal project to watch, the sandbox project
-and its test user, the alert channels, and the rollout log. Ask for a value
-they do not name.
+and its test user, the alert channels, and the rollout log. When a step needs
+a value they do not name, ask for it then.
 
 ## Merge
 
@@ -61,7 +62,8 @@ The default cadence, unless the user names another:
 2. **Sandbox**, only when `merge-risk` grades the PR high, calls it a one-way
    door, or names silent harm: enable the flag for the sandbox project and its
    test user. Walk the changed journey in production as that user with the
-   `agent-browser` skill, and save the walk as proof.
+   `agent-browser` skill, and save the walk as proof. The walk is part of the
+   rollout grant.
 3. **Internal**: enable the flag for the internal project, after the check one
    hour after the deploy is clean.
 4. **10%**: 24 hours after Internal.
@@ -87,7 +89,8 @@ After each stage change, append one line to the rollout log and push it:
 {"at":"<ISO time>","repo":"<owner/repo>","pr":123,"flag":"<key>","stage":"merged|deployed|sandbox|internal|10%|50%|100%|cleanup|done","state":"watching|holding|rolled-back|done|gap","next":"<ISO time of the next check>","note":"<one short line>","thread":"<this thread's id>"}
 ```
 
-Use `null` for a missing flag, next check, or thread.
+Use `null` for a missing flag, next check, or thread. The note carries no
+numbers or customer data.
 
 ## Check
 
@@ -125,13 +128,15 @@ Each check ends in one verdict:
   related, or too few events exist to judge.
 - **Advance** otherwise.
 
-A roll-back signal must show in two checks at least 30 minutes apart. Delivery
+A roll-back signal must show in two checks at least 30 minutes apart. When a
+check finds one, schedule the confirming check 30 minutes later. Delivery
 failures, data loss, and security problems roll back at once. To roll back,
 set the flag to its previous stage. A runtime change without a flag cannot
 roll back: prepare a revert and ask.
 
-On Hold, keep the stage and investigate. After a rollback, the flag never
-advances on its own. It advances only when the user says so, or when a fix has
+On Hold, keep the stage and investigate. After a rollback, or a second Hold in
+a row, follow "Before you ask". After a rollback, the flag never advances on
+its own. It advances only when the user says so, or when a fix has
 merged and passed its own rollout.
 
 ## Before you ask
@@ -159,8 +164,9 @@ other public text carry the conclusion only.
    means gaps wait for acceptance: ask the user. Exit 1 names a missing proof,
    an unreviewed head, CI not green on the head, or a failed judge: fix a
    missing proof, and record an unreviewed head on a merged PR as a gap.
-2. Two weeks after 100%, start a `full-stop` thread that removes the flag from
-   the code. Delete the flag after that PR rolls out.
+2. At Done, schedule a check two weeks after 100% that starts a `full-stop`
+   thread to remove the flag from the code. When a merged PR removes a flag
+   from the code, delete the flag at that PR's Done.
 3. Record a gap with `fleet proof gap ... --kind post-deploy-watch --reason
    "<reason>"` when the deploy signal or a project is unreachable, or no
    deploy shows up in time. Then ask the user to accept it.

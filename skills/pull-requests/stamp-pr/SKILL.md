@@ -20,7 +20,7 @@ Teammates review larger changes so the team keeps sharing what changes. Stamp
 only a PR that is all of these:
 
 - `merge-risk` grades it low, and it is a two-way door.
-- At most about 400 changed production lines.
+- At most 400 changed production lines.
 - Standalone: not a layer of a stack, and not from a map.
 - No change in product behavior that the team should see.
 - Outside the paths that the user's agent instructions keep for teammates.
