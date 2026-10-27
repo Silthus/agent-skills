@@ -24,6 +24,10 @@ only a PR that is all of these:
 - Standalone: not a layer of a stack, and not from a map.
 - No change in product behavior that the team should see.
 - Outside the paths that the user's agent instructions keep for teammates.
+- No hunk in authentication, permissions, secrets or crypto, billing, CI or
+  deploy configuration, release workflows, or installers, whatever its grade.
+  A person approves the code that controls who gets in, what is charged, and
+  what ships.
 
 Check before you start, and again on the final diff. If the PR does not
 qualify, do not stamp it. Ask the user, naming the rule that failed, with
