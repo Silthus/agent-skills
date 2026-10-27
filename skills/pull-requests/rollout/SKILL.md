@@ -131,7 +131,9 @@ Each check ends in one verdict:
 A roll-back signal must show in two checks at least 30 minutes apart. When a
 check finds one, schedule the confirming check 30 minutes later. Delivery
 failures, data loss, and security problems roll back at once. To roll back,
-set the flag to its previous stage. A runtime change without a flag cannot
+set the flag to its previous stage. A rollback or a revert of a reviewed PR is
+a reviewer miss: once the cause is known, record it with
+`fleet proof miss --commit <final head SHA> --source rollback|revert --finding "<the cause the review should have flagged>"`. A runtime change without a flag cannot
 roll back: prepare a revert and ask.
 
 On Hold, keep the stage and investigate. After a rollback, or a second Hold in

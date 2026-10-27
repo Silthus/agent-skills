@@ -80,6 +80,23 @@ without the CLI: name the finding a repeat cause and its fix a move to a new
 place there, so the arbiter reads the next round as progress. A sibling site a fix
 missed reopens that fix's item as a Fix instead.
 
+## Misses and review rules
+
+A Fix from a human thread, a bot thread, or a failed check is a **miss** when
+a finished `fleet proof review` round or final read had read the problem and
+not flagged it. Record each miss once:
+`fleet proof miss --commit <reviewed SHA> --source human|bot|ci --finding "<what the reviewer should have flagged>" --file <path> --line <n> --url <thread or run>`.
+A panel finding is never a miss. The misses are the reviewer's eval set.
+
+A miss, or a Fix from a human thread, teaches the reviewers a rule. When a
+lint rule, a type, or a check can enforce it, add that check, per
+`principle-encode-lessons-in-structure`. When it needs judgement and the
+area's agent docs do not say it yet, add one line to the nearest `REVIEW.md`
+above the changed files: the rule, then why in one sentence. Add it in the
+same PR when the PR touches that area, else record it as a Follow-up. `fleet
+proof review` puts every `REVIEW.md` above the changed files into each
+reviewer's brief.
+
 ## Sources
 
 - **Panel finding**: the ledger holds it. Post no reply to it.

@@ -67,7 +67,8 @@ the missing family in one brief, and report the outage as a gap.
 Before dispatch, collect the repository's own review material, its memory of
 how it broke before: review skills such as `qa-team` with its incident
 patterns and personas, or `security-audit`, and the security or review docs
-that the repo's agent docs point to. Each brief carries the material for its
+that the repo's agent docs point to. With the `fleet` CLI, every `REVIEW.md`
+above the changed files reaches every lens on its own; pass only the rest. Each brief carries the material for its
 lens after the lens text: incident patterns to Correctness and Risk, the
 security audit and security docs to Risk, personas to Fresh eyes. The hunting
 grounds below stay the floor. Name in the ledger the material each lens
