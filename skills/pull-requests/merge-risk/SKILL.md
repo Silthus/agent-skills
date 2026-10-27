@@ -65,7 +65,10 @@ named, and the grade follows from them.
 ## Callout
 
 Name the concrete risk, its worst case and reach band, and what limits it, in
-one to three bullets. Never put the measured numbers in the callout: the repo
+one to three bullets. End with a **Revert** line: the one step that undoes the
+merge, such as turning off the named flag or reverting the merge commit. For a
+one-way door, add the manual step that cleans up what the revert leaves, or
+say that nothing can. Never put the measured numbers in the callout: the repo
 may be public. The door follows the grade on its line. The grade sets the circle and the callout
 color:
 
@@ -80,7 +83,8 @@ color:
 > [!WARNING]
 > 🟡 **Merge risk: medium** · two-way door (merge-risk rubric)
 > - <the concrete risk: the path, what could break, for whom>
-> - <what limits it: the flag, the tests, the revert>
+> - <what limits it: the flag, the tests>
+> - **Revert:** <turn off `<flag>`, or `git revert <merge commit>`; for a one-way door, the cleanup step>
 <!-- /merge-risk -->
 ```
 
