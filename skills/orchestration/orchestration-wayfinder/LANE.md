@@ -4,14 +4,13 @@ Read this before the first dispatch. Every ticket worker's prompt, a successor's
 
 ## Template
 
-Write one template per ticket type at `$(git rev-parse --git-common-dir)/wayfinder/<map>/lane-<type>.md` in the conductor's checkout, and one for its successors at `lane-<type>-successor.md`, which adds `{{transcript}}`, the predecessor's transcript path or thread id, and in T3 Code also `{{branch}}`. In T3 Code, split the first by runtime instead: `lane-<type>-<child|thread>.md`. Put `{{ticket}}` wherever the ticket number goes: the title, every `gh issue` command and issue URL, and the lease name. Each other per-ticket value gets a one-line `{{name}}` placeholder; longer context stays on the ticket, behind a pointer. The template carries:
+Write one template per ticket type at `$(git rev-parse --git-common-dir)/wayfinder/<map>/lane-<type>.md` in the conductor's checkout, and one for its successors at `lane-<type>-successor.md`, which adds `{{transcript}}`, the predecessor's transcript path or thread id, and in T3 Code also `{{branch}}`. In T3 Code, split the first by runtime instead: `lane-<type>-<child|thread>.md`. Put `{{ticket}}` wherever the ticket number goes: the title, and every `gh issue` command and issue URL. Each other per-ticket value gets a one-line `{{name}}` placeholder; longer context stays on the ticket, behind a pointer. The template carries:
 
 - the map URL, the code repo, and the ticket, as context pointers per **Shared notes** in [`SHIP.md`](SHIP.md);
 - the wall-time cap, the ticket claim, the durable park and resolution protocol, the report before idle, and that downstream dispatch belongs to the conductor;
 - the prescribed skill, and the order to read its `SKILL.md` directly when the Skill tool refuses it, as it does `to-spec`;
 - **Casting** from [`SKILL.md`](SKILL.md), and the `fleet` CLI's resolved path;
 - for an `implement` ticket, [`SHIP.md`](SHIP.md) from **Stack thread** on;
-- for a ticket that runs code, the lease line from **Compute lease** in [`SKILL.md`](SKILL.md) while the map's **Notes** record it;
 - each line the **Dispatch contract** in [`SKILL.md`](SKILL.md) adds for the ticket's type, and the review outage while the map's **Notes** record one;
 - the **lane rules** below, verbatim.
 

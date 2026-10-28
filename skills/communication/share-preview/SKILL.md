@@ -39,14 +39,13 @@ CLI is signed in. Step 3 reads the Coder token there.
 ## Steps
 
 Fleet is available when the `fleet` CLI is on `PATH` or at `~/dev/fleet/fleet`;
-below, `fleet` means whichever exists. With Fleet, a worktree has a lease when
-`fleet lease status` names a compute box. Fleet then runs the preview on that box.
+below, `fleet` means whichever exists. The preview runs on the machine where
+this agent runs, a Fleet box included.
 
 1. Pick a short lowercase name that is unique to this preview, such as the
    branch name with `/` replaced by `-` plus what it serves
    (`<branch>-storybook`): Fleet replaces a running preview of the same name.
-   Pick a free port: `ss -ltn` does not list it. With a lease, check on the box
-   with `fleet heavy -- ss -ltn`.
+   Pick a free port: `ss -ltn` does not list it.
 2. Serve the work on `127.0.0.1:<port>` as a systemd user service, so it
    outlives this session. If `systemd-run` cannot reach the user manager, run
    `export XDG_RUNTIME_DIR=/run/user/$(id -u)` first.
@@ -54,20 +53,9 @@ below, `fleet` means whichever exists. With Fleet, a worktree has a lease when
      from the project. Fleet starts the service in its heavy slice and ends with
      `Fleet heavy: preview-<name> serves from <workspace>.`. Use that workspace,
      without the final period, for `<workspace>` in the link. The agent and
-     owner stay the ones from Settings. With a lease, the box gets local edits
-     only when a `fleet heavy` command runs. After edits, run
-     `fleet heavy --stop preview-<name>`, rebuild a static build, check the
-     port again with `fleet heavy -- ss -ltn`, and run the `--service` command
-     again, on a free port if the old one is taken. Fleet runs locally when the
-     box cannot start or does not answer, so a rerun can move the preview to
-     another host. When the port or the `serves from` workspace changes, give
-     the user the new link. With a lease, `--stop` fails when Fleet cannot
-     reach Coder or the box, and the preview can still run on the box. When
-     it fails twice, go on. If the preview then serves from another
-     workspace, tell the user that the old link can show the old work until
-     the box stops. A preview on the box stops with the box: after
-     `fleet lease release`, or 24 hours after the last `--service` start.
-     Run the `--service` command again to keep it longer.
+     owner stay the ones from Settings. On a Fleet box, the preview keeps the
+     box up for 24 hours after the box's last T3 activity, and stops with
+     the box.
    - **Without Fleet:** run
      `systemd-run --user --unit=preview-<name> --working-directory="$PWD" <command>`
      from the project.
@@ -78,13 +66,10 @@ below, `fleet` means whichever exists. With Fleet, a worktree has a lease when
    - **Project preview command:** when the project or the user's agent
      instructions document a preview command, use it, and read its log
      until it reports the preview ready:
-     `journalctl --user -u preview-<name> -n 20`, through `fleet heavy --`
-     with Fleet.
+     `journalctl --user -u preview-<name> -n 20`.
    - **Static build** (Storybook, `vite build`): build into a directory inside
      the project, because `/tmp` is cleared when the workspace restarts. With
-     Fleet, build with `fleet heavy -- <build command>`, so the build lands
-     where the preview runs: a lease syncs only the files Git sees, not ignored
-     build output. Serve it with
+     Fleet, build with `fleet heavy -- <build command>`. Serve it with
      `python3 -m http.server <port> --bind 127.0.0.1 --directory <build-dir>`,
      with `<build-dir>` relative to the project.
    - **App with its own server:** the project's production mode, such as
@@ -132,6 +117,4 @@ below, `fleet` means whichever exists. With Fleet, a worktree has a lease when
 Keep the port private: change no port sharing in Coder. Stop previews that are
 no longer needed: `fleet heavy --stop preview-<name>` with Fleet, else
 `systemctl --user stop preview-<name>`. A stop that reports the unit is not
-loaded found the preview already stopped. With a lease, when `--stop` fails
-twice, tell the user that the preview can still run on the box until the box
-stops.
+loaded found the preview already stopped.

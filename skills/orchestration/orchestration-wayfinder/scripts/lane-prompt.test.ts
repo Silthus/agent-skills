@@ -32,10 +32,10 @@ test("checks a long run of flags without backtracking for seconds", () => {
   expect(performance.now() - started).toBeLessThan(100);
 });
 
-test("finds a ticket in a lease name", () => {
-  expect(() => renderLanePrompt("Resolve #155. Run `fleet lease map-personal-95-145`.", { ticket: "155" }, [95])).toThrow("names #145");
-  expect(renderLanePrompt("Resolve #{{ticket}} with lease map-personal-95-{{ticket}}.", { ticket: "155" }, [95])).toBe(
-    "Resolve #155 with lease map-personal-95-155.",
+test("finds a ticket in a box name", () => {
+  expect(() => renderLanePrompt("Resolve #155. Run `fleet box spawn map-personal-95-145`.", { ticket: "155" }, [95])).toThrow("names #145");
+  expect(renderLanePrompt("Resolve #{{ticket}} with box map-personal-95-{{ticket}}.", { ticket: "155" }, [95])).toBe(
+    "Resolve #155 with box map-personal-95-155.",
   );
 });
 
