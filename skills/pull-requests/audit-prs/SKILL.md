@@ -128,10 +128,11 @@ Then run the steps again. The notification that the timer ended is your
 signal for the next run. It is not input from the author.
 
 - Use a Monitor task as the timer. Do not use a Bash command with
-  `run_in_background`, `/loop`, cron jobs, or scheduled wakeups. T3 Code
-  keeps the thread on the Working shelf while a Monitor task runs. It returns
-  the thread to the inbox for a background shell and does not track cron
-  jobs.
+  `run_in_background`, `/loop`, cron jobs, or scheduled wakeups. In T3 Code,
+  call `t3_background_wait` with the Monitor's task id after you start it.
+  T3 Code keeps the thread on the Working shelf only while a marked task
+  runs. It returns the thread to the inbox for an unmarked Monitor and does
+  not track cron jobs.
 - Keep one timer. Before you start a timer, stop the earlier timer of this
   watch with TaskStop if it still runs.
 - When the author tells you to stop the watch, stop the timer with TaskStop
