@@ -6,7 +6,7 @@ agent instructions, or with the runtime defaults when there is no policy:
 
 - **Review lane**: the policy's **Review** model for the change's author, or
   a strong model from the other family. It runs Correctness, Risk, Design,
-  Anti-Overengineering, and Systems.
+  Anti-Overengineering, Systems, and Sweep.
 - **Fresh-eyes lane**: the policy's **fresh-eyes** model, or a strong model
   from the author's family. It runs Fresh eyes and UI, with UI cast by the
   policy's UI defaults when it has them.
@@ -50,6 +50,9 @@ identifier and start each Claude lens read-only, from the repo root:
 ```sh
 claude -p --model "$claude_review_model" --allowedTools "Read,Grep,Glob" < <brief file>
 ```
+
+Dispatch the Sweep lens after every other lens of the round has finished, and
+append their `FINDINGS` blocks to its brief. The CLI does both on its own.
 
 A lane fails when it ends without a `FINDINGS` block, when its `COVERED`
 list misses a changed file, or when it runs longer than 30 minutes. Stop an
@@ -102,7 +105,8 @@ place of a trigger and a consequence, the concepts that exist now and the
 concepts the restructuring deletes. An Anti-Overengineering finding names
 the rung and the replacement, and why the replacement still meets the goal.
 When one cause breaks the same rule at
-more than one site, report it once and list every site.
+more than one site, report it once and list every site. End every finding
+with its anchor: the line at `<file>:<line>`, copied verbatim from the diff.
 
 Style counts only when it breaks a named standard: the repo's documented rules
 or the coding preferences in the user's agent instructions. Structure is not
@@ -111,9 +115,9 @@ style.
 End with:
 
 FINDINGS:
-- <file>:<line> | <blocker|major|minor|nit> | <lens> | <trigger> -> <consequence> | <fix> | sites: <file:line, ...>
-- Design form: <file>:<line> | <severity> | Design | <concepts now> -> deletes <concepts> | <restructuring> | sites: <file:line, ...>
-- Anti-Overengineering form: <file>:<line> | <severity> | Anti-Overengineering | <rung>: <what the diff builds> -> <replacement, and why it still meets the goal> | <cut> | sites: <file:line, ...>
+- <file>:<line> | <blocker|major|minor|nit> | <lens> | <trigger> -> <consequence> | <fix> | sites: <file:line, ...> | anchor: <the line at file:line>
+- Design form: <file>:<line> | <severity> | Design | <concepts now> -> deletes <concepts> | <restructuring> | sites: <file:line, ...> | anchor: <the line at file:line>
+- Anti-Overengineering form: <file>:<line> | <severity> | Anti-Overengineering | <rung>: <what the diff builds> -> <replacement, and why it still meets the goal> | <cut> | sites: <file:line, ...> | anchor: <the line at file:line>
 (or "(none)")
 COVERED: <every changed file you cleared or flagged>
 
@@ -156,13 +160,13 @@ finding has a bucket and every Fix and Call item is committed.
 
 ## Lenses
 
-Round one runs every lens. UI and Systems run only when their trigger holds.
+Round one runs every lens, and Sweep last. UI and Systems run only when their trigger holds.
 **UI** runs when the diff changes a user interface. **Systems** runs when the
 diff changes a boundary that many callers pass through: a shared helper, an
 executor, a serializer, a default resolved in one place. In round two,
 Systems runs when a round-one finding named the same cause at more than one
 site. **Team** runs one lens per perspective of the area's owners and the
-author.
+author. **Sweep** runs in round one only.
 
 ### Fresh eyes
 
@@ -387,6 +391,14 @@ Does the screen behave well for a real user?
 - Overflow and truncation of dynamic text.
 - Copy: clear, consistent wording for the same concept, and a permission
   error that names the missing permission.
+
+### Sweep
+
+What did every other lens miss? Their findings follow at the end of this
+brief. Study what they covered first: it shows where the attention went, and
+your value is everywhere else. Report only a problem that no other lens
+reported, with the same bar of a concrete trigger and a concrete consequence.
+An empty sweep is a good outcome. Padding is not.
 
 ### Team
 
