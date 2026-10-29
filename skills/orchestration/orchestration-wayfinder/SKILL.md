@@ -44,6 +44,7 @@ These rules bind the first chart and every later graduation of fog into tickets:
 - **Impact with the destination.** While you name the destination, run one round of the `impact` check. Write its Impact section into the map body, after **Destination**. When questions stay open, write `Impact: pending <ticket>` there instead and chart a grilling ticket for the rest. Block every non-research ticket on it. That ticket's resolution comment carries the Impact section, and the conductor copies it into the map body. When nothing measures the metric yet, put the instrumentation on the map. Code goes into **Not yet specified**, so the spec covers it and publishes it as a slice of a stack. An insight or dashboard on existing events is a `task` ticket. When the check ends in pushback, chart nothing more until the human chooses to carry on, reshape, or drop.
 - **Architecture first.** When the destination changes contracts between modules, the data model, or caching and performance, one of the tickets is an architecture `prototype` that blocks the spec or implementation tickets, so the human shapes the architecture before it is built. Its worker shapes it with the `architecture` skill.
 - **Decision lines on the map.** Each decision locked while charting or re-charting goes into the map's Decisions-so-far as a decision line (see `pr-description`), beside the ticket gists.
+- **Lessons first.** Before the first grilling question, read the lessons log per **Read** in the `lessons` skill. Raise each rule that bears on a grilling question at that question, and record the rules that apply in **Notes** as the `Lessons:` line.
 - **Grilling stays the default** for every open decision. The map's **Notes** may waive it only when the human says so for this map: quote their words and the date. A waiver from another map, a memory, or an earlier session does not carry over; ask the human instead.
 
 ## Reading the frontier
@@ -159,7 +160,8 @@ The worker earns its handoff through the proof gate and the review in [`SHIP.md`
 - Reserve one of three map-level CodeRabbit slots before launching a stack thread. Hold the slot through review; release it when the stack parks.
 - Keep ordinary AFK work off the human's attention rail. A prototype or spec doing its AFK stretch is also background work until it parks.
 - A HITL park is complete only when the ticket has a comment containing the decisions locked as decision lines plus one pending question, and `wayfinder:awaiting-human` is present.
-- Every resolution comment records each load-bearing decision the ticket settled as a decision line (see `pr-description`): the human's answers and the worker's own calls.
+- Every resolution comment records each load-bearing decision the ticket settled as a decision line (see `pr-description`): the human's answers and the worker's own calls. Park, handback, and resolution comments also record each thing that did not work as a ❌ line, per the `lessons` skill.
+- The conductor records each orchestration failure as a ❌ line in a map comment: an orphaned, stalled, or re-dispatched lane, a dead worker cast, a review outage, an orchestration blocker, and a ticket invalidated after work went into it.
 - A HITL resolution is complete only when its durable handoff comment carries its decision lines and links the resulting artifacts, the ticket is closed, and `wayfinder:awaiting-human` is absent. Then retire its runtime worker from human attention as the matching runtime addendum specifies.
 
 ### Lane contract
@@ -192,4 +194,4 @@ The tracker is semantic truth; a worker, a human-attention affordance, and the c
 
 Done means **every in-scope ticket is closed, every stack on the board is `done`, every dispatch setup and worker is terminal, and no runtime worker remains on the attention rail**. An empty frontier alone is not completion: claimed, blocked, and parked tickets are deliberately absent from it.
 
-At done, offer the human a retro of the map with the `retro` skill once. Running it stays their call.
+Before you declare the map done, and when it closes early, run the **Harvest** of the `lessons` skill: dispatch one worker for it, and count the map done only after its `Lessons:` comment is posted. Then offer the human a retro of the map with the `retro` skill once. Running it stays their call.

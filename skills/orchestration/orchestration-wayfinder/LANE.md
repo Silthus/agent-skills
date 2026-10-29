@@ -7,6 +7,7 @@ Read this before the first dispatch. Every ticket worker's prompt, a successor's
 Write one template per ticket type at `$(git rev-parse --git-common-dir)/wayfinder/<map>/lane-<type>.md` in the conductor's checkout, and one for its successors at `lane-<type>-successor.md`, which adds `{{transcript}}`, the predecessor's transcript path or thread id, and in T3 Code also `{{branch}}`. In T3 Code, split the first by runtime instead: `lane-<type>-<child|thread>.md`. Put `{{ticket}}` wherever the ticket number goes: the title, and every `gh issue` command and issue URL. Each other per-ticket value gets a one-line `{{name}}` placeholder; longer context stays on the ticket, behind a pointer. The template carries:
 
 - the map URL, the code repo, and the ticket, as context pointers per **Shared notes** in [`SHIP.md`](SHIP.md);
+- the `Lessons:` line of the map's **Notes**, verbatim, or `Lessons: none`;
 - the wall-time cap, the ticket claim, the durable park and resolution protocol, the report before idle, and that downstream dispatch belongs to the conductor;
 - the prescribed skill, and the order to read its `SKILL.md` directly when the Skill tool refuses it, as it does `to-spec`;
 - **Casting** from [`SKILL.md`](SKILL.md), and the `fleet` CLI's resolved path;
@@ -35,4 +36,6 @@ bun <this skill's directory>/scripts/lane-prompt.ts <template> <ticket> --allow 
 - Before a production action that fans out and cannot be undone, such as a job over every channel or every user: give the job a kill switch it checks before each unit, run it on one unit, and park until the human has looked at that unit's visible effect.
 - Before you merge a pull request, post a ticket comment `Still owed after merge: <steps>` that lists every step left, such as a flag rollout, a log watch, and the resolution. After the merge, edit it to start with `Merged <sha>.` Any thread can finish the lane from it.
 - To save a memory, update the topic note that covers it, or add one topic note when none does.
+- Record what did not work as ❌ lines in your park, handback, and resolution comments, in the shape of the `lessons` skill: `- ❌ **<what you tried>** <what happened, and why>`. Write one for each case its **❌ lines** section lists.
+- When a turn ends waiting on the human, make the last line of your final message `NEEDS_HUMAN: <what is needed, from whom>`. `fleet lanes` reads it, so the conductor sees the ask even when the human cannot reach your thread.
 ```
