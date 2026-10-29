@@ -83,7 +83,7 @@ with the harness's scheduler: in T3 Code, one `schedule_task` bound to this
 thread, updated after each check to the next one. Without a scheduler, park the
 next check with its due time, the PR, the head SHA, and the ledger path.
 
-After each stage change, append one line to the rollout log and push it:
+After each stage change or Hold, append one line to the rollout log and push it:
 
 ```json
 {"at":"<ISO time>","repo":"<owner/repo>","pr":123,"flag":"<key>","stage":"merged|deployed|sandbox|internal|10%|50%|100%|cleanup|done","state":"watching|holding|rolled-back|done|gap","next":"<ISO time of the next check>","note":"<one short line>","thread":"<this thread's id>"}
@@ -159,6 +159,10 @@ The user gets a finding with the evidence and a way out already prepared:
 
 Numbers stay in the notebook and the proof storage. The revert PR and any
 other public text carry the conclusion only.
+
+Record the rollback or the second Hold as a ❌ line, per the `lessons` skill:
+on the map's ticket when the PR belongs to a map, whose harvest collects it.
+Outside a map, run the `lessons` harvest for the PR once the rollout settles.
 
 ## Finish
 
