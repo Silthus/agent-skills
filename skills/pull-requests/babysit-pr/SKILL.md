@@ -112,11 +112,44 @@ same phase. Without the CLI, record both in the ledger. From the third final
 read, `fleet proof` asks its arbiter first, as in `qa-swarm`. Its refusal, or
 the ceiling of six final reads, stops the push and is a question for the user.
 
+## Progress
+
+Stop a fix loop when it stops moving, not after a count of tries. When the
+`fleet` CLI is available, run
+`fleet pr blockers --repo <owner/repo> --pr <number> --record` once on the
+first settled head, and again on each head that carries a fix for a failing
+check or a conflict, after its checks finish. Do not record a head that only
+rebased.
+
+- Exit 0: nothing an agent can fix blocks the PR. What is left waits on
+  people.
+- Exit 1: blockers remain, and the last fix moved them.
+- Exit 2: checks still run or GitHub has not settled mergeability. Record
+  after the next wake.
+- Exit 3: the fix left the same failing checks and conflict as an earlier
+  head. Read the failing log. A new cause under the same check is progress:
+  fix it and say so. The same cause is the "same check fails twice for the
+  same cause" of `full-send`: stop and ask the user.
+
+Without the CLI, compare the failing check names and the conflict state of
+each fixed head with the earlier ones yourself.
+
 ## Base branch
 
 Keep an eye on the base branch and rebase when needed. `watch_pull_request`
 reports conflicts only, so check for BEHIND yourself before you report the PR
-ready. Push a rebase with `--force-with-lease=<branch>:<head SHA before the
+ready. Update only for a conflict, or for BEHIND when the repo requires an
+up-to-date branch: every update restarts CI.
+
+A rebase must not change what the PR changes. Before it, save
+`git diff --name-only origin/<base>...HEAD`. After it, run the same command:
+the two lists must match, and `git merge-base --is-ancestor origin/<base> HEAD`
+must exit 0. A file that joins or leaves the list means the rebase pulled in
+base commits or dropped PR work; reset to the saved head and redo it. For a
+stacked PR whose parent merged, drop the parent's commits, and expect the
+parent's files to leave the list.
+
+Push a rebase with `--force-with-lease=<branch>:<head SHA before the
 rebase>`. If the lease fails, fetch and reassess rather than overwriting new
 work.
 

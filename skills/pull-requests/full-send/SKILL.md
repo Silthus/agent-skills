@@ -139,7 +139,8 @@ Ask only when you cannot continue alone:
 
 - You cannot prove the change.
 - The merge gate cannot pass, and you cannot fix that yourself: the same check
-  fails twice for the same cause, or the review arbiter refuses another round.
+  fails twice for the same cause (`fleet pr blockers --record` exits 3, see
+  **Progress** in `babysit-pr`), or the review arbiter refuses another round.
 - `merge-risk` grades the PR high, or calls it a one-way door. Ask before the
   merge.
 - You want to push back on a person's review, or answer a person in more than
