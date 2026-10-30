@@ -1,8 +1,9 @@
 ---
 name: full-stop
 description: >-
-  Trigger this if the user says 'full stop', or when the user's agent
-  instructions make full stop the default for work that ends in a PR.
+  Trigger this if the user says 'full stop', 'create a draft PR', or
+  'draft PR', or when the user's agent instructions make full stop the
+  default for work that ends in a PR.
 metadata:
   credits:
     - skill: full-stop
@@ -18,6 +19,7 @@ review. Never mark it ready for review, and never merge it.
 
 Read [full-send](../full-send/SKILL.md) and follow its workflow, proof rules,
 review, and babysitting steps 1 to 5. An explicit "full stop" request, or the
+same request worded as "create a draft PR" or "draft PR", or the
 user's agent instructions making full stop the default, authorizes that work
 without a separate "full send" request. That includes full-send's testing
 permission. That request, or that default, is the permission for the test
