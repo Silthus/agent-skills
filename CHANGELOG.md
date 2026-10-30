@@ -1,5 +1,33 @@
 # Changelog
 
+## [2.0.0](https://github.com/Silthus/agent-skills/compare/v1.3.0...v2.0.0) (2026-10-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* babysit-pr no longer merges or runs the post-deploy watch. Use rollout, full-send, or stamp-pr.
+
+### Features
+
+* add full-stop, full-send, stamp-pr and rollout; babysit-pr never merges ([07ba18c](https://github.com/Silthus/agent-skills/commit/07ba18c4c135ac872283c4ed8c68f51fe71dc3de))
+* **babysit-pr:** stop fix loops that make no progress and guard rebases against leaks ([bb9edc8](https://github.com/Silthus/agent-skills/commit/bb9edc8fe0ba051aa823054682493dbe52faa821))
+* **lessons:** keep an incident-backed log of what did not work ([af84c34](https://github.com/Silthus/agent-skills/commit/af84c3439588986f71aebb44c834e9a3d8177a15))
+* **merge-risk:** end the risk callout with a one-step revert line ([59b4c4d](https://github.com/Silthus/agent-skills/commit/59b4c4dbc2e3bf26b14a30e3763f15ba778d0ff5))
+* **orchestration-wayfinder:** harvest lessons at map close and surface NEEDS_HUMAN lanes ([ab84cd3](https://github.com/Silthus/agent-skills/commit/ab84cd356aa5cb0096ba1369ff9901becae58308))
+* **orchestration-wayfinder:** ship specs as short stacks owned by their own threads ([14dd057](https://github.com/Silthus/agent-skills/commit/14dd0573fbc83cc7ff98b735b36916ed90c6f3d7))
+* **orchestration-wayfinder:** try e2e walks as the spec's proof contract ([3a1bcd2](https://github.com/Silthus/agent-skills/commit/3a1bcd204097e9181da08dc0851bf996a2a86113))
+* **qa-swarm:** add a sweep lens, anchor every finding, and prove pre-existing failures from the log ([e5a1193](https://github.com/Silthus/agent-skills/commit/e5a11937f4829f3de9bf21ba6f35f9edee126653))
+* **qa-swarm:** record reviewer misses and grow REVIEW.md from them ([46d7444](https://github.com/Silthus/agent-skills/commit/46d74443ff310b24e348aee8dd1b38f92505b651))
+* **stamp-pr:** keep auth, billing, CI, release, and installer changes for people ([ac8c661](https://github.com/Silthus/agent-skills/commit/ac8c661be94b13b519448449dd164c22fa501e2d))
+
+
+### Bug Fixes
+
+* close the review findings on full-send, full-stop, babysit-pr and rollout ([7ef09ef](https://github.com/Silthus/agent-skills/commit/7ef09ef1bb61fa3aaf8723341e2cf8dd59e65017))
+* **full-send:** cut thin slices before the build, not in review ([13ef977](https://github.com/Silthus/agent-skills/commit/13ef97721e818057401379a568ee1ae9c4483058))
+* **full-stop:** trigger on 'create a draft PR' and 'draft PR' ([2be6ca2](https://github.com/Silthus/agent-skills/commit/2be6ca2f9643979dd7ae887da158aa21454a37ee))
+* **orchestration-wayfinder:** mark the conductor hold as awaited ([57fe3fa](https://github.com/Silthus/agent-skills/commit/57fe3fa577f9474609cccfacaa1ecbe2fe28fc48))
+
 ## [1.3.0](https://github.com/Silthus/agent-skills/compare/v1.2.0...v1.3.0) (2026-10-26)
 
 
