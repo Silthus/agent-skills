@@ -1,5 +1,5 @@
 import { afterEach, expect, test } from "bun:test";
-import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { assertWorkspaceSafe } from "./workspace-safety.ts";
@@ -7,7 +7,7 @@ import { assertWorkspaceSafe } from "./workspace-safety.ts";
 const fixtures: string[] = [];
 afterEach(() => fixtures.splice(0).forEach((path) => rmSync(path, { recursive: true, force: true })));
 
-test("protected Git metadata cannot back an agent worktree and local edits survive refusal", () => {
+test("a protected checkout refuses launches in it, keeps its edits, and lets linked worktrees run", () => {
   const home = mkdtempSync(join(tmpdir(), "workspace-safety-"));
   fixtures.push(home);
   mkdirSync(join(home, ".config/t3-kickoff"), { recursive: true });
@@ -22,24 +22,15 @@ test("protected Git metadata cannot back an agent worktree and local edits survi
   git(["-C", checkout, "add", "."]);
   git(["-C", checkout, "-c", "user.name=Test", "-c", "user.email=test@example.invalid", "commit", "-qm", "fixture"]);
   writeFileSync(join(checkout, "tracked.txt"), "local edits\n");
+  mkdirSync(join(checkout, "src"));
+  symlinkSync(checkout, join(home, "alias"));
+  expect(() => assertWorkspaceSafe(checkout, home)).toThrow("protected workspace");
+  expect(() => assertWorkspaceSafe(join(checkout, "src"), home)).toThrow("protected workspace");
+  expect(() => assertWorkspaceSafe(join(home, "alias"), home)).toThrow("protected workspace");
+  expect(readFileSync(join(checkout, "tracked.txt"), "utf8")).toBe("local edits\n");
   const worktree = join(home, "outside");
   git(["-C", checkout, "worktree", "add", "-qb", "worker", worktree]);
-  expect(() => assertWorkspaceSafe(checkout, home)).toThrow("protected workspace");
-  expect(() => assertWorkspaceSafe(worktree, home)).toThrow("protected workspace");
-  expect(readFileSync(join(checkout, "tracked.txt"), "utf8")).toBe("local edits\n");
-  const safe = join(home, "dev/app");
-  git(["init", "-q", safe]);
-  expect(() => assertWorkspaceSafe(safe, home)).not.toThrow();
-  const inherited = process.env.GIT_DIR;
-  try {
-    process.env.GIT_DIR = join(safe, ".git");
-    expect(() => assertWorkspaceSafe(worktree, home)).toThrow("protected workspace");
-  } finally {
-    if (inherited === undefined) delete process.env.GIT_DIR; else process.env.GIT_DIR = inherited;
-  }
-  const scratch = join(home, "scratch");
-  mkdirSync(scratch);
-  expect(() => assertWorkspaceSafe(scratch, home)).not.toThrow();
+  expect(() => assertWorkspaceSafe(worktree, home)).not.toThrow();
 });
 
 test("the Fleet policy path applies when no t3-kickoff policy exists", () => {

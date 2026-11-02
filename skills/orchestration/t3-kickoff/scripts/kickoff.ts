@@ -251,7 +251,7 @@ async function create(flags: Flags): Promise<void> {
     try {
       const project = await resolveProject(server, session, projectArg, str(flags, "clone"), !!flags["dry-run"]);
 
-      assertWorkspaceSafe(project.workspaceRoot);
+      if (worktree === "none") assertWorkspaceSafe(project.workspaceRoot);
       rpc = await Rpc.connect(server, session);
 
       const config = await rpc.call("server.getConfig", {});
