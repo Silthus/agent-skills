@@ -109,6 +109,11 @@ without a flag, with the 24 hours before the deploy. Read:
   investigations a triage bot posts there for alerts in the window.
 - The feature's own usage: its key events still fire.
 
+When the user's instructions name a production debug tool, run it on each
+Hold or roll-back signal: the deploy state of the changed services, and the
+metrics and logs behind the alert. When the tool is out of reach, record that
+as a gap and go on.
+
 Save each check's queries and results with
 `fleet proof save ... --kind post-deploy-watch` when the `fleet` CLI is
 available (on `PATH` or at `~/dev/fleet/fleet`), else in the ledger. Every
@@ -148,7 +153,8 @@ The user gets a finding with the evidence and a way out already prepared:
 1. Write the investigation in a notebook in the internal project: the signal,
    the window, the queries, the flag-on and flag-off comparison, the affected
    users, and the suspected cause with its file and line.
-2. Cite the triage bot's investigations of alerts in the window.
+2. Cite the triage bot's investigations of alerts in the window and the
+   debug tool's findings.
 3. Start the fix in a new top-level thread from the default branch, in
    `full-stop`, with the evidence and a link to this thread.
 4. Prepare the revert: a `git revert` of the merge commit on its own branch,
