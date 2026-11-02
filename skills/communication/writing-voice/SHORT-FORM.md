@@ -15,7 +15,7 @@ and frank: more casual in 1:1 DMs, positive and diplomatic in public channels.
   through a rendered Markdown reply, and a single newline merges lines into
   one paragraph.
 - Soften a direct point with an emoji, a "please", or a reason.
-- Close an ask with "Thanks!" or "Thank you so much :purple_heart:", and say
+- Close an ask with "Thanks!" or "Thank you so much!", and say
   what the ask unblocks.
 - Hedge lightly ("I think", "maybe", "afaik", "tbh") and still land a clear
   recommendation.
@@ -27,7 +27,7 @@ and frank: more casual in 1:1 DMs, positive and diplomatic in public channels.
 Use emoji often, each with a purpose.
 
 - Softener `:slightly_smiling_face:`, acknowledgement `:+1::skin-tone-2:`,
-  thanks `:purple_heart:` or `:taco:`, done `:white_check_mark:`,
+  thanks `:taco:`, done `:white_check_mark:`,
   self-deprecation `:sweat_smile:` or `:see_no_evil:`.
 - Add `:skin-tone-2:` to every hand emoji: `:wave::skin-tone-2:`,
   `:point_right::skin-tone-2:`, `:muscle::skin-tone-2:`.

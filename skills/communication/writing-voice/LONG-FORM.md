@@ -29,7 +29,7 @@ Two registers share this mode:
 - Put every command, path, variable, and tool in `code`. Bold the key term or
   the winning option.
 - Use callouts: 🎯 for a goal, ℹ️ for info or a tip, 🚨 or ⚠️ for a danger.
-  Other emoji are accents: 💜 for a shout-out, 👇🏻 for a call to action.
+  Other emoji are accents: 👇🏻 for a call to action.
 - Keep step-by-step instructions strictly functional, with no jokes, emoji, or
   narrative.
 - Use "you" in how-tos, "we" and "our" in blogs and decisions, and "I" only for
