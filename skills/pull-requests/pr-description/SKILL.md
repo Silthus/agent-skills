@@ -30,8 +30,9 @@ metadata:
    sentences. Describe the final implementation. Use the domain terms from
    `GLOSSARY.md` when it exists.
 4. Write the Impact section right after the problem, with the `impact`
-   skill when it is installed. It names the metric this change moves and
-   where we see it. A PR from a Wayfinder map copies the map's Impact
+   skill when it is installed. It links the insight that shows, 14 days
+   after deploy, whether this change worked. Leave the section out when
+   the skill says so, as it does for most fixes. A PR from a Wayfinder map copies the map's Impact
    section and narrows it to this change. Pushback happened while the map
    was charted, so ask nothing. When the map is private and this
    repository is public, everything copied from the map, its Impact
@@ -113,8 +114,8 @@ metadata:
    Evidence.
 
 Done when the problem and resulting behavior are clear without the diff,
-the Impact section names its metric, unless `impact` is not installed or
-the work is exempt,
+the Impact section follows the `impact` check, unless `impact` is not
+installed,
 each consequential claim has supporting evidence or an explicit gap, every
 load-bearing decision names who made it, the Decisions table holds the
 latest line for every question decided, including those since the PR
@@ -132,7 +133,7 @@ Use this structure when the repository has no required template:
 
 ## Impact
 
-<the impact line, per the `impact` skill>
+<the impact line, per the `impact` skill; drop the section when it says so>
 
 ## Merge Danger
 
