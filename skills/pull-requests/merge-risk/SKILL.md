@@ -63,6 +63,9 @@ path's reach. The highest path sets the grade. Read every danger hunk with
 its callers.
 
 - A one-way door is high.
+- A migration that adds or changes a column, in one PR with code in another
+  deploy unit that reads it, is high: the reader can go live first and fail
+  until the migration runs. Ask for the split in full-send step 1.
 - Silent harm is never low. It is high when behavior changes on a path that
   reaches some or most, and medium otherwise. A path the user's agent
   instructions name as critical has silent harm as its worst case.

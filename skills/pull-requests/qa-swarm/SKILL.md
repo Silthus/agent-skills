@@ -78,7 +78,8 @@ Fetch the base branch, then write down:
 - **Danger areas**: the hunks in the danger areas of the `merge-risk` skill.
 - **Split**: the PR is one slice, cut before the build by step 1 of
   `full-send` or by the map's stack ticket. A PR with mixed concerns or more
-  than about 400 changed production lines goes to the user with a proposed
+  than about 400 changed production lines, or a migration together with a
+  reader in another deploy unit, goes to the user with a proposed
   split before the first round; do not restack it yourself. In a stack, run
   the swarm on each PR, bottom up.
 - **Proofs**: the proofs the PR owes per [`PROOF.md`](PROOF.md), with the

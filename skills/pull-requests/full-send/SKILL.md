@@ -62,7 +62,11 @@ or an open PR. Skip the steps that are already done, and check them.
    production lines. Independent slices ship in parallel as separate PRs.
    Stack a PR only on a PR it needs; a stack aims for 5 PRs and never holds
    more than 10. Work from a map's stack ticket builds the slices that ticket
-   lists. Complete each slice with the smallest change that works. Fix the case that happened, not every case
+   lists. A schema migration and its readers in other deploy units are
+   separate slices: the migration PR, with the model and API code that deploys
+   with it, sits at the bottom, and each worker or frontend change that reads
+   the new column or field stacks on it as its own PR. `rollout` merges each
+   reader only after the migration is deployed to production. Complete each slice with the smallest change that works. Fix the case that happened, not every case
    that could. If you are on the default branch, create a branch first.
    Follow the PR workflow in the user's agent instructions. Put a runtime
    change that `merge-risk` grades medium or high behind a feature flag.

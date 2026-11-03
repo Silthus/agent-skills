@@ -37,6 +37,26 @@ bare `/trunk merge` comment. Stay until GitHub reports the PR as merged. Push
 nothing while the queue holds the PR. A failed queue run is a failed check:
 triage it and queue the PR once more. Never use `--admin` or other bypasses.
 
+### Deploy order
+
+Services that deploy on their own, such as a background worker or the
+frontend, can go live before the migrations of a PR that merged at the same
+moment. A worker that reads a column before its migration runs fails every
+request until the migration lands.
+
+Before each merge, list each column, table, and API field that the diff reads
+or sends and that does not exist on the default branch's production
+deploy yet. For each one, find the PR that adds it. Merge this PR only when
+that PR's merge commit is deployed to production in every region, with its
+migrations run, per the Deploy stage below. This holds for every PR, stacked
+or not.
+
+In a stack, merge one layer, follow it to its production deploy, and only then
+merge the next layer that reads what it adds. Never merge both in one go or
+one queue run. A layer that mixes a migration with a reader in another deploy
+unit goes back to the author to split, per full-send step 1. Never merge it.
+The user's agent instructions name the repo's deploy units.
+
 ## Flags
 
 List every feature flag the PR introduces or depends on. A flag that does not
