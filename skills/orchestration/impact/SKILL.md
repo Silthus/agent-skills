@@ -66,6 +66,8 @@ Watch [<metric>](<insight link>): <the change that shows this worked, and for wh
 
 Drop `Rolls up to` when no goal metric fits. Add `Run cost: <per unit, against the path it replaces>.` only when the work moves usage onto another path. When the baseline starts with this work, add `Baseline since <date>.`
 
+The `rollout` skill marks the deploy on each linked insight, and the retro reads the metric 14 days later from the PR's Impact section, so keep its format.
+
 A feature without a metric gets one line instead: `No metric: <why, and the instrumentation that would make one>.` A fix without a metric gets no Impact section.
 
 Done when the work has a class, and each feature or large feature links an insight that meets **Pick the metric**, or carries the no-metric line (feature) or the user's decision line (large feature). Each pushback choice is recorded as a decision line, unless the user chose to drop the work.

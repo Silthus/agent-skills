@@ -58,7 +58,12 @@ The default cadence, unless the user names another:
    deploy signal, such as the PostHog `checking-deploy-timing` skill, a deploy
    workflow run, or a release tag. Wait on a deploy run with
    `gh run watch <id> --exit-status`. When no deploy shows up within 24 hours,
-   record a gap and ask.
+   record a gap and ask. Then **mark the deploy** on each insight that the
+   PR's Impact section links: in PostHog, an annotation at the deploy time
+   that reads `<owner/repo>#<number> deployed`, scoped to that insight
+   (`dashboard_item`, the numeric ID behind the link's short ID) or to that
+   dashboard. The impact retro reads the metric on both sides of this mark.
+   Keep it off the whole project, where every chart would show it.
 2. **Sandbox**, only when `merge-risk` grades the PR high, calls it a one-way
    door, or names silent harm: enable the flag for the sandbox project and its
    test user. Walk the changed journey in production as that user with the
