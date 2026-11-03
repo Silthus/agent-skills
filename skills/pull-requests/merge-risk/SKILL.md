@@ -38,29 +38,44 @@ Name the worst thing a bug in the diff does to a user:
   such as saving or sending.
 - **Cosmetic**: a user sees it, and nothing they need is blocked.
 
+## Hot paths
+
+A **hot path** is a route that live traffic takes into the diff. Trace each
+one from its entry point in the product, such as a route, a job, a consumer,
+or a UI action, down to the changed code it runs. Shared code that the diff
+changes is on every path that calls it, including paths outside the diff.
+A new entry point is a path of its own, and existing traffic reaches only
+the shared code it calls.
+
 ## Reach
 
-Measure how many users the changed surface reaches: the share of active
-teams or users who used it in the last 30 days, from the product analytics
-project the user's agent instructions name. Band it as few, some, or most.
-Code on a path that every request or event runs through reaches most.
+Measure each hot path's reach from data: the share of active teams or users
+who ran it in the last 30 days, from the product analytics project the
+user's agent instructions name. A new entry point reaches the teams that can
+call it and are likely to, such as the users of the feature it extends. Band
+each path as few, some, or most. Code on a path that every request or event
+runs through reaches most.
 
 ## Grade
 
-Read every danger hunk with its callers. The worst case sets the floor:
+The grade is the true risk: the worst case on each hot path, weighed by that
+path's reach. The highest path sets the grade. Read every danger hunk with
+its callers.
 
-- Silent harm is never low. On a path the user's agent instructions name as
-  critical, it is at least medium even for a pure refactor, and high when
-  behavior changes.
+- A one-way door is high.
+- Silent harm is never low. It is high when behavior changes on a path that
+  reaches some or most, and medium otherwise. A path the user's agent
+  instructions name as critical has silent harm as its worst case.
 - A broken core action is medium. It is low only behind a default-off flag
-  with few users reached.
+  on a path that reaches few.
 - Cosmetic is low, even when most users see it.
 
-Danger areas, a one-way door, and more than about 400 changed production
-lines raise the grade. A default-off feature flag, focused tests on the risky
-path, and a two-way door lower it, never below the floor. Done when every
-danger hunk and every one-way effect is named, the worst case and reach are
-named, and the grade follows from them.
+Danger areas and more than about 400 changed production lines raise the
+grade. A default-off feature flag, focused tests on the risky path, and a
+shadow diff that shows existing paths behave as before lower it, but never
+below the first matching rule above. Done when every hot path is traced and
+banded, every danger hunk and every one-way effect is named, and the grade
+follows from them.
 
 ## Callout
 
