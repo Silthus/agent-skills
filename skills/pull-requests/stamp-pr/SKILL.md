@@ -45,3 +45,6 @@ Replace full-send's step 6:
      push, and request the stamp once more: remove the label and add it again.
    - **Refused again, or without a concrete issue:** stop stamping. Continue
      as full-send with a teammate's review, and say why in the report.
+
+For a stack, stamp every layer before you merge any of them, then merge the
+stack as one, per `rollout`.

@@ -37,6 +37,19 @@ bare `/trunk merge` comment. Stay until GitHub reports the PR as merged. Push
 nothing while the queue holds the PR. A failed queue run is a failed check:
 triage it and queue the PR once more. Never use `--admin` or other bypasses.
 
+### Merge a stack as one
+
+Merge a stack with one queue entry, not one per layer. First get every layer
+approved: a teammate's review or, under `stamp-pr`, a stamp on each layer.
+Then post one bare `/trunk merge` comment on the top PR of the stack. The
+queue collapses the stack and tests and merges it as one, which is much
+faster than queuing each layer in turn. Do not queue a layer while another
+still waits for approval; the queue drops a PR that stays not ready.
+
+Deploy order still wins. When a layer reads what a lower layer adds, collapse
+the layers up to and including the one that adds it, follow that merge to its
+production deploy, then collapse the rest.
+
 ### Deploy order
 
 Services that deploy on their own, such as a background worker or the
@@ -51,9 +64,9 @@ that PR's merge commit is deployed to production in every region, with its
 migrations run, per the Deploy stage below. This holds for every PR, stacked
 or not.
 
-In a stack, merge one layer, follow it to its production deploy, and only then
-merge the next layer that reads what it adds. Never merge both in one go or
-one queue run. A layer that mixes a migration with a reader in another deploy
+In a stack, merge the layer that adds it, follow it to its production deploy,
+and only then merge the layer that reads what it adds. Never merge both in one
+go or one queue run. A layer that mixes a migration with a reader in another deploy
 unit goes back to the author to split, per full-send step 1. Never merge it.
 The user's agent instructions name the repo's deploy units.
 
