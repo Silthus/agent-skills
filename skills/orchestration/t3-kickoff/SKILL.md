@@ -42,6 +42,7 @@ Without any of them, `kickoff` makes no workspace or quota check.
 1. Write the prompt to a file. The prompt is the thread's first user message, so it carries the full task, the context, and the report the thread owes back.
 2. Pick the flags:
    - `--project <name|id|repo>`: a project the server knows, by title, id, or repository such as `github.com/acme/app`. A wrong name lists the known projects. Add `--clone <git-url>` to clone the repository into `~/dev/<name>` and add it as a project when none matches.
+   - `--scratch` instead of `--project`: a "No project" thread in its own scratch folder, as the web client starts one. It runs without a worktree. The server creates the scratch project when the machine has none.
    - `--title "<title>"`: the thread title. Add `--auto-title` to let the server replace it.
    - `--model <slug>`: choose with the model selection policy in the user's agent instructions, when one exists; otherwise the runtime defaults. Pass it explicitly. A wrong slug lists the offered slugs.
    - `--worktree new|none`: `new` checks out `origin/<base>` into a fresh `t3code/<hex>` worktree and runs the project setup script; `none` runs in the project checkout. `--base` sets the base branch (default `master`).

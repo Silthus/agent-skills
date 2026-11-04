@@ -19,6 +19,7 @@ type Flags = Record<string, string | true>;
 
 const USAGE = `usage:
   kickoff --project <name|id> --title <title> --prompt-file <path|-> [options]
+  kickoff --scratch --title <title> --prompt-file <path|-> [options]
   kickoff delete --thread <thread-id> [--keep-worktree]
   kickoff status --thread <thread-id>
   kickoff wait --thread <thread-id> [--after <turn-id>] [--timeout <sec>]
@@ -45,6 +46,7 @@ remoteScript. T3_KICKOFF_AVAILABILITY_FILE and T3_KICKOFF_REMOTE_SCRIPT override
 create options:
   --project <name|id|repo>  a project title or id, or a repository such as github.com/owner/name
   --clone <git-url>         if no project matches, clone into ~/dev/<name> and add it to T3
+  --scratch                 instead of --project: a No project thread in its own scratch folder
   --model <slug>            model slug (default claude-opus-5-5)
   --provider <instanceId>   provider instance (default claudeAgent = Claude Code)
   --effort <level>          reasoning effort option (default high; "none" to omit)
@@ -228,14 +230,15 @@ class Rpc {
 }
 
 async function create(flags: Flags): Promise<void> {
-  const projectArg = str(flags, "project") ?? die(`--project is required\n${USAGE}`);
+  const scratch = flags["scratch"] === true;
+  const projectArg = scratch ? "" : str(flags, "project") ?? die(`--project or --scratch is required\n${USAGE}`);
   const title = str(flags, "title") ?? die(`--title is required\n${USAGE}`);
   const promptFile = str(flags, "prompt-file") ?? die(`--prompt-file is required\n${USAGE}`);
   const model = str(flags, "model", "claude-opus-5-5")!;
   const provider = str(flags, "provider", "claudeAgent")!;
   const effort = str(flags, "effort", "high")!;
   const contextWindow = str(flags, "context-window", "1m")!;
-  const worktree = str(flags, "worktree", "new")!;
+  const worktree = scratch ? "none" : str(flags, "worktree", "new")!;
   if (worktree !== "new" && worktree !== "none") die("--worktree must be new or none");
   const base = str(flags, "base", "master")!;
   const runtimeMode = str(flags, "runtime-mode", "full-access")!;
@@ -249,10 +252,11 @@ async function create(flags: Flags): Promise<void> {
   await withSession(async (server, session) => {
     let rpc: Rpc | undefined;
     try {
-      const project = await resolveProject(server, session, projectArg, str(flags, "clone"), !!flags["dry-run"]);
-
-      if (worktree === "none") assertWorkspaceSafe(project.workspaceRoot);
       rpc = await Rpc.connect(server, session);
+      // The server gives each thread in the scratch project its own folder, as the web client's "No project" does.
+      const projectKey = scratch ? (await rpc.call("projects.ensureScratch", {})).projectId : projectArg;
+      const project = await resolveProject(server, session, projectKey, str(flags, "clone"), !!flags["dry-run"]);
+      if (worktree === "none") assertWorkspaceSafe(project.workspaceRoot);
 
       const config = await rpc.call("server.getConfig", {});
       const prov = (config.providers as any[]).find((p) => p.instanceId === provider);
