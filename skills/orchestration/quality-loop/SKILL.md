@@ -36,7 +36,7 @@ Each module in scope moves through these stages in order, one at a time:
    - reach is the module's hot-path score;
    - confidence is high when the seam is clear, the tests run without services a fresh box lacks, and the change fits the line limits, and low otherwise;
    - the class is `critical` when the PR touches a critical path, and `normal` otherwise.
-5. **Cut.** The free slots are the WIP limit minus the running lanes of both loops. Keep high-confidence rows in score order until the slots are full. At most one `critical` lane is open at a time. Done when `lanes.md` lists the kept rows as `planned` and `backlog.md` gives each skipped row its reason.
+5. **Cut.** The free slots are this loop's WIP limit minus its running lanes. Keep high-confidence rows in score order until the slots are full. At most one `critical` lane is open at a time. Done when `lanes.md` lists the kept rows as `planned` and `backlog.md` gives each skipped row its reason.
 6. **Start lanes.** Start one lane per kept row, as [lane.md](references/lane.md) says. Record each lane's machine, thread, and task in `lanes.md`, then end the turn. The end of a normal lane wakes this thread.
 
 ## Settle

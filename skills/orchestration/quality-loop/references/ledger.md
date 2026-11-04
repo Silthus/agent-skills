@@ -7,8 +7,9 @@ Both loops share one ledger directory. Every file is plain text, so a run reads 
 The limits the ritual tunes. Each change gets one dated line that says why. Each run reads `Paused` first.
 
 ```md
-WIP: 2            # running lanes, both loops together
-Critical lanes: 1
+Quality loop WIP: 2   # running lanes of this loop
+Signal loop WIP: 2
+Critical lanes: 1     # both loops together
 Max changed production lines: 150
 Max changed lines: 300
 Paused: no

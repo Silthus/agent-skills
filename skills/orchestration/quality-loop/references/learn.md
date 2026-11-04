@@ -11,8 +11,9 @@ The weekly **ritual** of both loops. It turns the week's ledger into lessons, re
    A critical lane still at `ready` gets its grade after the user's word.
 3. **Learn.** For each `rough` or `bad` PR, write a lesson with the `lessons` skill from its ❌ lines and evidence. When a lesson repeats, route it as `lessons` says, to a check, a `REVIEW.md` line in the code repository through its own lane, or an edit to this skill. Run the `retro` categories over the session of the worst lane.
 4. **Tune `limits.md`.** Write one dated line per change:
-   - after ten `clean` PRs in a row since the last change, raise WIP by one, up to 4, or raise the line limits by half, up to 400 changed production lines, and never both at once;
-   - after any `bad` PR, set WIP back to 2 and halve the line limits;
+   - after ten `clean` PRs in a row from one loop since that loop's last raise, raise that loop's WIP by one, up to 5;
+   - when a loop's WIP is already 5, its next ten `clean` PRs in a row raise the line limits by half instead, up to 400 changed production lines;
+   - after any `bad` PR, set that loop's WIP back to 2 and halve the line limits;
    - after a revert, or a bad production signal from a lane, set `Paused: yes` and ask the user.
 5. **Re-rank the hot paths.** Recompute each module's score inputs: churn and bug-fix share from Git, error and latency weights from the signal sources, and the test gap. Write them to `hotpaths.md` and reorder `backlog.md`. Reopen a `done` module whose errors, latency, or churn rose.
 6. **Report** in the final reply. List the PRs and their grades, the limit changes, the lessons, the signals that need a product decision, the critical lanes waiting for the user, and the top five of each backlog. Keep production numbers in the ledger and link to it.

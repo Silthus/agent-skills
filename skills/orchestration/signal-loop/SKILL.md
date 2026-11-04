@@ -7,7 +7,7 @@ description: Coordinate the signal loop, which turns production signals that nob
 
 The signal loop finds what goes wrong for real users that nobody handles yet, and fixes the small, certain part of it. A scheduled task starts a **coordinator** run. The coordinator collects signals, drops the ones someone already covers, verifies and ranks the rest, keeps the items above a fixed bar, and starts one `fix` lane per kept signal.
 
-This loop shares its ledger, its WIP limit, its lane contract, and its weekly ritual with the `quality-loop` skill.
+This loop shares its ledger, its lane contract, and its weekly ritual with the `quality-loop` skill. Each loop has its own WIP limit.
 
 ## Settings
 
@@ -31,7 +31,7 @@ Read the `quality-loop` settings in the user's agent instructions. This loop use
    - confidence is 1 when one small `fix` PR can fix it and a test can show the fix, and 0 otherwise.
 
    A signal with confidence 0 becomes `needs decision`, with one line for the ritual report. Mark each signal `critical` or `normal` by the critical paths.
-6. **Cut.** The free slots are the WIP limit minus the running lanes of both loops. Keep signals in score order until the slots are full. At most one `critical` lane is open at a time. The rest stay `candidate` for the next run. Done when every collected signal has a status in `signals.md`, and `lanes.md` lists the kept ones as `planned`.
+6. **Cut.** The free slots are this loop's WIP limit minus its running lanes. Keep signals in score order until the slots are full. At most one `critical` lane is open at a time. The rest stay `candidate` for the next run. Done when every collected signal has a status in `signals.md`, and `lanes.md` lists the kept ones as `planned`.
 7. **Start lanes.** Start one lane per kept signal, as `quality-loop/references/lane.md` says, with PR type `fix` and the signal's evidence and metric in the brief. Record each lane in `lanes.md`, then end the turn. The end of a normal lane wakes this thread.
 
 The run is done when every collected signal has a status and every kept signal has a lane.
