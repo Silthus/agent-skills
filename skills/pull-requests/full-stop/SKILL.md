@@ -32,7 +32,8 @@ PR ready, merge, and roll out do not apply. The overrides below take precedence.
 You may commit, push, rebase, fix conflicts, and use `--force-with-lease` on
 this task's branch. Never mark the PR ready for review, request reviewers,
 merge, enable auto-merge, enter a merge queue, push to the default branch,
-bypass branch protection, or delegate those actions.
+bypass branch protection, ask the approval bot for a run or add its label, or
+delegate those actions.
 
 Disable existing auto-merge and remove the PR from any merge queue before
 work begins; check again before each push. Report these changes. If you
@@ -53,9 +54,26 @@ without the user. If someone else merged it, report that instead.
 - **Blocked:** explain what prevents readiness, what you tried, and what is
   needed. Follow full-send's rules for asking the user.
 
+## Forecast the stamp
+
+When the PR is ready for your review and the user's agent instructions name
+an approval bot for this repo, as `stamp-pr` uses, forecast its verdict on the
+final head. The bot refuses drafts, and a passing run posts a real approval,
+so never run it here. Predict the verdict instead:
+
+- Check `stamp-pr`'s Qualify rules against the final diff.
+- Check that every bot review on the head is finished, and each finding is
+  fixed or answered and its thread resolved.
+- Check the refusal patterns that the user's agent instructions record for
+  the bot.
+
+The verdict is **likely approve**, or **likely refuse** with the rule or
+pattern that fails. The forecast is not a requirement for the handoff.
+
 In T3 Code, call `unwatch_pull_request` before the handoff or a question.
 Report the PR link, final head, verdict, proof, reviewer outcome, merge risk,
-and remaining risks. State that the PR is still an unmerged draft.
+stamp forecast, and remaining risks. Label the forecast as a prediction, not
+the bot's verdict. State that the PR is still an unmerged draft.
 
 The user can continue from here with "full send" or "stamp it". That skill
 starts from this PR as it stands.
