@@ -9,11 +9,9 @@ description: >-
 # Slack PR update
 
 1. **Inventory.** Limit it to upstream repositories. Exclude PRs whose target repository is a fork.
-   A PR from the user's fork into an upstream repository is an upstream PR and stays in scope.
    Collect the open PRs, and the PRs merged in the update window: the window the user names, else the time since their last update, else the last 7 days. State the window you used.
    Check each open PR's draft status, reviews, conflicts, dependencies, stack parents, and required CI runs.
    When the repository uses the Trunk merge queue, read the Trunk merge comment and verify every merge check it lists.
-   Separate passing checks from CI that needs maintainer approval.
    If a check is unavailable, state what is unknown.
    Done when every PR has exactly one section from the table below.
 2. **Sort** each PR into one section. A PR sits in the first section whose rule it meets.
@@ -21,8 +19,8 @@ description: >-
    | Section | Rule |
    | --- | --- |
    | Shipped | Merged in the update window. |
-   | Ready to merge | Not a draft, current required approval, green required CI, every merge-queue check satisfied, no conflict, dependency, or other blocker. Unknown checks do not qualify. An approved PR that waits only for CI authorization qualifies, with a CI ack note. |
-   | Ready for review | Not a draft, no conflict or failing check that needs work, still needs review approval. Note pending CI authorization in the section header. |
+   | Ready to merge | Not a draft, current required approval, green required CI, every merge-queue check satisfied, no conflict, dependency, or other blocker. Unknown checks do not qualify. |
+   | Ready for review | Not a draft, no conflict or failing check that needs work, still needs review approval. |
    | Work in progress | Every GitHub draft, and any other PR with unresolved findings, conflicts, a running rebase, or failing checks that need work. |
 
    An approval on a closed predecessor or a dismissed approval does not count as current approval.
@@ -74,11 +72,11 @@ For [#channel](<channel-link>):
 
 **Ready to merge** :pr-open:
 
-- <Theme>: <what one PR does> ([#n](<link>)), needs a CI ack
+- <Theme>: <what one PR does> ([#n](<link>))
 
 &nbsp;
 
-**Ready for review** :review: *(please ack CI runs as well)*
+**Ready for review** :review:
 
 - <Theme>:
   - <What one PR does> ([#n](<link>))
