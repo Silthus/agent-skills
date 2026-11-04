@@ -16,21 +16,19 @@ user and continue as full-send.
 
 ## Qualify
 
-Teammates review larger changes so the team keeps sharing what changes. Stamp
-only a PR that is all of these:
+The user's "stamp it" is their risk call, and the approval bot makes its own.
+Grade the PR with `merge-risk` for its description as full-send does, but do
+not hold the stamp for its grade, its door, its size, or its shape. Under
+"stamp it", full-send's question before merging a high or one-way PR does not
+apply.
 
-- `merge-risk` grades it low, and it is a two-way door.
-- At most 400 changed production lines.
-- Standalone: not a layer of a stack, and not from a map.
-- No change in product behavior that the team should see.
-- Outside the paths that the user's agent instructions keep for teammates.
-- No hunk in authentication, permissions, secrets or crypto, billing, CI or
-  deploy configuration, release workflows, or installers, whatever its grade.
-  A person approves the code that controls who gets in, what is charged, and
-  what ships.
+Refuse a stamp only for a hunk in a danger area: the
+[danger areas of merge-risk](../merge-risk/SKILL.md#danger-areas), with the
+areas the user's agent instructions add to them or keep for teammates. A
+person approves those.
 
-Check before you start, and again on the final diff. If the PR does not
-qualify, do not stamp it. Ask the user, naming the rule that failed, with
+Check before you start, and again on the final diff. When a hunk falls in a
+danger area, do not stamp. Ask the user, naming the hunk and its area, with
 full-send as the recommended option.
 
 ## Stamp
