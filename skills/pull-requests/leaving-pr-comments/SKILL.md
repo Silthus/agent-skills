@@ -2,38 +2,40 @@
 name: leaving-pr-comments
 description: >-
   Draft and format every GitHub comment, review reply, or issue comment an
-  agent posts on the user's behalf, and get their approval for each one a
-  person reads. Replies to review bots, one-line acknowledgements, and
-  decision records go out without approval. Use before posting any comment
-  from the user's account.
+  agent posts on the user's behalf. A person's comment gets a 👍 reaction for
+  a fix, or a draft the user posts in their own voice. Replies to review bots
+  and decision records go out without approval. Use before posting any
+  comment or reaction from the user's account.
 ---
 
 # Leaving PR comments
 
-## Approval first
+## People hear from the user
 
-The user approves every comment to a person before it goes out. This covers PR
-comments, review replies, issue comments, and resolving a thread with a reply,
-when a person reads them. The exceptions are below.
+A person who wrote a comment put thought into it. They hear back from the
+user, or see one silent signal, never a reply from an agent. A thread or
+comment counts as a person's when a person wrote any comment in it, or when
+you cannot tell.
 
-1. Draft the comment in the format below.
-2. Show the user the target (URL and thread) and the exact text.
-3. Post only after the user approves that comment in the conversation. Post
-   it unchanged, or with their edits. An earlier approval does not cover a new
-   comment.
+- **Fixed as suggested**: push the fix, then add a 👍 reaction to their
+  latest comment. Post no reply. Leave the thread open; the person resolves
+  it. For a review comment, run
+  `gh api repos/<owner>/<repo>/pulls/comments/<id>/reactions -f content=+1`;
+  for a top-level PR comment, use `issues/comments/<id>/reactions`. The id is
+  the number after `#discussion_r` or `#issuecomment-` in the comment's URL.
+  The 👍 is the only reaction, and it means fixed.
+- **Everything else**: pushback, a question, a partial fix, or an answer
+  that waits on a decision. Draft the reply in the user's voice, without the
+  callout, and give the user the draft with the comment's URL. The user posts
+  it themselves. Post it for them only when they ask you to; then post their
+  approved text, unchanged or with their edits, under the callout. An earlier
+  request does not cover a new reply.
 
-A subagent or a loop cannot ask the user. It does not post a comment that
-needs approval. It returns each draft with its target in its summary, and the
-main agent asks the user.
+A subagent or a loop cannot ask the user. It adds the 👍 for a fix and
+returns each draft with its URL in its summary, and the main agent hands the
+drafts to the user.
 
-### Short acknowledgements
-
-A reply of a few words, one line at most, that accepts a person's suggestion
-or reports its fix goes out without approval, for example "Good catch, fixed in
-2c76885." Pushing back, disagreeing, asking a question, or anything longer
-waits for the user's approval. Leave the thread open for the person.
-
-### Records and commands
+## Records and commands
 
 These go out without approval:
 
@@ -42,33 +44,34 @@ These go out without approval:
 - A bare command that a repo's bot reads, such as `/trunk merge`, when a
   skill's grant covers it. Post the command alone, without the callout.
 
-### Replies to review bots
+## Replies to review bots
 
 A review bot, such as CodeRabbit, Greptile, Copilot, Cursor Bugbot, PostHog
 Review, or Macroscope, wrote every comment in the thread. Any agent, a
-subagent or a loop too, replies without approval when you are confident the
-reply is correct:
+subagent or a loop too, acts without approval when you are confident the
+finding is fixed or the reason is correct:
 
-- **Fixed finding**: push the fix first. If the bot already resolved the thread
-  after the push, post nothing. Otherwise reply with the fixing commit and one
-  sentence on the fix.
+- **Fixed finding**: push the fix, then resolve the thread with no reply.
+  The push and the resolved thread say it. When the `fleet` CLI is available
+  (on `PATH` or at `~/dev/fleet/fleet`), run
+  `fleet pr bot-threads --repo <owner/repo> --pr <number> --fixed <thread URL>`,
+  one `--fixed` per thread, with the URL the command lists. It refuses a
+  person's thread. Otherwise use the GitHub GraphQL `resolveReviewThread`
+  mutation through `gh api graphql`.
 - **Rejected finding or follow-up**: reply with the concrete reason and the
-  evidence, such as the file and line that prevents the bug, or the pattern the
-  fix waits for.
+  evidence, such as the file and line that prevents the bug, or the pattern
+  the fix waits for. The reason stops the bot from raising it again. Then run
+  the command with `--resolve`, which resolves only bot threads whose last
+  comment is yours.
 
-After the reply, resolve the bot's thread. When the `fleet` CLI is available (on `PATH` or at `~/dev/fleet/fleet`), run
-`fleet pr bot-threads --repo <owner/repo> --pr <number> --resolve`, which
-resolves only bot threads whose last comment is yours. Otherwise resolve it
-with the GitHub GraphQL `resolveReviewThread` mutation through `gh api graphql`.
-Human threads stay open for the person. A bot finding that sits in a review
-body has no thread. Answer those findings in one PR comment
-that mentions the bot, such as `@coderabbitai`. Use the format below. Report
-each reply you posted.
+A bot finding that sits in a review body has no thread. A fix needs no
+answer. Answer the rejected findings in one PR comment that mentions the bot,
+such as `@coderabbitai`, in the format below. Report each reply you posted
+and each thread you resolved.
 
-Draft for the user's approval instead when a person wrote any comment in the
-thread, when you cannot tell, when the reply depends on a decision that is
-still open, or when you are not confident in the reason. Any other top-level
-PR comment also needs approval.
+Hand the user a draft, as for a person, when the reply depends on a decision
+that is still open, or when you are not confident in the reason. Any other
+top-level PR comment also waits for the user's approval.
 
 ## Before you post
 
@@ -78,14 +81,15 @@ never post it.
 
 ## Format
 
-Start every comment with this callout. Put in the exact name of the model that
-writes the comment, for example `Claude Opus 5.5` or `GPT-5.6 Sol`:
+Start every comment an agent posts with this callout. Put in the exact name
+of the model that writes the comment, for example `Claude Opus 5.5` or `GPT-5.6 Sol`:
 
 ```md
 > [!NOTE]
 > 🤖 **<model name> responding on behalf of <user's first name>**
 
-Fixed in 2c76885. The parser now skips empty rows, and the new test covers it.
+No change: `parseRows` in `src/csv.ts:42` already skips empty rows, and
+`csv.test.ts` covers it.
 ```
 
 Write the body in the user's short-form voice from the `writing-voice` skill,

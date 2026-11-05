@@ -104,14 +104,15 @@ reviewer's brief.
 - **Panel finding**: the ledger holds it. Post no reply to it.
 - **Bot thread or bot comment**: every comment in the thread comes from a
   review bot, such as CodeRabbit, Greptile, Copilot, Cursor Bugbot, or PostHog
-  Review, or carries an automated-comment callout. Reply in its thread per the
-  `leaving-pr-comments` skill without approval: after you push the fix for a
-  Fix or Call item, or with the reason for a Reject or Follow-up item. An
-  item that waits on a Decision gets its reply after the user decides.
+  Review, or carries an automated-comment callout. Act per the
+  `leaving-pr-comments` skill without approval: resolve the thread with no
+  reply after you push the fix for a Fix or Call item, and reply with the
+  reason for a Reject or Follow-up item. An item that waits on a Decision
+  gets its reply after the user decides.
 - **Human thread**: a person wrote any comment in it, or you cannot tell. Fix
-  a Fix or Call item. Reply per `leaving-pr-comments`: a one-line
-  acknowledgement goes out on its own; draft anything longer, and any
-  pushback, for the user's approval. Leave the thread open for the person.
+  a Fix or Call item and add a 👍 to their comment, per
+  `leaving-pr-comments`. Any other answer is a draft for the user to post in
+  their own voice. Leave the thread open for the person.
 - **Failed check**: read the failed job's own log for the current HEAD. Status
   comments on the PR, your own earlier ones too, are not evidence. A failure
   that the PR causes is a Fix. An infrastructure failure, such as a timeout, a

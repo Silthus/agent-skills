@@ -78,9 +78,11 @@ Before you watch, close the review-bot threads that already exist:
    an unanswered bot thread remains. Otherwise read `reviewThreads` through
    `gh api graphql`.
 2. Triage and answer each one as in Reviews.
-3. Resolve every bot thread whose last comment is yours: run the command
-   again with `--resolve`, or use the `resolveReviewThread` mutation. Human
-   threads stay open.
+3. Resolve each fixed bot thread with `--fixed <thread URL>`, and every bot
+   thread whose last comment is yours with `--resolve`, or use the
+   `resolveReviewThread` mutation. Human threads stay open. A human thread
+   counts as answered once it carries your 👍; the command lists the rest as
+   waiting on the user.
 
 ## Reviews
 
@@ -163,7 +165,7 @@ If nothing has changed, stay quiet rather than posting filler comments.
 
 The skill that called you sets the end. Called alone, babysitting ends when
 the PR is approved, or is still a draft, and its required checks are green on
-the latest head, no bot thread is open, no human thread waits on you, and the
-branch is neither BEHIND nor DIRTY; or when the PR merges or closes. Report
+the latest head, no bot thread is open, every human thread has your 👍 or a
+draft you handed the user, and the branch is neither BEHIND nor DIRTY; or when the PR merges or closes. Report
 that it is ready to merge, or for a draft, ready for the user's review. Never
 merge it.
