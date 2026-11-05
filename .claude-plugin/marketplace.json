@@ -26,7 +26,7 @@
       "name": "communication",
       "source": "./skills/communication",
       "skills": ["./"],
-      "description": "Explain diffs, share plans and previews, and write in a consistent personal voice.",
+      "description": "Explain diffs, share plans and previews, write in a consistent personal voice, and write tested alert runbooks for people and agents.",
       "category": "productivity",
       "keywords": ["writing", "sharing", "preview", "explain"]
     }
