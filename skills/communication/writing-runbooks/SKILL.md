@@ -18,6 +18,8 @@ runbooks/<alert-name>/
 
 The steps live once, in `README.md`. `AGENT.md` links to them and never copies them, so the person and the agent always follow the same steps and the same safety calls.
 
+When the repository already has a runbook format, keep it and fit these rules inside it, as [HOST-FORMAT.md](HOST-FORMAT.md) describes.
+
 ## Process
 
 1. **Scope the alert.** Read the alert rule: its query, threshold, labels, and where it notifies. Then read what the alert has meant before: past incidents, postmortems, alert threads, and the service's code and deploy config. Done when you can name what is broken for users, the one check that confirms it, at most three known mitigations, and the person or rotation to page when they fail. When no mitigation is known, stop and ask the user. A runbook with an invented fix is worse than none.
@@ -42,7 +44,7 @@ The steps live once, in `README.md`. `AGENT.md` links to them and never copies t
    bun <this skill>/scripts/check-runbook.ts runbooks/<alert-name>
    ```
 
-   It checks the structure, the stamp, the `[human]` gates, the script link, and the wording. Done when it prints `ok`. Then run the `unslop` skill over the page's prose, if it is installed, and check again.
+   For a repository with its own format, pass the runbook file and the section that holds the steps instead. It checks the structure, the stamp, the `[human]` gates, the script link, and the wording. Done when it prints `ok`, and the host's own checker passes too. Then run the `unslop` skill over the page's prose, if it is installed, and check again.
 
 8. **Wire the alert.** Set the alert's runbook URL to the folder's `README.md`. Make the first line of the alert's description step 1 of the page, so the page notification already says what to do.
 
