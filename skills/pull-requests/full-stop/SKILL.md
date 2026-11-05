@@ -62,6 +62,8 @@ final head. The bot refuses drafts, and a passing run posts a real approval,
 so never run it here. Predict the verdict instead:
 
 - Check `stamp-pr`'s Qualify rules against the final diff.
+- Name every team other than the user's that owns a changed path, per
+  `stamp-pr`'s "Other teams' code". A stamp will ask the user about them.
 - Check that every bot review on the head is finished, and each finding is
   fixed or answered and its thread resolved.
 - Check the refusal patterns that the user's agent instructions record for

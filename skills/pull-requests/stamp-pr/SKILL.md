@@ -31,6 +31,30 @@ Check before you start, and again on the final diff. When a hunk falls in a
 danger area, do not stamp. Ask the user, naming the hunk and its area, with
 full-send as the recommended option.
 
+## Other teams' code
+
+A stamp can merge another team's code without that team knowing. Find the
+owner of every changed path where the user's agent instructions say ownership
+is recorded, else in the repository's `CODEOWNERS`. A path with no recorded
+owner needs no check.
+
+When a hunk belongs to a team other than the user's, hold the stamp and ask
+the user. Name each such hunk and the team that owns it. Ask again for every
+PR, and again when the final diff adds a team. One answer never covers the
+next PR. The options:
+
+- **Stamp and inform them:** stamp as below. Before you merge, draft a Slack
+  message to that team's channel. Say in one or two sentences what the PR
+  changes in their code and why, and link the PR.
+- **Ask them to review:** do not stamp. Draft a review request to that team's
+  channel with `slack-pr-update`, then continue as full-send and wait for an
+  approval from someone on that team.
+
+Write each message as an unsent Slack draft for the user to send. If you
+cannot make a draft, put the text in your report. The user's agent
+instructions name the user's team and each team's channel. If no channel is
+known for a team, ask the user.
+
 ## Stamp
 
 Replace full-send's step 6:
