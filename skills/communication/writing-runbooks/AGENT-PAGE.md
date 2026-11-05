@@ -28,11 +28,15 @@ One heading per mitigation in README.md, each naming the step it leads to.>
 ## Your access
 
 <What the agent's credentials can do: read-only, plus the [safe] actions it may run.
-Name the [human] steps it cannot run.>
+One line per step the agent cannot reach, [safe] ones too, such as an admin page:
+who runs it, and whether that needs a page.
+For each step that opens a graph, the same query for the agent's tools, with its range.>
 
 ## Hand over to a person
 
-- Any `[human]` step.
+- Any `[human]` step, or a step listed under "Your access" as out of reach.
+- How you page: <the exact way an agent can use, such as mentioning a group in the alert's thread>.
+  A command only a person can run, such as a paging slash command, is not a way.
 - A `You see:` line that does not match after one retry.
 - <Alert-specific stop conditions, such as customer data or a second region.>
 ````

@@ -11,6 +11,7 @@ const page = (steps: string, header = "Tested 2026-11-01 on staging by Sam.") =>
 
 ${header}
 Stuck for 15 minutes? Page the platform rotation. Do not wait.
+You are the person: run every step yourself, \`[human]\` steps too.
 Agents: read [AGENT.md](AGENT.md).
 
 ## Stop the bleeding
@@ -57,15 +58,15 @@ describe("checkRunbook", () => {
   test("a human step without its cost and undo fails", () => {
     const bare = humanStep.split("\n").slice(0, 5).join("\n");
     expect(checkRunbook(targetOf(folder(page(`${safeStep}\n\n${bare}`))), today)).toEqual([
-      'README.md:16: step 2: [human] needs a "Costs:" line',
-      'README.md:16: step 2: [human] needs an "Undo:" line',
+      'README.md:17: step 2: [human] needs a "Costs:" line',
+      'README.md:17: step 2: [human] needs an "Undo:" line',
     ]);
   });
 
   test("a step without a tag or a You see line fails", () => {
     expect(checkRunbook(targetOf(folder(page("1. Open the dashboard."))), today)).toEqual([
-      "README.md:9: step 1: start with [safe] or [human]",
-      'README.md:9: step 1: add a "You see:" line',
+      "README.md:10: step 1: start with [safe] or [human]",
+      'README.md:10: step 1: add a "You see:" line',
     ]);
   });
 
@@ -78,17 +79,21 @@ describe("checkRunbook", () => {
     expect(checkRunbook(targetOf(folder(page(safeStep, "Tested 2026-07-01 on staging by Sam."))), today)).toEqual([
       "README.md:3: stamp is older than 90 days: re-test the page",
     ]);
-    expect(checkRunbook(targetOf(folder(page(safeStep, "Tested 2026-11-01 on staging by Sam.\nUNTESTED: step 2 never ran."))), today)).toEqual([
-      "README.md:4: UNTESTED banner: test every [human] step, then remove it",
+    expect(checkRunbook(targetOf(folder(page(safeStep, "UNTESTED: step 1 has no recorded run.\nPartly tested 2026-11-01 on staging by Sam."))), today)).toEqual([
+      "README.md:3: UNTESTED banner: record a run of every step it names, then remove it",
+    ]);
+    expect(checkRunbook(targetOf(folder(page(safeStep, "UNTESTED: step 1 has no recorded run.\nTested 2026-11-01 on staging by Sam."))), today)).toEqual([
+      "README.md:3: UNTESTED banner: record a run of every step it names, then remove it",
+      'README.md:4: write "Partly tested" while the UNTESTED banner stands',
     ]);
   });
 
   test("placeholders, vague words, and long sentences before Morning fail", () => {
     const steps = "1. [safe] Open <dashboard> and wait if needed for the line to settle down again before you go on.\n   You see: a flat line.";
     expect(checkRunbook(targetOf(folder(page(steps))), today)).toEqual([
-      "README.md:9: fill in <dashboard>",
-      'README.md:9: "if needed" is vague: write the exact value or action',
-      'README.md:9: 17 words: split "Open <dashboard> and wait if needed for ..." to 12 or fewer',
+      "README.md:10: fill in <dashboard>",
+      'README.md:10: "if needed" is vague: write the exact value or action',
+      'README.md:10: 17 words: split "Open <dashboard> and wait if needed for ..." to 12 or fewer',
     ]);
   });
 
@@ -130,6 +135,7 @@ alert: ConsumerLagHigh
 
 Tested 2026-11-01 on staging by Sam.
 Stuck for 15 minutes? Page the platform rotation.
+You are the person: run every step yourself, \`[human]\` steps too.
 
 Consumers fall behind under load, and this paragraph may run as long as the daytime reader likes it to.
 

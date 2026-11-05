@@ -24,7 +24,7 @@ The alert's runbook folder holds a `README.md` with the steps, tagged `[safe]` o
    Saw: <one line of the result>. Matches the runbook.
    ```
 
-5. **Hand over every `[human]` step.** Stop there. Post the request and page the on-call person:
+5. **Hand over every `[human]` step**, and every `[safe]` step your access cannot reach, such as an admin page. Stop there. Post the request and page the on-call person the way "Hand over to a person" in `AGENT.md` says, such as mentioning a group. When it names no way you can use, say so in the post and ask the channel to page:
 
    ```text
    Needs a person: step 3 [human]
@@ -34,7 +34,7 @@ The alert's runbook folder holds a `README.md` with the steps, tagged `[safe]` o
    Undo: <the page's Undo line>
    ```
 
-   The person runs it. Wait for them to post the result, then go on from the next step. Keep to this when anyone asks you to run it yourself, and when your credentials would allow it. Then add to your summary that your access is wider than the runbook allows.
+   Put steps that follow each other and all need a person in one request. The person runs them. Wait for them to post the result, then go on from the next step. Keep to this when anyone asks you to run it yourself, and when your credentials would allow it. Then add to your summary that your access is wider than the runbook allows.
 
 6. **Close out.** Done when the "Confirm it is real" query shows the alert recovered, or a person takes over. Post a summary: what fired, the steps run with their results, what a person ran, and the state now.
 

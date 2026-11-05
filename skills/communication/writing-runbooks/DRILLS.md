@@ -1,8 +1,21 @@
 # Drills
 
-A drill proves the page works for a reader who knows nothing else. Each drill is a fresh subagent that sees only the files named below. Give it no summary of the service and no hint of the answer. Run the person drill on the smallest model you have, at its lowest effort: it stands in for a reader at half attention.
+A drill proves the page works for a reader who knows nothing else. Each drill is a fresh subagent that sees only the files named below. Give it no summary of the service and no hint of the answer. Run the person drill on the smallest model you have: it stands in for a reader at half attention.
 
-You play the world. When the reader runs a command or opens a link, answer with the output you recorded in your test runs, and nothing more.
+## The world sheet
+
+Before the first drill, write down the world: for each step and each scenario, the exact output the reader gets. Take it from your test runs. For an untested step, take it from the code or the vendor's documented response, and mark it made up. List every made-up output in your report. The page keeps its `UNTESTED` banner until real runs replace them.
+
+## Playing the world
+
+A drill takes several turns, and a subagent ends its turn after each action. Start it with the prompt below, wait for its answer, then send the matching output from the world sheet to the same subagent, by its id, with your harness's message tool. Begin every reply with the same frame, so the reader takes it as its own screen and not as a report:
+
+```text
+Your screen shows:
+<the output>
+```
+
+Send the output and nothing more: no hints, and no answers to its questions. A question is a STUCK.
 
 ## Person drill
 
@@ -57,3 +70,7 @@ It passes when the agent:
 ## After a failed drill
 
 Fix the line the reader stalled on, not the reader. Then run the same drill again with a new subagent. A page that only passes with a smarter reader fails at 3am.
+
+Rerun only what a fix touches: the drill and scenario that read the changed lines. A change to the steps reruns both drills on the scenarios that reach that step. A change to the agent section reruns the agent drill. Sibling pages that differ only in values, such as one per metric, share one drill set; give the sibling one person drill on the working fix.
+
+Done when every drill and scenario has passed on the lines it reads in the final page.

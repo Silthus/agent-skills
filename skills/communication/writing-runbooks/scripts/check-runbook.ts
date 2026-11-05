@@ -36,10 +36,10 @@ export function checkRunbook(target: Target, today = new Date()): string[] {
   const start = sectionStart(lines, target.section);
   if (!target.hostFormat && !lines.find((line) => line.text.trim())?.text.startsWith("# ")) add(1, "start with the alert title as a # heading");
   checkStamp(lines, today, add);
-  checkEscalation(lines.slice(0, start ?? lines.length), target, add);
+  checkStampBlock(stampBlock(lines), lines.slice(0, start ?? lines.length), target, add);
   const steps = start === undefined ? undefined : stepsOf(lines, start);
   checkSteps(steps, target.section, add);
-  checkWording(target.hostFormat ? stampLines(lines).concat(steps?.flatMap((step) => step.lines) ?? []) : nightLines(lines), add);
+  checkWording(target.hostFormat ? stampBlock(lines).concat(steps?.flatMap((step) => step.lines) ?? []) : nightLines(lines), add);
   checkScript(target.scriptPath, page, add);
   problems.push(...(target.hostFormat ? checkAgentSection(page, name) : checkAgentPage(target.pagePath)));
   return problems;
@@ -47,23 +47,32 @@ export function checkRunbook(target: Target, today = new Date()): string[] {
 
 function checkStamp(lines: Line[], today: Date, add: Add): void {
   const untested = lines.find((line) => line.text.includes("UNTESTED"));
-  if (untested) add(untested.number, "UNTESTED banner: test every [human] step, then remove it");
+  if (untested) add(untested.number, "UNTESTED banner: record a run of every step it names, then remove it");
   const stamp = lines.find(isStamp);
   if (!stamp) return add(undefined, 'add the stamp "Tested <YYYY-MM-DD> on <environment> by <name>."');
-  const tested = new Date(stamp.text.trim().slice(7, 17));
+  const partly = stamp.text.trim().startsWith("Partly");
+  if (untested && !partly) add(stamp.number, 'write "Partly tested" while the UNTESTED banner stands');
+  if (!untested && partly) add(stamp.number, 'write "Tested" once every step has a recorded run');
+  const tested = new Date(/\d{4}-\d{2}-\d{2}/.exec(stamp.text)![0]);
   if ((today.getTime() - tested.getTime()) / 86_400_000 > stampDays) add(stamp.number, `stamp is older than ${stampDays} days: re-test the page`);
 }
 
-const isStamp = (line: Line) => /^Tested \d{4}-\d{2}-\d{2} on \S.* by \S.*\.$/.test(line.text.trim());
-const isPageLine = (line: Line) => /\bPage\b/.test(line.text);
+const isStamp = (line: Line) => /^(Partly tested|Tested) \d{4}-\d{2}-\d{2} on \S.* by \S.*\.$/.test(line.text.trim());
 
-function stampLines(lines: Line[]): Line[] {
+function stampBlock(lines: Line[]): Line[] {
   const stamp = lines.findIndex(isStamp);
-  return stamp < 0 ? [] : lines.slice(stamp, stamp + 3).filter((line) => line.text.trim());
+  if (stamp < 0) return [];
+  let first = stamp;
+  let last = stamp;
+  while (first > 0 && lines[first - 1]!.text.trim()) first--;
+  while (last < lines.length - 1 && lines[last + 1]!.text.trim()) last++;
+  return lines.slice(first, last + 1);
 }
 
-function checkEscalation(header: Line[], target: Target, add: Add): void {
-  if (!header.some(isPageLine)) add(undefined, `say who to page above "${target.section}"`);
+function checkStampBlock(block: Line[], header: Line[], target: Target, add: Add): void {
+  if (!block.length) return;
+  if (!block.some((line) => /\b(Page|Post in)\b/.test(line.text))) add(block[0]!.number, 'say who to page, or where to post, next to the stamp');
+  if (!block.some((line) => line.text.includes("You are the person"))) add(block[0]!.number, 'add the role line next to the stamp: "You are the person: run every step yourself, `[human]` steps too."');
   if (!target.hostFormat && !header.some((line) => line.text.includes("[AGENT.md](AGENT.md)"))) add(undefined, "link [AGENT.md](AGENT.md) above the steps");
 }
 
@@ -170,8 +179,11 @@ function checkAgentPage(pagePath: string): string[] {
 }
 
 function checkAgentSection(page: string, name: string): string[] {
-  const section = /^#{2,4} For agents\n([\s\S]*?)(?=^#{1,4} |(?![\s\S]))/m.exec(page)?.[1];
-  if (section === undefined) return [`${name}: add a "### For agents" section`];
+  const heading = /^(#{2,4}) For agents$/m.exec(page);
+  if (!heading) return [`${name}: add a "### For agents" section`];
+  const rest = page.slice(heading.index + heading[0].length);
+  const end = new RegExp(`^#{1,${heading[1]!.length}} `, "m").exec(rest)?.index ?? rest.length;
+  const section = rest.slice(0, end);
   return section.includes("responding-to-alerts") ? [] : [`${name}: name the responding-to-alerts skill under "For agents"`];
 }
 
