@@ -1,6 +1,6 @@
 # Impact checklist
 
-Measure every dimension. Each one gets a pinned number, as `SKILL.md` defines it, or one line on why it does not apply.
+Measure every dimension, with numbers pinned as `SKILL.md` defines them.
 
 ## Scope
 
@@ -13,7 +13,7 @@ Measure every dimension. Each one gets a pinned number, as `SKILL.md` defines it
 ## What failed, from the customer's side
 
 - **Hit versus affected.** "Marked failed in our logs" and "the customer lost something" are different counts. For each item hit, follow what happened next: did the run go on, stop at its last step, or miss later steps? Report the affected count beside the hit count, with the reason for the gap.
-- **Kinds of use.** Split by the kinds of use the product has, such as transactional, marketing, and broadcast sends. Test the lead's expectation of which kinds were hit; do not assume it.
+- **Kinds of use.** Split by the kinds of use the product has, such as transactional, marketing, and broadcast sends. Test the lead's expectation of which kinds were hit against the data. Keep items whose lookup records were deleted since: a join against current tables drops them. Take their kind from the logs, or count them as unknown.
 - **Sent but not tracked versus never sent.** A message that went out without tracking is not a lost message. A message that was never sent is.
 - **Records that lie.** An item can succeed and be recorded as failed, or fail and be recorded as succeeded. Check the record against a source outside it, such as the provider's send counter. A wrong record misleads the customer, their metrics, and any rerun.
 - **Actions since the failure.** Reruns, resumes, and manual sends by customers or staff after the failure, and what they caused, such as a duplicate send.
