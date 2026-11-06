@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 
 const root = resolve(import.meta.dir, "..");
 const skillsRoot = join(root, "skills");
@@ -67,11 +68,16 @@ const privateShapes: [RegExp, string][] = [
   [/\b[CDGU]0(?=[0-9A-Z]*[0-9])(?=[0-9A-Z]*[A-Z])[0-9A-Z]{8,10}\b/, "a Slack channel or user ID"],
   [/\bINC-\d+\b/, "an incident number"],
   [/\bposthog\.dev\b|\.ts\.net\b|\bdevbox-[a-z]+-[0-9a-z]+\b/i, "an internal hostname"],
-  [/\bSilthus\/(personal|agent-memory|fleet)\b/, "a private repository"],
   [/op:\/\/(?!<)/, "a real 1Password reference"],
   [/\b(ghp_|gho_|github_pat_|phx_|phc_|phs_|xox[abprs]-|sk-ant-|AKIA)[A-Za-z0-9_-]{8,}/, "a token"],
   [/\b(team|project)_?id\s*[=:]\s*\d+|\/project\/\d+\//i, "a team or project ID"],
 ];
+
+// Names of private repositories, as the first 16 hex digits of the SHA-256 of the lowercase name, so
+// this public file does not publish them.
+const privateNameHashes = new Set(["37f2561ebf4cacdf", "b1ee202acdcdf93c", "41d218cd694ddd71", "f57e5004f0c590ce"]);
+const nameHash = (word: string) => createHash("sha256").update(word.toLowerCase()).digest("hex").slice(0, 16);
+const namesPrivateRepo = (line: string) => (line.match(/[\w./-]+/g) ?? []).some((word) => privateNameHashes.has(nameHash(word.replace(/[./-]+$/, ""))));
 
 function checkPrivateData(): void {
   const listed = spawnSync("git", ["ls-files", "-z"], { cwd: root, encoding: "utf8" }).stdout.split("\0").filter(Boolean);
@@ -80,6 +86,7 @@ function checkPrivateData(): void {
     const lines = readFileSync(join(root, path), "utf8").split("\n");
     lines.forEach((line, index) => {
       for (const [shape, what] of privateShapes) if (shape.test(line)) problems.push(`${path}:${index + 1}: ${what}; keep it in the user's private agent instructions`);
+      if (namesPrivateRepo(line)) problems.push(`${path}:${index + 1}: a private repository; keep it in the user's private agent instructions`);
     });
   }
 }
