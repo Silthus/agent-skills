@@ -1,5 +1,67 @@
 # Changelog
 
+## [2.0.0](https://github.com/Silthus/agent-skills/compare/v1.3.0...v2.0.0) (2026-11-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* **t3-kickoff:** a workspace safety policy no longer refuses linked worktrees whose Git common directory lies in a protected root.
+* babysit-pr no longer merges or runs the post-deploy watch. Use rollout, full-send, or stamp-pr.
+
+### Features
+
+* add full-stop, full-send, stamp-pr and rollout; babysit-pr never merges ([07ba18c](https://github.com/Silthus/agent-skills/commit/07ba18c4c135ac872283c4ed8c68f51fe71dc3de))
+* add quality-loop and signal-loop skills ([7a89f66](https://github.com/Silthus/agent-skills/commit/7a89f662e7022e52acaff22682871bdd773f0ad6))
+* add writing-runbooks and responding-to-alerts skills ([ea99d1e](https://github.com/Silthus/agent-skills/commit/ea99d1e8ffeb126cd462e1a998f458b0d9fcd3c8))
+* **babysit-pr:** stop fix loops that make no progress and guard rebases against leaks ([bb9edc8](https://github.com/Silthus/agent-skills/commit/bb9edc8fe0ba051aa823054682493dbe52faa821))
+* **full-stop:** forecast the approval bot's verdict at handoff ([f28488e](https://github.com/Silthus/agent-skills/commit/f28488e32288512a21e8552d06bf5f4638f57846))
+* **impact:** link each PR to the metric its retro reads ([70d623e](https://github.com/Silthus/agent-skills/commit/70d623e918f49098c179e87466f541c0ce5fe1b8))
+* **incident:** investigate and communicate production incidents ([c08213d](https://github.com/Silthus/agent-skills/commit/c08213d382cf3e12af519273433b08575747b700))
+* **lessons:** keep an incident-backed log of what did not work ([af84c34](https://github.com/Silthus/agent-skills/commit/af84c3439588986f71aebb44c834e9a3d8177a15))
+* merge an approved stack with one queue entry on its top PR ([c7aee34](https://github.com/Silthus/agent-skills/commit/c7aee34eae80439029ebe22d9e6b837d8b78b9d9))
+* **merge-risk:** end the risk callout with a one-step revert line ([59b4c4d](https://github.com/Silthus/agent-skills/commit/59b4c4dbc2e3bf26b14a30e3763f15ba778d0ff5))
+* **merge-risk:** grade the true risk from traced hot paths ([65896d8](https://github.com/Silthus/agent-skills/commit/65896d863f1d89ca25da54d291dae8b8de87dba3))
+* **orchestration-wayfinder:** drop the quota lane cap and dispatch the whole frontier ([c6508ed](https://github.com/Silthus/agent-skills/commit/c6508ed1f0778b042a4a81a9a96b88ab8c31f9fc))
+* **orchestration-wayfinder:** harvest lessons at map close and surface NEEDS_HUMAN lanes ([ab84cd3](https://github.com/Silthus/agent-skills/commit/ab84cd356aa5cb0096ba1369ff9901becae58308))
+* **orchestration-wayfinder:** ship specs as short stacks owned by their own threads ([14dd057](https://github.com/Silthus/agent-skills/commit/14dd0573fbc83cc7ff98b735b36916ed90c6f3d7))
+* **orchestration-wayfinder:** try e2e walks as the spec's proof contract ([3a1bcd2](https://github.com/Silthus/agent-skills/commit/3a1bcd204097e9181da08dc0851bf996a2a86113))
+* **pull-requests:** answer people with a reaction or the user's own words ([5d46963](https://github.com/Silthus/agent-skills/commit/5d469633eec702c61ca72ae86269175585ce0ec4))
+* **pull-requests:** ask before stamping another team's code ([c99e870](https://github.com/Silthus/agent-skills/commit/c99e870676d09d72c9131bfd4fd4d8aa15818d6a))
+* **pull-requests:** build review-lens from an architecture and style interview ([b8cf1bb](https://github.com/Silthus/agent-skills/commit/b8cf1bbee36f250ef264e732d61e5dcb92140736))
+* **qa-swarm:** add a sweep lens, anchor every finding, and prove pre-existing failures from the log ([e5a1193](https://github.com/Silthus/agent-skills/commit/e5a11937f4829f3de9bf21ba6f35f9edee126653))
+* **qa-swarm:** record reviewer misses and grow REVIEW.md from them ([46d7444](https://github.com/Silthus/agent-skills/commit/46d74443ff310b24e348aee8dd1b38f92505b651))
+* **quality-loop:** give each loop its own WIP limit ([f2a9a52](https://github.com/Silthus/agent-skills/commit/f2a9a524a9c46812607b9143c22b039a3cd68c7d))
+* **rollout:** mark the deploy on the insights a PR's Impact section links ([474e10d](https://github.com/Silthus/agent-skills/commit/474e10d1d44b4fec0e379b3521d58cafc634f552))
+* **rollout:** merge a migration's readers only after it reaches production ([b527101](https://github.com/Silthus/agent-skills/commit/b5271014c1d5df8075cb468dbbf49e519409bec2))
+* **rollout:** run the user's production debug tool on a bad signal ([cf0423f](https://github.com/Silthus/agent-skills/commit/cf0423fc2d803bd0db75250cb5e35f96e2d49ed1))
+* **stamp-pr:** keep auth, billing, CI, release, and installer changes for people ([ac8c661](https://github.com/Silthus/agent-skills/commit/ac8c661be94b13b519448449dd164c22fa501e2d))
+* **stamp-pr:** refuse a stamp only for a danger-area hunk ([3b8ba73](https://github.com/Silthus/agent-skills/commit/3b8ba73e7c7de81356896462258ecc98ed09fb32))
+* **t3-kickoff:** let new worktrees of a protected checkout launch ([f2ca56e](https://github.com/Silthus/agent-skills/commit/f2ca56ea90d66f80fb4c6fdcd7a87237ea0bee56))
+* **t3-kickoff:** start a No project thread with --scratch ([0183f76](https://github.com/Silthus/agent-skills/commit/0183f7689e54fc011396bcda31c756b22043d715))
+* **writing-runbooks:** fit runbooks into a repository's own format ([ebdb069](https://github.com/Silthus/agent-skills/commit/ebdb0690778b7d105193ec297b3e1e89e3f0a2b0))
+
+
+### Bug Fixes
+
+* **check:** match private repository names by hash instead of publishing them ([d6b019d](https://github.com/Silthus/agent-skills/commit/d6b019d5f5c738d715e459f11a76e0d4d9269310))
+* close the review findings on full-send, full-stop, babysit-pr and rollout ([7ef09ef](https://github.com/Silthus/agent-skills/commit/7ef09ef1bb61fa3aaf8723341e2cf8dd59e65017))
+* **full-send:** cut thin slices before the build, not in review ([13ef977](https://github.com/Silthus/agent-skills/commit/13ef97721e818057401379a568ee1ae9c4483058))
+* **full-stop:** trigger on 'create a draft PR' and 'draft PR' ([2be6ca2](https://github.com/Silthus/agent-skills/commit/2be6ca2f9643979dd7ae887da158aa21454a37ee))
+* **incident:** check open deadlines and earlier claims first, grade totals by their weakest part ([ddc0bde](https://github.com/Silthus/agent-skills/commit/ddc0bdee29ee5611d3aa4f5fd36443a5ae5330d1))
+* **incident:** cover lying records, later actions, bounded numbers, and scheduled failures ([8655afe](https://github.com/Silthus/agent-skills/commit/8655afea104e91570f22f8b1ae5c5fb8d813e360))
+* **incident:** dispatch before sizing, add an update-only path and done lines for every workstream ([dd34f9a](https://github.com/Silthus/agent-skills/commit/dd34f9afd882a1064c7647392b95281cc36f3d76))
+* **incident:** dispatch workstreams early, pin claims, keep deleted items, one customer table ([d768d61](https://github.com/Silthus/agent-skills/commit/d768d618968327fe438709d6353fe23110b4b7b2))
+* **incident:** fall back to a model that can start when the table's model cannot ([e8f6f76](https://github.com/Silthus/agent-skills/commit/e8f6f76124f6a4a5e97d66e085f2afe4630dafb7))
+* **incident:** find the signature loosely first, name a missing second route, fall back to the channel for open tasks ([15c6e21](https://github.com/Silthus/agent-skills/commit/15c6e21edc82b6151744a31d39f91a96a42da1c7))
+* **incident:** recheck live facts in updates, split no-workers from report-once, carry deadlines ([327ce0c](https://github.com/Silthus/agent-skills/commit/327ce0c44209c12b1583bc5074673b07a4ae19c1))
+* **incident:** search the full span first, start workers at once, recheck recovery at execution ([1cf059f](https://github.com/Silthus/agent-skills/commit/1cf059f5a370020d7dc9e65047a080b2cca9d638))
+* **incident:** split the update path into steps with a done line, check reruns both ways ([e4088af](https://github.com/Silthus/agent-skills/commit/e4088afc78a32a54a61378e184cd41bc8ecad53f))
+* keep private data out of the public skills ([98bfe64](https://github.com/Silthus/agent-skills/commit/98bfe648405c70c81d8c22e366ab4a6b29793dcf))
+* **orchestration-wayfinder:** mark the conductor hold as awaited ([57fe3fa](https://github.com/Silthus/agent-skills/commit/57fe3fa577f9474609cccfacaa1ecbe2fe28fc48))
+* **slack-pr-update:** drop the fork CI-ack notes ([885f018](https://github.com/Silthus/agent-skills/commit/885f0185b75ae29aef634d304e4758d2ef2c4802))
+* **writing-runbooks:** fold in what the first two real runs found ([422a201](https://github.com/Silthus/agent-skills/commit/422a201f9565cb643ae087bc64d94396faa30084))
+* **writing-voice:** drop the purple heart emoji ([ad7666e](https://github.com/Silthus/agent-skills/commit/ad7666ea8b505090671b448317c2310dfea46e5b))
+
 ## [1.3.0](https://github.com/Silthus/agent-skills/compare/v1.2.0...v1.3.0) (2026-10-26)
 
 
