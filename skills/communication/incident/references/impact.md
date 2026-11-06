@@ -15,6 +15,8 @@ Measure every dimension. Each one gets a pinned number, as `SKILL.md` defines it
 - **Hit versus affected.** "Marked failed in our logs" and "the customer lost something" are different counts. For each item hit, follow what happened next: did the run go on, stop at its last step, or miss later steps? Report the affected count beside the hit count, with the reason for the gap.
 - **Kinds of use.** Split by the kinds of use the product has, such as transactional, marketing, and broadcast sends. Test the lead's expectation of which kinds were hit; do not assume it.
 - **Sent but not tracked versus never sent.** A message that went out without tracking is not a lost message. A message that was never sent is.
+- **Records that lie.** An item can succeed and be recorded as failed, or fail and be recorded as succeeded. Check the record against a source outside it, such as the provider's send counter. A wrong record misleads the customer, their metrics, and any rerun.
+- **Actions since the failure.** Reruns, resumes, and manual sends by customers or staff after the failure, and what they caused, such as a duplicate send.
 - **Safety checks that did not run.** Caps, suppression lists, and suspensions that failed open. These cannot be undone, so report them as they are.
 
 ## Downstream effects
@@ -40,4 +42,4 @@ For each lost item, say which of these it is:
 
 ## Per customer
 
-For the customer list: name, organization, region, account owner, revenue, and per dimension above what they lost and what they need to do. A placeholder owner, such as one person on most accounts, is probably a default queue; say so. Give the date of the revenue data when it is stale.
+For the customer list: name, organization, region, account owner, revenue, and for each dimension above what they lost, what is recorded wrongly, and what they need to do. A placeholder owner, such as one person on most accounts, is probably a default queue; say so. Give the date of the revenue data when it is stale.

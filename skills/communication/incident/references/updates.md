@@ -34,7 +34,7 @@ For customer comms. Copy the structure of earlier incident canvases in the same 
 2. **Handover**: when someone takes over. What has run and what has not, the open tasks, and who owns each.
 3. **Summary**: the one-line update, and a timeline chart when the window has a shape worth seeing.
 4. **Breakdown**: one table per dimension of the impact checklist. Attach a CSV when a table runs long.
-5. **Customers**: one table per region. Columns: priority, customer, project, revenue, owner, items hit, items affected, lost items (recoverable and not), downstream effect.
+5. **Customers**: one table per region. Columns: priority, customer, project, revenue, owner, items hit, items affected, wrong records, lost items (recoverable and not), downstream effect.
 6. **What did not run on the customer's side**: per customer, in plain words.
 7. **Who to contact and what to do**: per customer, what they need to do, or what we will do for them.
 8. **Recovery**: the runs or items to recover, the script, and the warnings, such as a rerun action that would resend.
