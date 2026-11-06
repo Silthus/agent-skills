@@ -6,7 +6,7 @@ Measure every dimension, with numbers pinned as `SKILL.md` defines them.
 
 - **Window.** Start and end in UTC, from the first failure to the last one. When the failure shape differs from the fix time, give both, such as "events missing from 13:50, bleeding stopped at 14:20".
 - **Teams and organizations hit.** The count, out of the teams that use the feature at all, not out of all teams.
-- **Regions.** Each region apart, then the total. Drop the split from the update when the lead does not need it.
+- **Regions.** Each region apart, then the total.
 - **Internal team.** Count the company's own team apart. It can be most of the volume and hide how few customers were hit, or the other way round.
 - **Since when.** When the failing code shipped. A failure that started weeks before anyone saw it is a bigger incident than its first report.
 
@@ -17,7 +17,7 @@ Measure every dimension, with numbers pinned as `SKILL.md` defines them.
 - **Sent but not tracked versus never sent.** A message that went out without tracking is not a lost message. A message that was never sent is.
 - **Records that lie.** An item can succeed and be recorded as failed, or fail and be recorded as succeeded. Check the record against a source outside it, such as the provider's send counter. A wrong record misleads the customer, their metrics, and any rerun.
 - **Actions since the failure.** Reruns, resumes, and manual sends by customers or staff after the failure, and what they caused, such as a duplicate send.
-- **Safety checks that did not run.** Caps, suppression lists, and suspensions that failed open. These cannot be undone, so report them as they are.
+- **Safety checks that did not run.** Caps, suppression lists, and suspensions that failed open. Count them apart; recovery cannot undo them.
 
 ## Downstream effects
 
