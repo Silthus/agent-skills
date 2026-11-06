@@ -5,7 +5,7 @@ Measure every dimension, with numbers pinned as `SKILL.md` defines them.
 ## Scope
 
 - **Window.** Start and end in UTC, from the first failure to the last one. When the failure shape differs from the fix time, give both, such as "events missing from 13:50, bleeding stopped at 14:20".
-- **Teams and organizations hit.** The count, out of the teams that use the feature at all, not out of all teams.
+- **Teams and organizations hit.** The count, out of the teams that use the feature at all.
 - **Regions.** Each region apart, then the total.
 - **Internal team.** Count the company's own team apart. It can be most of the volume and hide how few customers were hit, or the other way round.
 - **Since when.** When the failing code shipped. A failure that started weeks before anyone saw it is a bigger incident than its first report.
@@ -30,7 +30,7 @@ Data the incident lost or delayed may feed things the customer built. For every 
 - cohorts built from it
 - saved insights and dashboards that chart it
 
-Report, per customer, what did not run on their side: "about 15 runs did not start", "a chart shows a dip from 13:50 to 14:20". This is the true customer impact, and it is the part of comms the customer cares about.
+Report, per customer, what did not run on their side: "about 15 runs did not start", "a chart shows a dip from 13:50 to 14:20". This is the true customer impact.
 
 ## Recoverable versus lost
 
