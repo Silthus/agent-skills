@@ -42,4 +42,4 @@ For each lost item, say which of these it is:
 
 ## Per customer
 
-For the customer list: name, organization, region, account owner, revenue, and for each dimension above what they lost, what is recorded wrongly, and what they need to do. A placeholder owner, such as one person on most accounts, is probably a default queue; say so. Give the date of the revenue data when it is stale.
+For the customer list, fill the Customers columns in [updates.md](updates.md). A placeholder owner, such as one person on most accounts, is probably a default queue; say so. Give the date of the revenue data when it is stale.
