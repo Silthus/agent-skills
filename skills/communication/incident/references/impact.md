@@ -1,0 +1,43 @@
+# Impact checklist
+
+Measure every dimension. Each one gets a pinned number, as `SKILL.md` defines it, or one line on why it does not apply.
+
+## Scope
+
+- **Window.** Start and end in UTC, from the first failure to the last one. When the failure shape differs from the fix time, give both, such as "events missing from 13:50, bleeding stopped at 14:20".
+- **Teams and organizations hit.** The count, out of the teams that use the feature at all, not out of all teams.
+- **Regions.** Each region apart, then the total. Drop the split from the update when the lead does not need it.
+- **Internal team.** Count the company's own team apart. It can be most of the volume and hide how few customers were hit, or the other way round.
+- **Since when.** When the failing code shipped. A failure that started weeks before anyone saw it is a bigger incident than its first report.
+
+## What failed, from the customer's side
+
+- **Hit versus affected.** "Marked failed in our logs" and "the customer lost something" are different counts. For each item hit, follow what happened next: did the run go on, stop at its last step, or miss later steps? Report the affected count beside the hit count, with the reason for the gap.
+- **Kinds of use.** Split by the kinds of use the product has, such as transactional, marketing, and broadcast sends. Test the lead's expectation of which kinds were hit; do not assume it.
+- **Sent but not tracked versus never sent.** A message that went out without tracking is not a lost message. A message that was never sent is.
+- **Safety checks that did not run.** Caps, suppression lists, and suspensions that failed open. These cannot be undone, so report them as they are.
+
+## Downstream effects
+
+Data the incident lost or delayed may feed things the customer built. For every lost event type, find who reads it:
+
+- workflow and automation triggers
+- wait-until and branch steps that wait for the event
+- destinations and webhooks that forward it
+- conversion goals and experiments
+- cohorts built from it
+- saved insights and dashboards that chart it
+
+Report, per customer, what did not run on their side: "about 15 runs did not start", "a chart shows a dip from 13:50 to 14:20". This is the true customer impact, and it is the part of comms the customer cares about.
+
+## Recoverable versus lost
+
+For each lost item, say which of these it is:
+
+- **Recoverable**: we hold enough data to rebuild it.
+- **Recoverable with risk**: it can be replayed, but a late replay may fire automations at the wrong time.
+- **Lost**: no record exists, or the retention window has passed. Give the retention window's end date.
+
+## Per customer
+
+For the customer list: name, organization, region, account owner, revenue, and per dimension above what they lost and what they need to do. A placeholder owner, such as one person on most accounts, is probably a default queue; say so. Give the date of the revenue data when it is stale.
