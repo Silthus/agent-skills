@@ -1,21 +1,24 @@
 ---
 name: incident
-description: Investigate a production incident as the incident lead's analyst. Use when an incident is declared or might need declaring, when a support report or an error burst across pods or teams hints at a wider failure, or when the user asks for an incident's impact, numbers, update, or customer comms.
+description: Investigate a production incident as the incident lead's analyst. Use when an incident is declared or might need declaring, when a support report or an error burst across pods or teams hints at a wider failure, or when the user asks for an incident's impact, update, or customer comms.
 ---
 
 # Incident
 
 You work for the **incident lead**, the person who owns the incident. They need three answers from you, fast and right: how big it is, who it hurt and how, and what to tell people. They decide, declare, post, and run production changes. You find the facts and draft the words.
 
-Open every message to the lead with one sentence on what customers experienced, in the product's terms. Keep error strings and code details in the evidence. Then give the cause in one sentence, what is unknown, and what happens next.
+Open every message to the lead with one sentence on what customers experienced, in the product's terms. Keep error strings and code details in the evidence. Then give the cause in one sentence, what is unknown, and what happens next. When you report only at the end, open with the current assessment, the earliest deadline, whether to declare, and the drafts the lead asked for. Then list each correction to an earlier figure, with its time.
 
 Before your first query, read this skill's settings in the user's agent instructions. They name the data sources, how to slice queries, where customer owners and revenue live, the recovery traps, and the canvas to copy.
 
-For an update or a customer draft on an incident already investigated, start with the canvas's Handover section: check every open task and dated deadline first. Reuse a number only from saved evidence, and give the time its query ran. Re-query every other number in the draft, its whole included, and every fact that changes, such as recovery state and which fixes are live; while a query runs, call that number unknown. Treat the canvas, posted numbers, and replies to customers as claims, as step 1 says. Use the format from [references/updates.md](references/updates.md). Use the steps below for a new investigation, or when the lead asks to widen one.
+**Update path.** For a new investigation, or when the lead asks to widen one, use the steps below. For an update or a customer draft on an incident already investigated:
 
-**Without workers.** When you cannot start workers, run the workstreams yourself in this order: bleeding, impact, recovery, root cause, alerting.
+1. Give every open task and dated deadline in the canvas's Handover section its current state.
+2. Treat the canvas, posted numbers, and replies to customers as claims, as step 1 says.
+3. Reuse a count only from saved evidence that meets Pinned numbers, and give the time its query ran. Re-query every whole, every other count, and every fact that changes, such as recovery state and which fixes are live. While a query runs, call that number unknown.
+4. Draft in the format from [references/updates.md](references/updates.md).
 
-**Report once.** When you report only at the end, open with the current assessment, the earliest deadline, whether to declare, and the drafts the lead asked for. Then list each correction to an earlier figure, with its time.
+Done when every number in the draft has a saved query and its run time, and every Handover task, deadline, and reply already sent has a state you checked.
 
 ## Pinned numbers
 
@@ -30,7 +33,7 @@ Every number and every claim you report, such as "the emails were dropped" or th
   - *inferred*: from code order or logic.
   - *bounded*: a route gives only an upper or lower limit. Report the limit, such as "at most 50".
   - Grade each part of a total. A total is *verified* only when every part and its second route are. Report a limit on a total only when it bounds the whole total; otherwise give the parts and call the total unknown.
-- **Second route.** Check every headline number through a source or method that could expose an error in the first one, such as the provider's own counter against our logs. The same filters and joins run twice are one route. When the second route gives only a limit, report the limit as *bounded* and keep the exact count unconfirmed until an independent route matches it. Routes that disagree make the number unknown until you find why.
+- **Second route.** Check every headline number through a source or method that could expose an error in the first one, such as the provider's own counter against our logs. The same filters and joins run twice are one route. When the second route gives only a limit, the number stays *bounded* until an independent route matches it. Routes that disagree make the number unknown until you find why.
 
 When a number or claim you sent changes, write the correction on its own line, before the new one: "Correction: 12,000 runs need a resume. The right count is 3 runs (0.03% of 12,000); the other 11,997 went on or stopped at their last step." Call a claim you cannot prove "unknown", and say what would prove it.
 
@@ -39,13 +42,17 @@ When a number or claim you sent changes, write the correction on its own line, b
 1. **Size it before you judge it.**
    - Once you can write the failure's signature as a query filter, start step 2's workers in a single message, then run this search yourself.
    - When the incident already has a canvas, posted numbers, or replies sent to customers, treat each as a claim to check. Flag advice that the evidence contradicts, such as "a rerun is safe", and promises that depend on fixes not yet live.
-   - Search for the signature across every team and region, from the day the failing code shipped until now. When that day is unknown, start with the last 30 days and extend back until you find the first failure or reach the oldest data. Look for the same signature on other pods in the same minute, in alerts and incident channels, and in the deploy history.
-   - Send the lead a first status when the first sizing query returns, and within 15 minutes at most: what customers experienced, what is pinned, the span searched so far, such as "searched the last 60 days; earlier is unknown", what is unknown, the queries still running, and the earliest deadline, such as recoverable data that expires within days. Compare the size with other incidents only once the search covers the full span.
+   - Search for the signature across every team and region, from the day the failing code shipped until now. When that day is unknown, search back in slices to the oldest data kept. Report the earliest failure found and the oldest time searched. Look for the same signature on other pods in the same minute, in alerts and incident channels, and in the deploy history.
+   - Send the lead a first status when the first sizing query returns, and within 15 minutes at most. Compare the size with other incidents only once the search covers the full span. The first status gives:
+     - what is pinned
+     - the span searched so far, such as "searched the last 60 days; earlier is unknown"
+     - what is unknown, and the queries still running
+     - the earliest deadline, such as recoverable data that expires within days
    - In the first status, recommend declaring an incident when customer data or messages were lost, sent twice, or sent wrongly, when more than one customer is hit, or when the failure was silent.
 
    Done when the first status is sent, names the span searched, and says whether to declare.
 
-2. **Run the workstreams.** Give each worker the signature, the window, the evidence folder, the settings pointer above, the Pinned numbers section, and its workstream's done line. Use the model and effort from the user's model table, with read-only access. Check their reports against each other, and send the lead a status whenever a headline number is pinned or changes. Done when every workstream meets its done line or names what blocks it.
+2. **Run the workstreams.** Give each worker the signature, the window, the evidence folder, the skill's settings entry from the user's agent instructions, the Pinned numbers section, and its workstream's done line. Use the model and effort from the user's model table, with read-only access. Check their reports against each other, and send the lead a status whenever a headline number is pinned or changes. Done when every workstream meets its done line or names what blocks it. When you cannot start workers, run the workstreams yourself in this order: bleeding, impact, recovery, root cause, alerting.
    - **Bleeding**: is it still happening? Watch for the fix to land, and give the time of the last failure. The bleeding has stopped when the trigger has come back without failures. When failures follow a schedule, such as a weekly batch, the next scheduled run is the test. Done when you give the last failure and the clean trigger run, or name the run that is the next test.
    - **Impact**: every dimension in [references/impact.md](references/impact.md), from the customer's side. The headline is what customers saw or missed, not what our system logged. Done when every dimension has a pinned number, an unknown with the check that would settle it, or one line on why it does not apply.
    - **Recovery**: what can be resent, resumed, or rebuilt, and what is lost, under the rules in step 4. Done as step 4 says.
@@ -55,7 +62,7 @@ When a number or claim you sent changes, write the correction on its own line, b
 3. **Draft the updates.** Use the format the lead asks for from [references/updates.md](references/updates.md). For a full investigation, draft all three formats as the evidence comes in. A draft is ready when every number and claim in it is pinned.
 
 4. **Plan the recovery.** Recovery reaches customers a second time, so these rules hold:
-   - Every message goes out once. Before you resume or replay anything, prove which messages already went out. Check whether a built-in "rerun" restarts at the send step.
+   - Every message goes out once. Before you resume or replay anything, prove which messages already went out. Find out what a built-in rerun does to each item: whether it restarts at the send step and sends again, or starts past it and sends nothing.
    - A one-off script runs as a dry run by default and needs a separate flag to execute. At execution it checks each item again: its send outcome and any rerun, resume, or manual send since sizing. It skips items already recovered, refuses items whose outcome is unknown or whose state changed, and prints why.
    - A reviewer from the other model family reads the script before its first dry run.
    - Backfills and replays wait for the lead's go. A late event can fire a customer's automation days after it was useful.
@@ -63,7 +70,9 @@ When a number or claim you sent changes, write the correction on its own line, b
 
    Done when every affected item has a recovery path, evidence that it is lost, or an unknown with the check that would settle it. Give each recovery path the date its data expires, or say it is unknown.
 
-5. **Hand over and close.** When someone takes over, fill the canvas's Handover section, with how the scripts work and their commands. After the incident, log what went wrong with the `lessons` skill and offer the user a retro.
+5. **Hand over and close.** When someone takes over, check that the Handover section is current, and add each script's purpose, whether it has run, and its exact commands. After the incident, log what went wrong with the `lessons` skill and offer the user a retro.
+
+   Done when the Handover section lists what has run, each open task with its owner and deadline, and each script's commands, and the lesson is logged.
 
 ## Private data
 

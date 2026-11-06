@@ -26,10 +26,10 @@ Headed sections, each a few short lines:
 
 ## Impact canvas
 
-For customer comms. Copy the structure of earlier incident canvases in the same workspace when they exist. Build it in this order, top to bottom:
+For customer comms. Copy the canvas the skill's settings name, or else an earlier incident canvas in the same workspace. Build it in this order, top to bottom:
 
 1. **TL;DR**: three to five lines that a reader stops after.
-2. **Handover**: when someone takes over. What has run and what has not, and each open task with its owner and deadline, including when recoverable data expires.
+2. **Handover**: keep it current from the first draft. What has run and what has not, and each open task with its owner and deadline, including when recoverable data expires.
 3. **Summary**: the one-line update, and a timeline chart when the window has a shape worth seeing.
 4. **Breakdown**: one table per dimension of the impact checklist. Attach a CSV when a table runs long.
 5. **Customers**: one table per region. Columns: priority, customer, project, revenue, owner, items hit, items affected, wrong records, recoverable loss, permanent loss, what did not run on the customer's side, and who does what next.
