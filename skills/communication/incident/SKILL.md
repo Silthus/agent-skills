@@ -13,7 +13,7 @@ Before your first query, read this skill's settings in the user's agent instruct
 
 **Update path.** For a new investigation, or when the lead asks to widen one, use the steps below. For an update or a customer draft on an incident already investigated:
 
-1. Give every open task and dated deadline in the canvas's Handover section its current state.
+1. Give every open task and dated deadline its current state: from the canvas's Handover section, or from the incident channel when the canvas has none.
 2. Treat the canvas, posted numbers, and replies to customers as claims, as step 1 says.
 3. Reuse a count only from saved evidence that meets Pinned numbers, and give the time its query ran. Re-query every whole, every other count, and every fact that changes, such as recovery state and which fixes are live. While a query runs, call that number unknown.
 4. Draft in the format from [references/updates.md](references/updates.md).
@@ -33,7 +33,7 @@ Every number and every claim you report, such as "the emails were dropped" or th
   - *inferred*: from code order or logic.
   - *bounded*: a route gives only an upper or lower limit. Report the limit, such as "at most 50".
   - Grade each part of a total. A total is *verified* only when every part and its second route are. Report a limit on a total only when it bounds the whole total; otherwise give the parts and call the total unknown.
-- **Second route.** Check every headline number through a source or method that could expose an error in the first one, such as the provider's own counter against our logs. The same filters and joins run twice are one route. When the second route gives only a limit, the number stays *bounded* until an independent route matches it. Routes that disagree make the number unknown until you find why.
+- **Second route.** Check every headline number through a source or method that could expose an error in the first one, such as the provider's own counter against our logs. The same filters and joins run twice are one route. When the second route gives only a limit, the number stays *bounded* until an independent route matches it. Routes that disagree make the number unknown until you find why. When no independent route exists, write "no second route" beside the number.
 
 When a number or claim you sent changes, write the correction on its own line, before the new one: "Correction: 12,000 runs need a resume. The right count is 3 runs (0.03% of 12,000); the other 11,997 went on or stopped at their last step." Call a claim you cannot prove "unknown", and say what would prove it.
 
@@ -42,6 +42,7 @@ When a number or claim you sent changes, write the correction on its own line, b
 1. **Size it before you judge it.**
    - Once you can write the failure's signature as a query filter, start step 2's workers in a single message, then run this search yourself.
    - When the incident already has a canvas, posted numbers, or replies sent to customers, treat each as a claim to check. Flag advice that the evidence contradicts, such as "a rerun is safe", and promises that depend on fixes not yet live.
+   - Find the signature with a loose match first, and group the hits by message shape: the wording can change between releases, and unrelated lines can quote it.
    - Search for the signature across every team and region, from the day the failing code shipped until now. When that day is unknown, search back in slices to the oldest data kept. Report the earliest failure found and the oldest time searched. Look for the same signature on other pods in the same minute, in alerts and incident channels, and in the deploy history.
    - Send the lead a first status when the first sizing query returns, and within 15 minutes at most. Compare the size with other incidents only once the search covers the full span. The first status gives:
      - what is pinned
