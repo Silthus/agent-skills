@@ -1,5 +1,6 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
+import { spawnSync } from "node:child_process";
 
 const root = resolve(import.meta.dir, "..");
 const skillsRoot = join(root, "skills");
@@ -59,6 +60,30 @@ function checkThemeReadme(theme: string, skills: Skill[]): void {
   for (const skill of skills) if (!content.includes(`./${skill.name}/SKILL.md`)) problems.push(`${theme}/README.md: does not list ${skill.name}`);
 }
 
+// This repository is public. A value that only makes sense inside a company or one person's setup
+// belongs in the user's private agent instructions, so these shapes fail the check.
+const privateShapes: [RegExp, string][] = [
+  [/\b[a-z0-9-]+\.slack\.com\/(archives|docs|files|team)\//i, "a Slack workspace link"],
+  [/\b[CDGU]0(?=[0-9A-Z]*[0-9])(?=[0-9A-Z]*[A-Z])[0-9A-Z]{8,10}\b/, "a Slack channel or user ID"],
+  [/\bINC-\d+\b/, "an incident number"],
+  [/\bposthog\.dev\b|\.ts\.net\b|\bdevbox-[a-z]+-[0-9a-z]+\b/i, "an internal hostname"],
+  [/\bSilthus\/(personal|agent-memory|fleet)\b/, "a private repository"],
+  [/op:\/\/(?!<)/, "a real 1Password reference"],
+  [/\b(ghp_|gho_|github_pat_|phx_|phc_|phs_|xox[abprs]-|sk-ant-|AKIA)[A-Za-z0-9_-]{8,}/, "a token"],
+  [/\b(team|project)_?id\s*[=:]\s*\d+|\/project\/\d+\//i, "a team or project ID"],
+];
+
+function checkPrivateData(): void {
+  const listed = spawnSync("git", ["ls-files", "-z"], { cwd: root, encoding: "utf8" }).stdout.split("\0").filter(Boolean);
+  for (const path of listed) {
+    if (path === "bun.lock" || path === "scripts/check.ts" || !existsSync(join(root, path))) continue;
+    const lines = readFileSync(join(root, path), "utf8").split("\n");
+    lines.forEach((line, index) => {
+      for (const [shape, what] of privateShapes) if (shape.test(line)) problems.push(`${path}:${index + 1}: ${what}; keep it in the user's private agent instructions`);
+    });
+  }
+}
+
 const themes = directories(skillsRoot);
 const seen = new Map<string, string>();
 for (const theme of themes) {
@@ -72,6 +97,7 @@ for (const theme of themes) {
   checkThemeReadme(theme, skills);
 }
 checkMarketplace(themes);
+checkPrivateData();
 
 if (problems.length) {
   console.error(problems.join("\n"));
