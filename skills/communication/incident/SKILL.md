@@ -11,7 +11,7 @@ Open every message to the lead with one sentence on what customers experienced, 
 
 Before your first query, read this skill's settings in the user's agent instructions. They name the data sources, how to slice queries, where customer owners and revenue live, the recovery traps, and the canvas to copy.
 
-For an update or a customer draft on an incident already investigated, use the saved evidence and [references/updates.md](references/updates.md), and query only the facts that are missing or stale. Use the steps below for a new investigation, or when the lead asks to widen one.
+For an update or a customer draft on an incident already investigated, start with the canvas's Handover section: check every open task and dated deadline first. Reuse numbers from saved evidence. Re-query every other number, such as a canvas figure, or label it "not re-checked". Use the format from [references/updates.md](references/updates.md). Use the steps below for a new investigation, or when the lead asks to widen one.
 
 **Report once.** When you report once at the end, as a worker does, run the workstreams yourself in this order: bleeding, impact, recovery, root cause, alerting. Open the report with the current assessment and the drafts the lead asked for. Then list each correction to an earlier figure, with its time.
 
@@ -27,6 +27,7 @@ Every number and every claim you report, such as "the emails were dropped" or th
   - *estimated*: from a baseline or a sample. Give the method.
   - *inferred*: from code order or logic.
   - *bounded*: a route gives only an upper or lower limit. Report the limit, such as "at most 50".
+  - A total takes the weakest grade of its parts.
 - **Second route.** Check every headline number through a source or method that could expose an error in the first one, such as the provider's own counter against our logs. The same filters and joins run twice are one route. When the second route gives only a limit, report the limit as *bounded* and keep the exact count unconfirmed until an independent route matches it. Routes that disagree make the number unknown until you find why.
 
 When a number or claim you sent changes, write the correction on its own line, before the new one: "Correction: 900 runs need a resume. The right count is 3 runs (0.03% of 12,000); the other 897 stopped at their last step." Call a claim you cannot prove "unknown", and say what would prove it.
@@ -35,8 +36,9 @@ When a number or claim you sent changes, write the correction on its own line, b
 
 1. **Size it before you judge it.**
    - Once you can write the failure's signature as a query filter, start step 2's workers, then run this search yourself.
+   - When the incident already has a canvas, posted numbers, or replies sent to customers, treat each as a claim to check. Flag advice that the evidence contradicts, such as "a rerun is safe", and promises that depend on fixes not yet live.
    - Search for the signature across every team and region, from the day the failing code shipped until now. When that day is unknown, search the last 30 days. Look for the same signature on other pods in the same minute, in alerts and incident channels, and in the deploy history.
-   - Send the lead a first status when the first sizing query returns, and within 15 minutes at most: what customers experienced, what is pinned, the span searched so far, such as "searched the last 60 days; earlier is unknown", what is unknown, and the queries still running. Compare the size with other incidents only once the search covers the full span.
+   - Send the lead a first status when the first sizing query returns, and within 15 minutes at most: what customers experienced, what is pinned, the span searched so far, such as "searched the last 60 days; earlier is unknown", what is unknown, the queries still running, and any data that expires within days, with its date. Compare the size with other incidents only once the search covers the full span.
    - Recommend declaring an incident when customer data or messages were lost, sent twice, or sent wrongly, when more than one customer is hit, or when the failure was silent.
 
    Done when the first status is sent and names the span searched.
