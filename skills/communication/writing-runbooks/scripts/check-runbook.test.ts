@@ -153,5 +153,12 @@ Post in the team channel.
 
     writeFileSync(file, hosted("Roll back the deploy."));
     expect(checkRunbook(targetOf(file)).problems).toEqual(['ConsumerLagHigh.md: write the mitigations as bullets under "Mitigation"']);
+
+    const commandFirst = "```bash\n# prod-us\naws sesv2 get-account --region us-east-1\n```\n\n- **If** sending is paused, page the platform rotation now.";
+    writeFileSync(file, hosted(commandFirst));
+    expect(checkRunbook(targetOf(file)).problems).toEqual([]);
+
+    writeFileSync(file, hosted("```bash\n- not a bullet\n1. not a step\n```\n\nRoll back the deploy."));
+    expect(checkRunbook(targetOf(file)).problems).toEqual(['ConsumerLagHigh.md: write the mitigations as bullets under "Mitigation"']);
   });
 });

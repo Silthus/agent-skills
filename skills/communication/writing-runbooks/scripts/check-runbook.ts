@@ -64,7 +64,8 @@ export function checkRunbook(target: Target): Report {
     if (target.hostFormat) add(undefined, `add a "## ${target.section}" section`);
   } else {
     checkLines(fix, flowchart, add);
-    const items = fix.filter((line) => /^(-|\d+\.) /.test(line.text)).length;
+    const prose = outsideFences(fix);
+    const items = fix.filter((line) => prose.has(line) && /^(-|\d+\.) /.test(line.text)).length;
     if (items === 0) add(undefined, `write the mitigations as bullets under "${target.section}"`);
     if (items > maxItems) warn(undefined, `${items} items under "${target.section}": keep 3 to 5 mitigations, least destructive first`);
     checkWording(fix, add, warn);
@@ -75,11 +76,23 @@ export function checkRunbook(target: Target): Report {
   return report;
 }
 
+// A heading inside a code fence, such as a `# prod-us` shell comment, is code, not a section boundary.
 function sectionOf(lines: Line[], title: string): Line[] | undefined {
-  const start = lines.findIndex((line) => line.text.trim() === `## ${title}`);
+  const prose = outsideFences(lines);
+  const start = lines.findIndex((line) => prose.has(line) && line.text.trim() === `## ${title}`);
   if (start < 0) return undefined;
-  const end = lines.findIndex((line, index) => index > start && /^#{1,2} /.test(line.text));
+  const end = lines.findIndex((line, index) => index > start && prose.has(line) && /^#{1,2} /.test(line.text));
   return lines.slice(start + 1, end < 0 ? lines.length : end);
+}
+
+function outsideFences(lines: Line[]): Set<Line> {
+  const prose = new Set<Line>();
+  let inCode = false;
+  for (const line of lines) {
+    if (line.text.trim().startsWith("```")) inCode = !inCode;
+    else if (!inCode) prose.add(line);
+  }
+  return prose;
 }
 
 function checkLines(lines: Line[], rules: [RegExp, string][], add: Add): void {
