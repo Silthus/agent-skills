@@ -23,9 +23,9 @@ metadata:
    PR template. When the repository requires its own description skill, use
    it. Its section structure, QA, media, and publication rules win.
 2. Write the prose with the `writing-voice` skill when it is installed, and
-   the risk callout with the `merge-risk` skill. Put the callout after the
-   problem and its Impact section, within the repository's section
-   structure.
+   the risk block with the `merge-risk` skill: its callout, and its Rollout
+   section when the skill adds one. Put the block after the problem and its
+   Impact section, within the repository's section structure.
 3. State the user problem and the resulting behavior in one or two
    sentences. Describe the final implementation. Use the domain terms from
    `GLOSSARY.md` when it exists.
@@ -137,7 +137,7 @@ Use this structure when the repository has no required template:
 
 ## Merge Danger
 
-<merge-risk callout>
+<merge-risk block>
 
 ## Summary
 

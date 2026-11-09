@@ -9,9 +9,10 @@ description: >-
 
 # Merge risk
 
-The **merge risk** is the blast radius of merging a diff: what breaks, for
-whom, and what limits it. Grade the PR's own increment. In a stack, that is
-the diff against its parent PR.
+The **merge risk** is the incident a merge can cause: what breaks, for whom,
+in which regions, and what limits it. Grade the PR's own increment, together
+with the design it commits us to. In a stack, the increment is the diff
+against its parent PR.
 
 ## Danger areas
 
@@ -20,16 +21,28 @@ real sends to customers, migrations or schema, destructive writes, data
 ingestion, locking or concurrency, public API contracts, dependencies, or
 deploy and CI configuration.
 
+## Switch-off
+
+The **switch-off** is how we stop the change in production: a feature flag,
+or an env allowlist where the code has no flags. It limits risk only when its
+check runs before the changed code; shared code that runs before the check is
+live on deploy. Without a switch, the change is live on deploy and we fix
+forward. A rollback or a revert is the last resort for a disaster, so the
+callout never plans one.
+
 ## Door
 
-A **two-way door** is a change a revert fully undoes. A **one-way door**
-leaves effects a revert cannot undo: a dropped column, a data migration, a
-sent email, published data, a released public contract. Name the one-way
-effect.
+Judge the door against the switch-off, never against `git revert`. A
+**two-way door** leaves nothing behind once the switch is off. A **one-way
+door** leaves something that stays: data or schema, a sent message, a public
+contract that SDKs, docs, or callers build on, or a design on a core path that
+other code comes to depend on. Name what we commit to. A door that is two-way
+at merge and turns one-way on a later event, such as an SDK release or a
+docs publish, names that event.
 
-## Worst case
+## Incident
 
-Name the worst thing a bug in the diff does to a user:
+Name the worst incident a missed bug in the diff causes for a user:
 
 - **Silent harm**: nobody sees it happen. Messages are dropped, sent twice, or
   sent to the wrong person, scheduled work does not run, data is lost or
@@ -37,6 +50,8 @@ Name the worst thing a bug in the diff does to a user:
 - **Broken core action**: a user sees that the product's main task fails,
   such as saving or sending.
 - **Cosmetic**: a user sees it, and nothing they need is blocked.
+
+When no path leads to an incident, say so in one bullet.
 
 ## Hot paths
 
@@ -58,37 +73,37 @@ runs through reaches most.
 
 ## Grade
 
-The grade is the true risk: the worst case on each hot path, weighed by that
-path's reach. The highest path sets the grade. Read every danger hunk with
-its callers.
+The grade is the true risk: the worst incident on each hot path, weighed by
+that path's reach. The highest path sets the grade. Read every danger hunk
+with its callers.
 
-- A one-way door is high.
+- A door that is one-way at merge is high.
+- A design on a core path is graded by what it does at full use, even when
+  the merge exposes no one yet. A new table in a shared queue database that
+  can bloat and stall every job is high.
 - A migration that adds or changes a column, in one PR with code in another
   deploy unit that reads it, is high: the reader can go live first and fail
   until the migration runs. Ask for the split in full-send step 1.
 - Silent harm is never low. It is high when behavior changes on a path that
   reaches some or most, and medium otherwise. A path the user's agent
   instructions name as critical has silent harm as its worst case.
-- A broken core action is medium. It is low only behind a default-off flag
-  on a path that reaches few.
+- A broken core action is medium. It is low only behind a switch-off on a
+  path that reaches few.
 - Cosmetic is low, even when most users see it.
 
-Danger areas and more than about 400 changed production lines raise the
-grade. A default-off feature flag, focused tests on the risky path, and a
-shadow diff that shows existing paths behave as before lower it, but never
-below the first matching rule above. Done when every hot path is traced and
-banded, every danger hunk and every one-way effect is named, and the grade
-follows from them.
+Behind a default-off switch-off, grade what the merge exposes with the switch
+off, and add the grade at full rollout when it is higher. Danger areas and
+more than about 400 changed production lines raise the grade. Focused tests
+on the risky path, a shadow diff that shows existing paths behave as before,
+and an alert that pages on the incident lower it, but never below the first
+matching rule above. Done when every hot path is traced and banded, every
+danger hunk and every commitment is named, and the grade follows from them.
 
 ## Callout
 
-Name the concrete risk, its worst case and reach band, and what limits it, in
-one to three bullets. End with a **Revert** line: the one step that undoes the
-merge, such as turning off the named flag or reverting the merge commit. For a
-one-way door, add the manual step that cleans up what the revert leaves, or
-say that nothing can. Never put the measured numbers in the callout: the repo
-may be public. The door follows the grade on its line. The grade sets the circle and the callout
-color:
+The callout stays short: the headline, one or two incident bullets naming the
+path, who, and the regions, and the switch-off. Never put measured numbers in
+it: the repo may be public. The grade sets the circle and the callout color:
 
 | Grade  | Circle | Callout       |
 | ------ | ------ | ------------- |
@@ -96,18 +111,36 @@ color:
 | medium | 🟡     | `[!WARNING]`  |
 | high   | 🔴     | `[!CAUTION]`  |
 
+A **Rollout** section follows the callout when the grade is medium or high,
+or when a decision from the PR or its thread shapes the risk. Each line
+appears only when it has content:
+
+- **Stages:** deploy order and the switch-off's stages, per the `rollout`
+  skill and the user's agent instructions.
+- **Decided:** the user's calls that set the risk, such as an accepted limit
+  or a design choice.
+- **Watch:** the alert that pages on the incident, else the metric to watch.
+  Name a missing alert.
+
 ```markdown
 <!-- merge-risk -->
 > [!WARNING]
-> 🟡 **Merge risk: medium** · two-way door (merge-risk rubric)
-> - <the concrete risk: the path, what could break, for whom>
-> - <what limits it: the flag, the tests>
-> - **Revert:** <turn off `<flag>`, or `git revert <merge commit>`; for a one-way door, the cleanup step>
+> 🟡 **Merge risk: medium**, 🔴 at full rollout · one-way door once <event>: <what we commit to>
+> - <the incident: the path, what breaks, for whom, in which regions>
+> - **Switch-off:** `<flag or allowlist>`, or none: live on deploy, fix forward.
+
+## Rollout
+
+- **Stages:** <deploy order, then the switch-off's stages>
+- **Decided:** <the call that sets the risk>
+- **Watch:** <the alert that pages, or the metric; a missing alert>
 <!-- /merge-risk -->
 ```
 
-GitHub fixes the callout title and strips `class` and `style` from HTML, so
-the circle and the bold grade line carry the risk.
+Drop the full-rollout grade when it matches the merge grade, and the "once
+<event>" when the door is already one-way or stays two-way. GitHub fixes the
+callout title and strips `class` and `style` from HTML, so the circle and the
+bold grade carry the risk.
 
 ## Post
 
@@ -116,10 +149,9 @@ after they approve.
 
 1. Read the body with `gh pr view <n> --json body -q .body`.
 2. Remove every `merge-risk` and `line-count` marker block from the body.
-3. Put the callout under the `Merge Danger` heading when the body has one,
+3. Put the block under the `Merge Danger` heading when the body has one,
    else right after the Impact section, else right after the problem
-   section, else first. Keep the rest of the
-   body byte for byte.
+   section, else first. Keep the rest of the body byte for byte.
 4. Write it back with `gh pr edit <n> --body-file <file>`.
 
-Done when the description carries one risk callout with the current grade.
+Done when the description carries one merge-risk block with the current grade.
