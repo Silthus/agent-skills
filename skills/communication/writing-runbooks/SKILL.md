@@ -1,6 +1,6 @@
 ---
 name: writing-runbooks
-description: Write an alert runbook that a half-awake engineer paged at 3am can follow to stop the bleeding, with every step tested, plus the instructions an agent follows for the same alert. Use when writing, fixing, re-testing, or reviewing a runbook, or when an alert has no runbook.
+description: Write an alert runbook that a half-awake engineer paged at 3am can follow to stop the bleeding, with every step tested, plus the instructions an agent follows for the same alert. Use when adding or changing an alert, when writing, fixing, re-testing, or reviewing a runbook, or when an alert has no runbook. Use it alongside a repository's own alert or runbook format or skill, such as `create-alert`: it fits inside that format.
 ---
 
 # Writing runbooks
