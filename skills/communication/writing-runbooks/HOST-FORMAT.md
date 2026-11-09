@@ -1,22 +1,36 @@
 # A repository with its own runbook format
 
-Many repositories already hold runbooks in a fixed format, often checked in CI: one file per alert, a set of required headings, no extra files in the folder. Keep that format. Read its rules and its checker first, such as a README or a parser, and fit this skill inside them:
+Many repositories already hold runbooks in a fixed format, often checked in CI: one file per alert, a set of required headings, no extra files in the folder. Their mature runbooks are the proven shape: on-call engineers have used them through real incidents. Write to that shape.
 
-| This skill | Where it goes in the host format |
+## Read the house shape
+
+1. Read the format's rules and its checker, such as a README or a parser.
+2. Find the 2 or 3 most edited runbooks for critical alerts:
+
+   ```sh
+   git log --format= --name-only -- <runbooks dir> | sort | uniq -c | sort -rn | head -20
+   ```
+
+   Keep the ones whose alert pages someone, by its severity or tier label.
+3. Read them whole, with their alerts' descriptions. Note their length in lines, how Mitigation reads, how Escalation reads, and how the descriptions read.
+
+Done when you can state the typical length and the Mitigation style in one line each. Your page lands within that length range and reads like those pages. A page longer than the house's longest critical runbook needs cuts, not more headings.
+
+## Where this skill's parts go
+
+| This skill | In the host format |
 | --- | --- |
-| The stop-the-bleeding steps | First under the section that holds the fix, such as `## Mitigation`. Nothing else goes in that section when the host copies it into the notification; otherwise daytime material follows the last step under its own `###` heading. |
-| The banner, the stamp, the "Stuck?" line, and the role line | The first lines of the first section, such as `## Symptoms`, in that order. |
-| `AGENT.md` | A `### For agents` section in the same file, in the section where diagnosis lives, such as `## Investigation`. Its first line is "Only agents read this section. People skip it." It names the `responding-to-alerts` skill and links steps by number, as [AGENT-PAGE.md](AGENT-PAGE.md) describes. |
+| The page sections in [PAGE.md](PAGE.md) | The host's own headings, in the host's order. Its mitigation section holds the conditional bullets, least destructive first. |
+| Test status, the test log, and drill results | The PR description. |
+| Notes for agents | Nothing, by default: the `responding-to-alerts` skill reads a normal runbook. When an agent truly needs one fact the page lacks, such as the query for a graph link, add it as one line beside that check. |
 | `mitigate.sh` | A script next to the runbook with the same name and `.sh`, such as `ConsumerLagHigh.sh`, when the host's checker only reads `.md` files. Otherwise link it from where the host keeps scripts. |
-| The title and "Morning" | Leave them out when the host forbids them. The host's own sections hold the background. |
-| Step 8, wiring the alert | Keep what the host generates, such as the runbook URL or a notification that already carries the fix section. |
+| The alert description | The fact, the value, and the user impact, worded like the mature runbooks' alerts. |
+| The runbook URL | Keep what the host generates. |
 
-The person drill reads the whole file, agent section included, so the role line and the "You, the on-call person, run this step" wording carry more weight here. The step rules, the tests, and the drills stay the same. Check the file with the host's checker and with this skill's, naming the section that holds the steps:
+Check the file with the host's checker and with this skill's, naming the section that holds the fix:
 
 ```sh
 bun <this skill>/scripts/check-runbook.ts alerts/runbooks/ConsumerLagHigh.md --section Mitigation
 ```
 
-On a file, the checker applies its wording rules to the stamp lines and the steps only, and looks for the `For agents` section instead of `AGENT.md`.
-
-When the host format cannot hold a rule at all, keep the host's rule and tell the user which of this skill's rules you dropped.
+When the host format cannot hold one of this skill's rules, keep the host's rule and tell the user which rule you dropped.

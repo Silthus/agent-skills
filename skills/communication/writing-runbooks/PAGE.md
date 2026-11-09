@@ -1,79 +1,68 @@
 # The runbook page
 
-Copy this into `runbooks/<alert-name>/README.md` and replace every `<...>`.
+The page has the shape of a proven critical runbook: what is broken, how to check, what to do, and who to page. Copy this into `runbooks/<alert-name>/README.md` and replace every `<...>`. In a host format, keep the host's headings and fit these rules under them.
 
 ````markdown
 # <Alert title, exactly as the notification shows it>
 
-Tested <YYYY-MM-DD> on <environment> by <name>.
-Stuck for 15 minutes? Page <person or rotation>. Do not wait.
-You are the person: run every step yourself, `[human]` steps too.
-Agents: read [AGENT.md](AGENT.md).
+## Symptoms
 
-Users see: <what is broken for them, in one sentence>.
+<What is broken for users, in one or two sentences.>
+<What else looks like this alert, and which runbook covers it.>
 
-## Stop the bleeding
+## Investigation
 
-1. [safe] Open the <name> graph: <full URL with the time range>
-   You see: a line above <number>.
-   Line below <number>? It recovered by itself. Go to step 5.
-
-2. [safe] Copy and run:
+1. Open the <name> graph: <full URL with the time range>.
+   A line above <number> confirms it. Below <number>, it recovered.
+2. Check whether a deploy matches the onset:
    ```sh
    <full command, every flag spelled out>
    ```
-   You see: `<the line that proves the cause>`
-   Not that? Go to step 4.
+   A rollout within <minutes> of the onset points at a regression.
+3. <One check per known cause, with what result points at it.>
 
-3. [human] You, the on-call person, run this step. Copy and run:
-   ```sh
-   <the fix>
-   ```
-   You see: `<what the fix prints>`
-   Costs: <what it breaks or loses, with numbers>.
-   Undo: `<the command that reverts it>`
+## Mitigation
 
-4. [safe] Wait <the alert's window, such as 5 minutes>. Look at the graph from step 1 again.
-   You see: the line below <number>.
-   Still above? Page <person or rotation> now.
+Least destructive first.
 
-5. [safe] Post this in <incident channel>:
-   ```text
-   <Alert title> is mitigated. I followed the runbook. Details tomorrow.
-   ```
-   You see: your message in the channel. Go back to sleep.
+- If <a condition from an Investigation check>, <one action>. <Why it is the right first move.>
+- If <a deploy matches the onset>, roll it back:
+  ```sh
+  <the rollback command>
+  ```
+  Costs: <what it breaks or loses, with numbers>. Undo: `<the command that reverts it>`.
+- If <none of the above>, page <person or rotation> now.
+- Confirm recovery on the graph from Investigation 1: the line below <number> for <the alert's window>.
 
-## Morning
+Fix the cause and keep the thresholds. Change a threshold only in its own PR, with baseline numbers.
 
-<Links to dashboards, the design doc, and how to find the root cause.>
+## Escalation
+
+Page <person or rotation> when no mitigation has started within 15 minutes.
+Include: the region, the value from Investigation 1, the onset time, and the latest deploy.
 ````
 
-## A step
+## The sections
 
-Every step has these parts, in this order:
+- **Symptoms** says what users cannot do, in plain prose. It names lookalike alerts and their runbooks. Every line serves the reader: test status lives in the PR description.
+- **Investigation** is numbered checks. Each holds one link or one command, and says which result means what. The first check confirms the alert. Order the rest by how often each cause has been the answer.
+- **Mitigation** opens with "Least destructive first", then 3 to 5 bullets. Each is `If <condition>, <action>.` plus its reason. Every condition is a result an Investigation check shows, so the reader matches and never guesses. A bullet that changes production names its cost and its undo. When nothing reverts it, write `Undo: none.` and say the change is permanent. One bullet says when to stop and page. The last bullet says how to confirm recovery.
+- **Escalation** is 2 to 6 lines: who to page, when, and what to put in the page.
 
-- **The number and a tag.** `[safe]` means read-only, or reverts on its own, like a scale-up. A side effect that ends by itself within a stated time, such as messages hidden for 5 minutes, is `[safe]` when the step names it. An agent may run a `[safe]` step. `[human]` means it changes production in a way that is hard to undo, touches customer data, or stops a feature for customers, even when one command undoes it. Only a person runs it. The step says so to the reader ("You, the on-call person, run this step") and adds `Costs:` and `Undo:` lines. When nothing reverts it, write `Undo: none.` and say in `Costs:` that the change is permanent.
-- **One action.** One link to open, with the clicks to make there, or one command to copy. A command sits alone in a fenced code block so a phone copies it in one tap. Labeled alternatives per region count as one action: a link per region, or one command block with a comment line per region. A read-only check across regions is best as one loop over them.
-- **`You see:`** The exact text, number, or shape that proves the step worked. Copy it from your test run.
-- **Still in progress?** A step whose result takes time says how long to wait and when to look again: "Status `running`? Wait 1 minute, then reload the page."
-- **A way out.** When the result differs, the step says where to go: another step number, or "Page <rotation>". A reader never has to decide what a result means. When two ways out could apply at once, list the stop and page ones first.
-
-Address the steps to the person only. Text for agents lives in `AGENT.md`, or the host's agent section, and never inside a step: a tired reader who sees "agents stop here" stops too.
+Most proven runbooks run 40 to 100 lines. Move background, design notes, and root-cause hunting to a link.
 
 ## Wording
 
-- Start each sentence with a verb: "Open", "Copy and run", "Wait", "Page".
-- Keep sentences to 12 words or fewer. Split anything longer.
-- Write exact values: "Wait 5 minutes", "above 2,000", "the `prod-us` context". Say a number, never "a few" or "some". Size a wait to the alert's window and the metric's delay, not to a round number.
-- Write every command complete: the cluster, region, namespace, and profile spelled out. When regions differ, give one labeled command block per region, or one page per region.
+- One action per bullet or check: one link to open, or one command to copy. A command sits alone in a fenced code block, so a phone copies it in one tap.
+- Start each sentence with a verb or with `If`. Keep sentences near 12 words; a condition and its action may run longer.
+- Write exact values: "Wait 5 minutes", "above 2,000", "the `prod-us` context". Size a wait to the alert's window and the metric's delay.
+- Write every command complete: the cluster, region, namespace, and profile spelled out. When regions differ, give one labeled command per region, or one loop over them for a read-only check.
 - Use the words the notification and the dashboard use. Name a thing the same way every time.
-- Put at most five steps under "Stop the bleeding". Move diagnosis that can wait to "Morning".
-- Match the page line to the alert's tier. A page: "Stuck for 15 minutes? Page <rotation>." A warning that only posts to a channel: "Stuck? Post in <channel> and mention <group>."
-- Leave out why the system works the way it does. Link it under "Morning".
+- Match the escalation to the alert's tier. A page: "Page <rotation> when no mitigation has started within 15 minutes." A warning that only posts to a channel: "Post in <channel> and mention <group>."
 
 ## The script line
 
-When the folder has a `mitigate.sh`, a step runs it with one line:
+When the folder has a `mitigate.sh`, a Mitigation bullet runs it with one line:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/<owner>/<repo>/<40-character commit SHA>/runbooks/<alert-name>/mitigate.sh | bash
@@ -87,4 +76,4 @@ curl -fsSL https://raw.githubusercontent.com/<owner>/<repo>/<40-character commit
   gh api -H 'Accept: application/vnd.github.raw' 'repos/<owner>/<repo>/contents/runbooks/<alert-name>/mitigate.sh?ref=<SHA>' | bash
   ```
 
-- Tag the step `[human]` when the script contains a `human` stage. Its `Costs:` and `Undo:` lines sum up the script's.
+- When the script contains a `human` stage, the bullet names its cost and undo, summed from the script's.

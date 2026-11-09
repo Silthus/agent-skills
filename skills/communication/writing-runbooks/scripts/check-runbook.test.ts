@@ -5,45 +5,40 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { checkRunbook, targetOf } from "./check-runbook";
 
-const today = new Date("2026-11-05");
+const mitigation = `Least destructive first.
 
-const page = (steps: string, header = "Tested 2026-11-01 on staging by Sam.") => `# Consumer lag high
+- If the consumer pods crash-loop after a deploy, roll it back:
+  \`\`\`sh
+  argocd app rollback consumer-prod-us
+  \`\`\`
+  Costs: the last release's fix is gone. Undo: \`argocd app sync consumer-prod-us\`.
+- If lag grows with no deploy, page the platform rotation now.
+- Confirm recovery: lag below 2,000 on the graph for 10 minutes.`;
 
-${header}
-Stuck for 15 minutes? Page the platform rotation. Do not wait.
-You are the person: run every step yourself, \`[human]\` steps too.
-Agents: read [AGENT.md](AGENT.md).
+const page = (fix = mitigation, symptoms = "Events reach dashboards late. Users see stale numbers.") => `# Consumer lag high
 
-## Stop the bleeding
+## Symptoms
 
-${steps}
+${symptoms}
 
-## Morning
+## Investigation
 
-Read the design doc for the long story about why consumers fall behind under load.
+1. Open the lag graph: https://grafana.example.com/d/lag?from=now-1h.
+   A line above 2,000 confirms it.
+
+## Mitigation
+
+${fix}
+
+## Escalation
+
+Page the platform rotation when no mitigation has started within 15 minutes.
 `;
 
-const safeStep = `1. [safe] Copy and run:
-   \`\`\`sh
-   kubectl --context prod --namespace ingest get pods
-   \`\`\`
-   You see: \`consumer-1 CrashLoopBackOff\`
-   Not that? Page the platform rotation.`;
-
-const humanStep = `2. [human] Copy and run:
-   \`\`\`sh
-   kubectl --context prod --namespace ingest rollout restart deployment/consumer
-   \`\`\`
-   You see: \`deployment.apps/consumer restarted\`
-   Costs: events wait 2 minutes.
-   Undo: \`kubectl --context prod --namespace ingest rollout undo deployment/consumer\``;
-
-const agentPage = "Follow the `responding-to-alerts` skill. The steps are in [README.md](README.md).\n";
-
-function folder(readme: string, agent = agentPage): string {
+function folder(readme: string, agent?: string): string {
   const dir = mkdtempSync(join(tmpdir(), "runbook-"));
   writeFileSync(join(dir, "README.md"), readme);
-  writeFileSync(join(dir, "AGENT.md"), agent);
+  if (agent !== undefined) writeFileSync(join(dir, "AGENT.md"), agent);
   return dir;
 }
 
@@ -51,49 +46,55 @@ const git = (dir: string, ...args: string[]) =>
   spawnSync("git", ["-C", dir, "-c", "user.name=t", "-c", "user.email=t@t", ...args], { encoding: "utf8" }).stdout.trim();
 
 describe("checkRunbook", () => {
-  test("a tested page with a safe and a human step passes", () => {
-    expect(checkRunbook(targetOf(folder(page(`${safeStep}\n\n${humanStep}`))), today)).toEqual([]);
+  test("a page in the proven shape passes with no AGENT.md", () => {
+    expect(checkRunbook(targetOf(folder(page())))).toEqual({ problems: [], warnings: [] });
   });
 
-  test("a human step without its cost and undo fails", () => {
-    const bare = humanStep.split("\n").slice(0, 5).join("\n");
-    expect(checkRunbook(targetOf(folder(page(`${safeStep}\n\n${bare}`))), today)).toEqual([
-      'README.md:17: step 2: [human] needs a "Costs:" line',
-      'README.md:17: step 2: [human] needs an "Undo:" line',
+  test("a page without the four sections fails", () => {
+    expect(checkRunbook(targetOf(folder("# Consumer lag high\n\n## Mitigation\n\n- If lag grows, page the platform rotation.\n"))).problems).toEqual([
+      'README.md: add a "## Symptoms" section',
+      'README.md: add a "## Investigation" section',
+      'README.md: add a "## Escalation" section',
     ]);
   });
 
-  test("a step without a tag or a You see line fails", () => {
-    expect(checkRunbook(targetOf(folder(page("1. Open the dashboard."))), today)).toEqual([
-      "README.md:10: step 1: start with [safe] or [human]",
-      'README.md:10: step 1: add a "You see:" line',
+  test("test status, role lines, and agent sections on the page fail", () => {
+    const symptoms = [
+      "UNTESTED: steps 1 and 3 have no recorded run.",
+      "Partly tested 2026-11-09 on prod-eu by Sam.",
+      "You are the person: run every step yourself.",
+      'Agents: read "For agents" under Investigation.',
+      "",
+      "### For agents",
+    ].join("\n");
+    expect(checkRunbook(targetOf(folder(page(mitigation, symptoms)))).problems).toEqual([
+      "README.md:5: test status goes in the PR description, not on the page",
+      "README.md:6: test status goes in the PR description, not on the page",
+      "README.md:7: drop the role line: the page has one reader",
+      "README.md:8: drop the agents line: responding-to-alerts reads the page as is",
+      "README.md:10: drop the agent section: one line beside a check, or nothing",
     ]);
   });
 
-  test("more than five steps fails", () => {
-    const steps = [1, 2, 3, 4, 5, 6].map((n) => `${n}. [safe] Wait 5 minutes.\n   You see: a flat line.`).join("\n\n");
-    expect(checkRunbook(targetOf(folder(page(steps))), today)).toEqual(['README.md: put 1 to 5 steps first under "Stop the bleeding", not 6']);
-  });
-
-  test("an expired stamp or an UNTESTED banner fails", () => {
-    expect(checkRunbook(targetOf(folder(page(safeStep, "Tested 2026-07-01 on staging by Sam."))), today)).toEqual([
-      "README.md:3: stamp is older than 90 days: re-test the page",
-    ]);
-    expect(checkRunbook(targetOf(folder(page(safeStep, "UNTESTED: step 1 has no recorded run.\nPartly tested 2026-11-01 on staging by Sam."))), today)).toEqual([
-      "README.md:3: UNTESTED banner: record a run of every step it names, then remove it",
-    ]);
-    expect(checkRunbook(targetOf(folder(page(safeStep, "UNTESTED: step 1 has no recorded run.\nTested 2026-11-01 on staging by Sam."))), today)).toEqual([
-      "README.md:3: UNTESTED banner: record a run of every step it names, then remove it",
-      'README.md:4: write "Partly tested" while the UNTESTED banner stands',
+  test("a goto flow with step tags and You see lines fails", () => {
+    const flow = "1. [safe] Open the graph.\n   You see: a line above 2,000.\n   Below? Go to step 4.";
+    expect(checkRunbook(targetOf(folder(page(flow)))).problems).toEqual([
+      'README.md:14: drop the step tag: a production change names its "Costs:" and "Undo:"',
+      "README.md:15: say what to look for in the check itself, not on a You see: line",
+      'README.md:16: write "If <condition>, <action>." bullets, not a jump to another step',
     ]);
   });
 
-  test("placeholders, vague words, and long sentences before Morning fail", () => {
-    const steps = "1. [safe] Open <dashboard> and wait if needed for the line to settle down again before you go on.\n   You see: a flat line.";
-    expect(checkRunbook(targetOf(folder(page(steps))), today)).toEqual([
-      "README.md:10: fill in <dashboard>",
-      'README.md:10: "if needed" is vague: write the exact value or action',
-      'README.md:10: 17 words: split "Open <dashboard> and wait if needed for ..." to 12 or fewer',
+  test("placeholders and vague words fail; long sentences and long pages only warn", () => {
+    const fix = "- If lag grows, restart <deployment> and wait if needed.\n- If the restart did not help and lag keeps growing across every partition in both regions with no recent deploy on record, page the platform rotation now.";
+    const report = checkRunbook(targetOf(folder(page(fix, "Events arrive late.\n".repeat(90)))));
+    expect(report.problems).toEqual([
+      'README.md:104: "if needed" is vague: write the exact value or action',
+      "README.md:104: fill in <deployment>",
+    ]);
+    expect(report.warnings).toEqual([
+      "README.md: 109 lines: proven runbooks run 40 to 100; cut background to a link",
+      'README.md:105: 27 words: split "If the restart did not help and lag keep..."',
     ]);
   });
 
@@ -104,63 +105,53 @@ describe("checkRunbook", () => {
     git(dir, "add", "mitigate.sh");
     git(dir, "commit", "-qm", "script");
     const sha = git(dir, "rev-parse", "HEAD");
-    const run = (ref: string) => `1. [human] Copy and run:\n   \`\`\`sh\n   curl -fsSL https://raw.githubusercontent.com/o/r/${ref}/mitigate.sh | bash\n   \`\`\`\n   You see: \`Done\`\n   Costs: events wait 2 minutes.\n   Undo: \`./undo.sh\``;
+    const run = (ref: string) => `- If lag grows, run the restart script:\n  \`\`\`sh\n  curl -fsSL https://raw.githubusercontent.com/o/r/${ref}/mitigate.sh | bash\n  \`\`\`\n  Costs: events wait 2 minutes. Undo: none.`;
 
     writeFileSync(join(dir, "README.md"), page(run(sha)));
-    expect(checkRunbook(targetOf(dir), today)).toEqual([]);
+    expect(checkRunbook(targetOf(dir)).problems).toEqual([]);
 
     writeFileSync(join(dir, "README.md"), page(run("main")));
-    expect(checkRunbook(targetOf(dir), today)).toEqual(["README.md: pin the mitigate.sh line to a 40-character commit SHA, not a branch"]);
+    expect(checkRunbook(targetOf(dir)).problems).toEqual(["README.md: pin the mitigate.sh line to a 40-character commit SHA, not a branch"]);
 
     writeFileSync(join(dir, "README.md"), page(run(sha)));
     writeFileSync(join(dir, "mitigate.sh"), "#!/usr/bin/env bash\necho changed\n");
-    expect(checkRunbook(targetOf(dir), today)).toEqual([`README.md: mitigate.sh differs from commit ${sha.slice(0, 7)}: commit it and put the new SHA in the page`]);
+    expect(checkRunbook(targetOf(dir)).problems).toEqual([`README.md: mitigate.sh differs from commit ${sha.slice(0, 7)}: commit it and put the new SHA in the page`]);
   });
 
-  test("the agent page must name the shared skill and link the steps", () => {
-    expect(checkRunbook(targetOf(folder(page(safeStep), "Restart the consumer when lag is high.\n")), today)).toEqual([
+  test("an AGENT.md, when present, must name the shared skill and link the page", () => {
+    expect(checkRunbook(targetOf(folder(page(), "Restart the consumer when lag is high.\n"))).problems).toEqual([
       "AGENT.md: name the responding-to-alerts skill",
-      "AGENT.md: link the steps in README.md",
+      "AGENT.md: link the checks in README.md",
     ]);
   });
 
-  test("a runbook in a repo's own format keeps its sections and checks the steps under Mitigation", () => {
+  test("a runbook in a repo's own format keeps its sections and checks the bullets under Mitigation", () => {
     const dir = mkdtempSync(join(tmpdir(), "runbook-"));
     const file = join(dir, "ConsumerLagHigh.md");
-    const hosted = (agents: string) => `---
+    const hosted = (fix: string) => `---
 alert: ConsumerLagHigh
 ---
 
 ## Symptoms
 
-Tested 2026-11-01 on staging by Sam.
-Stuck for 15 minutes? Page the platform rotation.
-You are the person: run every step yourself, \`[human]\` steps too.
-
 Consumers fall behind under load, and this paragraph may run as long as the daytime reader likes it to.
 
 ## Investigation
 
-Read the consumer logs around the time the lag started to grow, and compare them with the deploy history.
-${agents}
+1. Read the consumer logs around the time the lag started to grow, and compare them with the deploy history.
+
 ## Mitigation
 
-${safeStep}
-
-${humanStep}
-
-### From a toolbox pod
-
-Longer daytime notes can follow the steps under their own heading, with as many words as they need.
+${fix}
 
 ## Escalation
 
 Post in the team channel.
 `;
-    writeFileSync(file, hosted("\n### For agents\n\nFollow the `responding-to-alerts` skill. Run [safe] steps under Mitigation.\n"));
-    expect(checkRunbook(targetOf(file), today)).toEqual([]);
+    writeFileSync(file, hosted(mitigation));
+    expect(checkRunbook(targetOf(file))).toEqual({ problems: [], warnings: [] });
 
-    writeFileSync(file, hosted(""));
-    expect(checkRunbook(targetOf(file), today)).toEqual(['ConsumerLagHigh.md: add a "### For agents" section']);
+    writeFileSync(file, hosted("Roll back the deploy."));
+    expect(checkRunbook(targetOf(file)).problems).toEqual(['ConsumerLagHigh.md: write the mitigations as bullets under "Mitigation"']);
   });
 });
