@@ -2,7 +2,7 @@
 
 Skills that take a pull request from a draft to merged, and help you review the pull requests of others.
 
-- **[pr-description](./pr-description/SKILL.md)**: Write or refresh a PR description that leads with the problem and its impact, carries the merge-risk callout, and puts proof beside each behavior: screenshots, a recording, or a flow diagram. Based on Matt Pocock's `pr`.
+- **[pr-description](./pr-description/SKILL.md)**: Add the merge-risk callout, the Impact section, owed proofs, and decision lines to a PR description, alongside the repository's own description skill. Writes the whole body, with screenshots, a recording, or a flow diagram, when the repository has no description skill or template. Based on Matt Pocock's `pr`.
 - **[merge-risk](./merge-risk/SKILL.md)**: Grade a PR's blast radius as low, medium, or high, call its door one-way or two-way, and post the risk callout.
 - **[qa-swarm](./qa-swarm/SKILL.md)**: Bring a PR to review-ready with a cross-model reviewer panel, the proofs the change owes, and a fix for every verified finding and bot thread, with panel rounds and final reads until clean, and an arbiter deciding past two of each. Its spec pass checks a draft spec for overengineering before anyone builds it. Based on Paul D'Ambra's `qa-swarm` and `review-triage`, with Daniel Visca's verify-by-observation rules.
 - **[full-stop](./full-stop/SKILL.md)**: Build or fix something end to end and stop at a reviewed draft PR with green CI and every bot finding handled. Never marks it ready or merges. Based on Theo Browne's `full-stop`, MIT.
