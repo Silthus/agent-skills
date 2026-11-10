@@ -29,6 +29,8 @@ Every lane PR has exactly one type. The type makes the PR self-proving: anyone c
 - **`refactor`** changes production code only. Test files stay byte for byte the same, the same tests pass before and after, and the mutation score of the touched files stays the same or rises. Each PR makes one move, such as one god method split or one copy removed.
 - **`fix`** changes behavior on purpose. The first commit adds a test that fails on the base. The next commit makes it pass with the smallest change.
 
+Every test that a `test` or `fix` PR adds or changes is outside-in. It drives the unit through its public interface and asserts what a caller observes, such as the response, the stored row, or the delivered message. It asserts no mock calls, call counts, or call arguments, except where a stubbed boundary injects a fault. It does not reach past the seam. Do not copy a neighbouring test's mock assertions. Each review round checks this bar.
+
 A change that needs two types becomes two lanes. Every PR stays inside the line limits in `limits.md`.
 
 ## Steps
