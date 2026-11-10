@@ -33,11 +33,26 @@ You may commit, push, rebase, fix conflicts, and use `--force-with-lease` on
 this task's branch. Never mark the PR ready for review, request reviewers,
 merge, enable auto-merge, enter a merge queue, push to the default branch,
 bypass branch protection, ask the approval bot for a run or add its label, or
-delegate those actions.
+delegate those actions. One exception: the code-owner request in "Ask code
+owners at draft time" below.
 
 Disable existing auto-merge and remove the PR from any merge queue before
 work begins; check again before each push. Report these changes. If you
 cannot prevent automatic merging, report the blocker before proceeding.
+
+## Ask code owners at draft time
+
+When the user's agent instructions name an approval bot for this repo, as
+`stamp-pr` uses, run this right after the draft PR opens:
+
+`fleet pr forecast --repo <owner/repo> --pr <number> --request`
+
+It matches the changed paths and size against the bot's own policy files. On
+a likely refusal it requests the owning teams from CODEOWNERS and owners.yaml,
+so their review overlaps CI and the proof gate instead of starting after
+them. Exit 0 means the forecast ran, whatever it predicts. Run it again after
+a push that adds paths. Report any path it prints as having no owning team.
+It never posts to Slack and never asks the bot for a run.
 
 ## Stop at the gate
 
@@ -61,7 +76,8 @@ an approval bot for this repo, as `stamp-pr` uses, forecast its verdict on the
 final head. The bot refuses drafts, and a passing run posts a real approval,
 so never run it here. Predict the verdict instead:
 
-- Check `stamp-pr`'s Qualify rules against the final diff.
+- Run `fleet pr forecast --repo <owner/repo> --pr <number>` on the final
+  head, and check `stamp-pr`'s Qualify rules against the final diff.
 - Name every team other than the user's that owns a changed path, per
   `stamp-pr`'s "Other teams' code". A stamp will ask the user about them.
 - Check that every bot review on the head is finished, and each finding is

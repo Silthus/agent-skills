@@ -87,10 +87,21 @@ without any, ask.
 
 The default cadence, unless the user names another:
 
-1. **Deploy.** Find when the merge commit reached production from the repo's
-   deploy signal, such as the PostHog `checking-deploy-timing` skill, a deploy
-   workflow run, or a release tag. Wait on a deploy run with
-   `gh run watch <id> --exit-status`. When no deploy shows up within 24 hours,
+1. **Deploy.** Find when the merge commit reached production. In
+   `PostHog/posthog`, run `fleet deploy wait <pr>` (on `PATH` or at
+   `~/dev/fleet/fleet`) as one background command whose timeout is longer than
+   its `--timeout`, 120 minutes by default. It blocks until the deploy bot's
+   PR comment shows prod-us and prod-eu deployed. It prints each region's
+   deploy time, the minutes since the merge, and the workflow links, and when
+   the one-hour check is due. It exits 0 when the PR is live. Exit 1 means a
+   failed row or a PR closed without a merge. Exit 2 is a timeout. The bot
+   writes no failure status, so a failed deploy usually shows as a timeout:
+   open the state-deploy runs it links. Do not poll Slack, Grafana, or image
+   builds for this. Its rows track the Django `posthog` release only. For a
+   change to a Node or Rust service, also confirm that service's own deploy,
+   as the PostHog deploy-signal memory describes. In other repos, wait on the
+   repo's deploy signal: a deploy workflow run with
+   `gh run watch <id> --exit-status`, or a release tag. When no deploy shows up within 24 hours,
    record a gap and ask. Then **mark the deploy** on each insight that the
    PR's Impact section links: in PostHog, an annotation at the deploy time
    that reads `<owner/repo>#<number> deployed`, scoped to that insight
