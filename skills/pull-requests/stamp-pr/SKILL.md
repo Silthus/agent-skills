@@ -64,7 +64,9 @@ Replace full-send's step 6:
    a PR with an unresolved concern or a review still running.
 2. Add the label.
 3. Wait for the verdict with the watcher.
-   - **Approved:** continue at full-send's step 7.
+   - **Approved:** continue at full-send's step 7. The bot's approval does
+     not clear a **person's comment**: one the user has not answered still
+     holds the merge, per full-send's merge gate.
    - **Refused for a concrete issue:** fix it the smallest way, prove the fix,
      push, and request the stamp once more: remove the label and add it again.
    - **Refused again, or without a concrete issue:** stop stamping. Continue

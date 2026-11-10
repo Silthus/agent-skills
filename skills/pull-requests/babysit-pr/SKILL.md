@@ -33,16 +33,20 @@ Handle the existing checks and comments first. Then call
 a check fails, the required checks pass, someone comments or reviews, or the
 branch conflicts.
 
-- **Only the thread that owns the PR watches it.** If you are a delegated
-  child task (a reviewer, a review round, any `delegate_task` child), never
-  call `watch_pull_request`. The parent owns the PR. Do not watch PRs you are
-  not working on.
+- **Every open PR has one owning thread that watches it**, each layer of a
+  stack included, from its opening until it merges or closes. The owning
+  thread babysits the PR, modernizes it with `modernize-pr` when it goes
+  stale, and starts the merge once a merge grant covers it. A delegated child
+  task (a reviewer, a review round, any `delegate_task` child) never calls
+  `watch_pull_request`: the parent or conductor that owns the stack watches.
+  A conductor that hands a PR to a lane checks that some thread still watches
+  it. Do not watch PRs you do not own.
 - **A wake is news, not a merge decision.** Read the PR yourself before you
   act.
-- **Unwatch when you hand off.** A watched thread stays in Working and out of
-  the user's inbox. When you stop (ready, blocked, or asking the user a
-  question), call `unwatch_pull_request` first. A merge or close ends the
-  watch on its own.
+- **Keep the watch through handoffs.** A report, a park, or a PR that waits
+  on review keeps its watch, so a comment still wakes the owner. Unwatch only
+  right before a question to the user, and watch again once the user
+  answers. A merge or close ends the watch on its own.
 - **"Stopped watching, could not read it"** usually means GitHub's rate limit
   is used up. Run `gh api rate_limit --jq .resources.graphql` before you
   watch again. If `remaining` is near 0, wait for `reset` with one background
@@ -92,6 +96,11 @@ the `qa-swarm` skill: verify it against the source before you change code, fix
 real findings and CI failures, tell repository failures from infrastructure
 flakes, and reply with a written reason when you dismiss a false positive. Use
 the `leaving-pr-comments` skill for every comment posted on the user's behalf.
+
+A **person's comment**, as full-send's merge gate defines it, holds the
+merge. Check whether it holds, fix it if it does, and react 👍 per
+`leaving-pr-comments`. Report it to the skill that called you, which asks the
+user before any merge.
 
 CodeRabbit is advisory. Treat its findings like any other finding, but never
 wait for it and never hold a merge for it.

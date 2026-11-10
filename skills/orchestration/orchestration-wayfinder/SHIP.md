@@ -34,7 +34,7 @@ A review that leaves a decision open is a park: decisions locked plus the one pe
 
 ## Handoff
 
-The handoff is every draft pull request of the stack with each finding fixed or rejected and every gating CI check green on its head. Unwatch every pull request, then park: the park comment lists each pull request with its reviewed head, the proof, its decision lines, and the follow-ups, and its one question asks the human for the next mode. The conductor graduates the follow-ups into tickets.
+The handoff is every draft pull request of the stack with each finding fixed or rejected and every gating CI check green on its head. Keep watching every pull request, per `babysit-pr`, then park: the park comment lists each pull request with its reviewed head, the proof, its decision lines, and the follow-ups, and its one question asks the human for the next mode. The conductor graduates the follow-ups into tickets.
 
 ## Modes
 

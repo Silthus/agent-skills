@@ -31,6 +31,11 @@ Right before the merge, run `git fetch` and check the PR again. Never merge
 when it is BEHIND or DIRTY, or when base commits that landed after the last
 green run touch this PR's files. Rebase, push, and wait for green again.
 
+Right before the merge or queue entry, read the PR's comments and reviews
+once more. A **person's comment** the user has not answered holds it, per
+full-send's merge gate, even under a merge grant with every check green: ask
+the user first. For a stack, check every layer.
+
 Merge with the method the repo uses. Check the allowed methods and recent
 merged PRs. In a repo with a merge queue, enter the queue, for example with a
 bare `/trunk merge` comment. Stay until GitHub reports the PR as merged. Push

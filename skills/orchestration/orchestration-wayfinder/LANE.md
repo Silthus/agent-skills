@@ -29,7 +29,7 @@ bun <this skill's directory>/scripts/lane-prompt.ts <template> <ticket> --allow 
 
 ```md
 - Wait for an event that wakes you, then end your turn. A thread that owns a pull request waits with `watch_pull_request` in T3 Code, or the watcher of the `babysit-pr` skill elsewhere. A delegated task you started wakes you when it ends. Any other wait is one blocking command that ends on the event. Each turn reads your whole context again, so never poll and never `sleep` across turns.
-- Leave nothing running: before any turn that ends waiting on the human, a park included, and before your last turn, stop everything you started, such as a background `kickoff wait`, a watcher, a monitor, a subagent, or a child task, and call `unwatch_pull_request` on each pull request you watch. Anything left live keeps your thread, and the conductor's, off the human's inbox.
+- Leave nothing running: before any turn that ends waiting on the human, a park included, and before your last turn, stop everything you started, such as a background `kickoff wait`, a monitor, a subagent, or a child task. Anything left live keeps your thread, and the conductor's, off the human's inbox. The watch on each pull request you own stays: it ends when the pull request merges or closes, per `babysit-pr`.
 - Run the lane gate the repo's agent docs name, or its full local gate when they name none; CI runs the full gate on the pull request. The repo's docs own its commands and settings, such as worker counts.
 - Run every gate and check unpiped, or start the same command with `set -o pipefail;`, and read its exit code before you push or merge.
 - `rm` takes literal paths.

@@ -89,8 +89,9 @@ or an open PR. Skip the steps that are already done, and check them.
 Stay active from step 1 to the merge. If you end your turn while checks, bots,
 or reviewers are pending, the work stops, because nobody will prompt you again.
 Wait with the watcher from `babysit-pr`, so something wakes you when the PR
-changes. In T3 Code that is `watch_pull_request`. If you stop before the
-merge, call `unwatch_pull_request` first. After the merge, `rollout` schedules
+changes. In T3 Code that is `watch_pull_request`. This thread owns the PR:
+keep the watch until it merges or closes, also when you stop before the
+merge, per `babysit-pr`. After the merge, `rollout` schedules
 its own checks: send the step 8 report with the rollout state and the next
 check, and `rollout` reports each stage after that.
 
@@ -123,7 +124,14 @@ Full confidence means all of these are true on the latest commit:
 - Review bots have finished, and each finding is fixed or dismissed with a
   written reason.
 - A person approved the PR, or the approval bot did under `stamp-pr`.
-- No human review still requests changes.
+- No **person's comment** waits on the user. A person's comment is a PR
+  conversation comment, an inline review comment, a review submitted as
+  "comment" or "changes requested", or an approval whose body asks a question
+  or raises a concern. It holds the merge, and any queue entry, until the user
+  answers it, even when everything else above passes. Meanwhile check whether
+  it holds, fix it if it does, and react 👍 per `leaving-pr-comments`. An
+  approval that only approves, confirms, or praises is no hold. Bot comments
+  and bot reviews follow the review-bot line above.
 - The branch is up to date with the default branch, and GitHub reports it as
   mergeable.
 
@@ -136,7 +144,8 @@ A question in a normal message goes unseen, and the thread looks done. To ask
 the user something, use the harness's question tool so the thread shows that
 it is waiting: `AskUserQuestion` in Claude Code, `request_user_input` in Codex,
 or the question tool your harness has. In T3 Code, call
-`unwatch_pull_request` first. Put all the context in the question: the PR
+`unwatch_pull_request` first, and watch again once the user answers. Put all
+the context in the question: the PR
 link, what blocks you, and the options with your recommendation first.
 
 Ask only when you cannot continue alone:
@@ -147,6 +156,8 @@ Ask only when you cannot continue alone:
   **Progress** in `babysit-pr`), or the review arbiter refuses another round.
 - `merge-risk` grades the PR high, or calls it a one-way door. Ask before the
   merge.
+- A person's comment holds the merge, per the merge gate. Name the comment,
+  what you found, and what you fixed.
 - You want to push back on a person's review, or answer a person in more than
   one line.
 - The next step is outside the grant above: deleting data, touching production

@@ -88,7 +88,8 @@ so never run it here. Predict the verdict instead:
 The verdict is **likely approve**, or **likely refuse** with the rule or
 pattern that fails. The forecast is not a requirement for the handoff.
 
-In T3 Code, call `unwatch_pull_request` before the handoff or a question.
+In T3 Code, keep the watch through the handoff, per `babysit-pr`. Unwatch
+only right before a question, and watch again once the user answers.
 Report the PR link, final head, verdict, proof, reviewer outcome, merge risk,
 stamp forecast, and remaining risks. Label the forecast as a prediction, not
 the bot's verdict. State that the PR is still an unmerged draft.
