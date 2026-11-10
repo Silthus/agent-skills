@@ -19,7 +19,9 @@ against its parent PR.
 Hunks that touch authentication, permissions, secrets or crypto, billing or
 real sends to customers, migrations or schema, destructive writes, data
 ingestion, locking or concurrency, public API contracts, dependencies, or
-deploy and CI configuration.
+deploy and CI configuration. Read each danger hunk first, with its callers.
+A danger area marks where to look; the grade comes from what the change does
+there, so it sets no grade of its own.
 
 ## Switch-off
 
@@ -71,11 +73,15 @@ call it and are likely to, such as the users of the feature it extends. Band
 each path as few, some, or most. Code on a path that every request or event
 runs through reaches most.
 
+Reach counts the traffic whose behavior changes. When the change acts only
+under a condition, such as an unset setting, a flag, or one input shape, band
+the path by who meets that condition: a path that most teams run, changed
+only where a setting is unset, reaches the teams that leave it unset.
+
 ## Grade
 
 The grade is the true risk: the worst incident on each hot path, weighed by
-that path's reach. The highest path sets the grade. Read every danger hunk
-with its callers.
+that path's reach. The highest path sets the grade.
 
 - A door that is one-way at merge is high.
 - A design on a core path is graded by what it does at full use, even when
@@ -84,16 +90,17 @@ with its callers.
 - A migration that adds or changes a column, in one PR with code in another
   deploy unit that reads it, is high: the reader can go live first and fail
   until the migration runs. Ask for the split in full-send step 1.
-- Silent harm is never low. It is high when behavior changes on a path that
-  reaches some or most, and medium otherwise. A path the user's agent
-  instructions name as critical has silent harm as its worst case.
+- Silent harm is never low. It is high when the changed behavior reaches
+  some or most, and medium otherwise. The critical paths in the user's agent
+  instructions say what can go wrong there; the incident is still the worst
+  one this diff can cause.
 - A broken core action is medium. It is low only behind a switch-off on a
   path that reaches few.
 - Cosmetic is low, even when most users see it.
 
 Behind a default-off switch-off, grade what the merge exposes with the switch
-off, and add the grade at full rollout when it is higher. Danger areas and
-more than about 400 changed production lines raise the grade. Focused tests
+off, and add the grade at full rollout when it is higher. More than about
+400 changed production lines raise the grade. Focused tests
 on the risky path, a shadow diff that shows existing paths behave as before,
 and an alert that pages on the incident lower it, but never below the first
 matching rule above. Done when every hot path is traced and banded, every
