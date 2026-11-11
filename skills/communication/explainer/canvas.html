@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!--
+  Explainer canvas. render.ts screenshots .card at 2x and fails when text overflows its box.
+  This file holds the tokens and nothing else: draw the picture the mechanism needs inside .card,
+  usually one inline SVG. Keep the tokens.
+  In inline SVG, set colors as CSS (style="fill: var(--old)"); var() in an attribute (fill="var(--old)") does not work.
+  An arrowhead: <defs><marker id="head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill: var(--muted)"/></marker></defs>
+  then marker-end="url(#head)" on a line or path.
+-->
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1f2328; --muted: #59636e; --line: #d1d9e0; --panel: #f6f8fa;
+    --old: #cf222e; --old-soft: #ffebe9; --new: #1a7f37; --new-soft: #dafbe1;
+    --warn: #9a6700; --warn-soft: #fff8c5; --accent: #0969da;
+    --sans: -apple-system, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 13px/1.45 var(--sans); }
+  .card { display: inline-block; box-sizing: border-box; width: 720px; padding: 18px 22px; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; }
+  h2 { font-size: 17px; margin: 0 0 10px; }
+  .note { color: var(--muted); font-size: 12px; margin: 10px 0 0; }
+  code { font: 12px var(--mono); }
+  svg { display: block; }
+  svg text { font: 12px var(--sans); fill: var(--fg); }
+  svg text.muted { fill: var(--muted); }
+  svg text.mono { font: 12px var(--mono); }
+</style>
+</head>
+<body>
+<div class="card">
+  <h2>Two or three words</h2>
+  <svg width="676" height="120" viewBox="0 0 676 120"></svg>
+</div>
+</body>
+</html>
