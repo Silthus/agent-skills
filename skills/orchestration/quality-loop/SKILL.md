@@ -47,9 +47,11 @@ Settle a lane when it ends, or when a later run finds that it ended.
 2. For `NEEDS_HUMAN`, ask the user with the question tool, send the answer to the lane's thread, and leave the lane running.
 3. For a critical lane with outcome `ready`, set its state to `ready` and stop there. The user reviews the draft from the lane's thread in the T3 sidebar, and the lane ships it on their word.
 4. For every other outcome, check it against GitHub and append the lane's record to `runs.jsonl`. Move the backlog row to its next stage when the stage's done criterion holds. Mark the lane `settled` in `lanes.md`.
-5. Archive the lane's thread.
+5. When the lane holds an Inbox claim, settle the claim too. A lane with a PR: check that the report lists the PR, and attach it with `inbox-reports-claim` when it does not. A lane without a PR: release the claim with `release: true`, and set its signal back to `candidate`.
+6. A bug the lane found and left out of its PR becomes a `candidate` row in `signals.md`, with source `lane <id>`. The next signal-loop run verifies it like any other collected signal.
+7. Archive the lane's thread.
 
-A lane is settled when its record is in `runs.jsonl` and its thread is archived. A critical lane at `ready` stays in `lanes.md` with state `ready`, and each later run checks it again.
+A lane is settled when its record is in `runs.jsonl`, its Inbox claim carries its PR or is released, and its thread is archived. A critical lane at `ready` stays in `lanes.md` with state `ready`, and each later run checks it again.
 
 ## Learn
 

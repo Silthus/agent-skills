@@ -13,6 +13,7 @@ Write the **lane brief** first. It holds:
 
 - the loop, the ledger row or signal with its evidence, the class, and the PR type;
 - the path of this file, `quality-loop/references/lane.md`;
+- for a signal with an Inbox report: the report id and the coordinator's `claim_id`;
 - for a normal lane: "You cannot reach the user. When you need them, end your turn with a last line `NEEDS_HUMAN: <what, from whom>`."
 
 Then start the lane:
@@ -44,7 +45,7 @@ A change that needs two types becomes two lanes. Every PR stays inside the line 
 
    A UI change also needs a walk through the running app, with screenshots.
 4. **Review.** Get reviews from the other model family until a review finds nothing new. Add `qa-swarm` when `merge-risk` grades the PR medium or higher, and for every critical lane.
-5. **Ship.** Write the PR with `pr-description`, without production numbers. A `fix` links its signal's metric in an Impact section, as the `impact` skill says.
+5. **Ship.** Write the PR with `pr-description`, without production numbers. A `fix` links its signal's metric in an Impact section, as the `impact` skill says. When the brief names an Inbox report, attach the PR to it as soon as the PR exists: `inbox-reports-claim` with the report id, the `claim_id`, and `pull_requests`. Then append a `note` artefact with the same `claim_id` that names the PR's type, its proof, and its review rounds. A merged PR resolves the report.
    - **Normal lane:** `stamp-pr`. The user gave "stamp it" for every normal lane. When the approval bot refuses twice, convert the PR to a draft and end with outcome `stamp-refused` and the bot's reason.
    - **Critical lane:** `full-stop`. Babysit the draft until its checks are green and every bot finding is fixed or answered. Then end the turn with outcome `ready` and a final reply the user can decide from: the problem, the change, the proof, the review rounds, the merge-risk grade, and what a teammate's review should check. When the user answers "full send" in this thread, continue with `full-send`.
 6. **Roll out.** Merge and roll out with `rollout`, and watch the module's errors and latency through the deploy. When the rollout needs later stages, schedule them on the coordinator's machine before you end, because the lane's worktree goes away.

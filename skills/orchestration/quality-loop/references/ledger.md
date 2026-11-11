@@ -34,17 +34,23 @@ The dated score inputs per module are 90-day churn, the bug-fix share of commits
 
 ## `signals.md`
 
-Every signal the signal loop has seen, so no signal is handled twice.
+Every signal the signal loop has seen, so no signal is handled twice. The Inbox report holds the problem, the evidence, the owner, and the PRs. A row holds only what the Inbox cannot: the loop's score, status, and notes, and the findings with no report.
 
 ```md
-| ID | Source | First seen | Last seen | Problem | Code area | Class | Score | Status | Metric |
+| ID | Source | First seen | Last seen | Problem | Code area | Class | Score | Status | Metric | Report |
 ```
 
 Status is one of `candidate`, `lane <id>`, `covered by <owner or link>`, `rejected: <reason>`, `needs decision`, or `fixed in <PR>`.
 
+`Report` is the Inbox report id when the Inbox held the signal when the loop found it, `filed <report id>` when the loop filed it, or `miss` when no report holds it. It is empty on rows from before 2026-11-11. The ritual counts the misses per source from this column.
+
+## `inbox-feedback.md`
+
+The log of every gap the loops reported to the Inbox's makers: the date, the source or tool, what happened, the fix you suggest, and the feedback id. Check it before you report a gap, so a gap is reported once.
+
 ## `lanes.md`
 
-Each lane has one row with its id, loop, row or signal, class, box, thread link, task id, PR, and state. The state is one of `planned`, `running`, `needs human`, `ready` (a critical lane waiting for the user), `ended`, or `settled`.
+Each lane has one row with its id, loop, row or signal, class, box, thread link, task id, Inbox report and `claim_id`, PR, and state. The state is one of `planned`, `running`, `needs human`, `ready` (a critical lane waiting for the user), `ended`, or `settled`.
 
 ## `runs.jsonl`
 
