@@ -4,7 +4,7 @@ A lane is one T3 thread that ships one PR for the quality loop or the signal loo
 
 There are two kinds of lane:
 
-- A **normal lane** touches no critical path. It runs `full-send` with the approval bot, on its own ephemeral box, and ends merged and deployed.
+- A **normal lane** touches no critical path. It runs `full-send` with the approval bot, in its own worktree, and ends merged and deployed.
 - A **critical lane** touches a critical path. It runs `full-stop` on the coordinator's machine and ends with a reviewed, proven, green draft PR. The user reads it in the T3 sidebar, and the lane ships it with `full-send` on their word.
 
 ## Start a lane
@@ -17,7 +17,7 @@ Write the **lane brief** first. It holds:
 
 Then start the lane:
 
-- **Normal lane.** Spawn a box with `fleet box spawn <loop>-<slug>` in the background, because a spawn can take up to 15 minutes. Find the code repository's T3 project on the box with `t3_project_list` and the box's `environmentId`. When the lane reads production data, give the box that access as the user's agent instructions say. Start the lane with `delegate_task`, with the box's `environmentId`, the project, the model and effort that the user's model table gives implementation, `runtimeMode: "full-access"`, and the brief as the task. When the spawn fails, start the lane on the coordinator's machine with `isolation: "worktree"`, and record the fallback.
+- **Normal lane.** Start the lane with `delegate_task` on the coordinator's machine, with `isolation: "worktree"`, the code repository's project, the model and effort that the user's model table gives implementation, `runtimeMode: "full-access"`, and the brief as the task. The lane runs its heavy tests and typechecks where the user's agent instructions say, such as a per-worktree box.
 - **Critical lane.** Start a top-level thread with `t3_thread_launch` on the coordinator's machine, in the code repository's project, with a new worktree from the default branch, and the brief as its message. A top-level thread stays in the user's sidebar, and the machine stays up while the PR waits for them.
 
 ## PR types
@@ -47,7 +47,7 @@ A change that needs two types becomes two lanes. Every PR stays inside the line 
 5. **Ship.** Write the PR with `pr-description`, without production numbers. A `fix` links its signal's metric in an Impact section, as the `impact` skill says.
    - **Normal lane:** `stamp-pr`. The user gave "stamp it" for every normal lane. When the approval bot refuses twice, convert the PR to a draft and end with outcome `stamp-refused` and the bot's reason.
    - **Critical lane:** `full-stop`. Babysit the draft until its checks are green and every bot finding is fixed or answered. Then end the turn with outcome `ready` and a final reply the user can decide from: the problem, the change, the proof, the review rounds, the merge-risk grade, and what a teammate's review should check. When the user answers "full send" in this thread, continue with `full-send`.
-6. **Roll out.** Merge and roll out with `rollout`, and watch the module's errors and latency through the deploy. When the rollout needs later stages, schedule them on the coordinator's machine with its `environmentId` before you end, because the box goes away.
+6. **Roll out.** Merge and roll out with `rollout`, and watch the module's errors and latency through the deploy. When the rollout needs later stages, schedule them on the coordinator's machine before you end, because the lane's worktree goes away.
 7. **End.** Put the lane's record line for `runs.jsonl` in the final reply, in the format of `ledger.md`, with a ❌ line for each thing that did not work. The last line is `PR <url>, head <sha>, outcome <outcome>`.
 
 A normal lane is done when its PR is merged and deployed, or when it stops with a recorded outcome. A critical lane is done the same way after the user's word. Until then, it rests at outcome `ready`.

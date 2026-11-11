@@ -47,9 +47,9 @@ Settle a lane when it ends, or when a later run finds that it ended.
 2. For `NEEDS_HUMAN`, ask the user with the question tool, send the answer to the lane's thread, and leave the lane running.
 3. For a critical lane with outcome `ready`, set its state to `ready` and stop there. The user reviews the draft from the lane's thread in the T3 sidebar, and the lane ships it on their word.
 4. For every other outcome, check it against GitHub and append the lane's record to `runs.jsonl`. Move the backlog row to its next stage when the stage's done criterion holds. Mark the lane `settled` in `lanes.md`.
-5. Release the lane's box with `fleet box release <box>` when it has one, and archive the lane's thread.
+5. Archive the lane's thread.
 
-A lane is settled when its record is in `runs.jsonl`, its box is released, and its thread is archived. A critical lane at `ready` stays in `lanes.md` with state `ready`, and each later run checks it again.
+A lane is settled when its record is in `runs.jsonl` and its thread is archived. A critical lane at `ready` stays in `lanes.md` with state `ready`, and each later run checks it again.
 
 ## Learn
 
