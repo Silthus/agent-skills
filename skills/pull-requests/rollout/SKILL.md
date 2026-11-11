@@ -48,12 +48,18 @@ Merge a stack with one queue entry, not one per layer. First get every layer
 approved: a teammate's review or, under `stamp-pr`, a stamp on each layer.
 Then post one bare `/trunk merge` comment on the top PR of the stack. The
 queue collapses the stack and tests and merges it as one, which is much
-faster than queuing each layer in turn. Do not queue a layer while another
-still waits for approval; the queue drops a PR that stays not ready.
+faster than queuing each layer in turn. Do not queue a layer while a layer
+below it still waits for approval; the queue drops a PR that stays not ready.
 
 Deploy order still wins. When a layer reads what a lower layer adds, collapse
 the layers up to and including the one that adds it, follow that merge to its
 production deploy, then collapse the rest.
+
+A layer that waits on a person splits the stack too. When the approval bot
+refuses a layer, or a layer passes the review deadline in the user's PR
+workflow, offer the user to merge the **approved bottom** now: the layers from
+the base up that are approved and safe to deploy without the layers above.
+Queue it on its top layer, and merge the rest the same way once it is approved.
 
 ### Deploy order
 

@@ -70,7 +70,10 @@ Replace full-send's step 6:
    - **Refused for a concrete issue:** fix it the smallest way, prove the fix,
      push, and request the stamp once more: remove the label and add it again.
    - **Refused again, or without a concrete issue:** stop stamping. Continue
-     as full-send with a teammate's review, and say why in the report.
+     as full-send with a teammate's review, and say why in the report. When
+     the user's PR workflow has a rule for a PR that waits on a person, start
+     it now.
 
 For a stack, stamp every layer before you merge any of them, then merge the
-stack as one, per `rollout`.
+stack as one, per `rollout`. When a layer needs a person, offer to merge the
+approved bottom first, per `rollout`.

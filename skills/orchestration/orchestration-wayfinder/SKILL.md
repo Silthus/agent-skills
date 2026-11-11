@@ -106,13 +106,15 @@ Outside T3 Code, the `Conductor` line and the Thread cell carry the runtime's lo
 - `planned`: charted, no thread yet.
 - `building`: the thread builds, reviews, or babysits its drafts.
 - `review`: handed back; the drafts wait on the human.
-- `ready`: marked ready; waiting on an approval.
+- `ready`: marked ready; waiting on an approval. The row names who it waits on and since when, such as `ready: waits on team-x since 11-09 22:12`.
 - `merging`: `rollout` merges the stack.
 - `rolling-out`: `rollout` watches the deploy and stages the flags.
 - `done`: merged, and rolled out when `rollout` ran.
 - `blocked`: parked on another question, or behind an orchestration blocker.
 
 A stack thread sends the conductor a state notice, `stack <name>: <state> (<mode>)`, on each change of its state or mode. The conductor updates the row and posts one map comment per state change: `<stack>: <state>`.
+
+Every report or question to the human starts with the stacks that wait on a person: one line each with the pull request, who it waits on, and since when. Other rows follow. A stack that waits on a person is never one row among many.
 
 ## Ticket types
 

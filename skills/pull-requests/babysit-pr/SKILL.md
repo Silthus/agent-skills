@@ -57,7 +57,8 @@ branch conflicts.
 Wait in one command that blocks until the checks finish:
 `gh pr checks <number> --watch`, with the shell tool's timeout near its
 maximum. Run it again when it times out first. When only a review is pending,
-end your turn and report that the PR waits on review. Under `full-send` or
+end your turn and report who the PR waits on and since when, first in the
+report. Under `full-send` or
 `stamp-pr`, ask instead with the question tool, per full-send's "Asking the
 user".
 
