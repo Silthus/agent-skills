@@ -13,7 +13,7 @@ The skills build on [Matt Pocock's skills](https://github.com/mattpocock/skills)
 | --- | --- |
 | [Orchestration](skills/orchestration/README.md) | `orchestration-wayfinder`, `t3-kickoff`, `architecture`, `impact`, `usage-brief`, `lessons` |
 | [Pull requests](skills/pull-requests/README.md) | `pr-description`, `merge-risk`, `qa-swarm`, `full-stop`, `full-send`, `stamp-pr`, `babysit-pr`, `rollout`, `modernize-pr`, `leaving-pr-comments`, `review-pr`, `review-pr-setup`, `audit-prs`, `slack-pr-update` |
-| [Communication](skills/communication/README.md) | `explain-diff`, `share-plan`, `share-preview`, `writing-voice`, `writing-runbooks`, `responding-to-alerts`, `incident` |
+| [Communication](skills/communication/README.md) | `explain-diff`, `explainer`, `share-plan`, `share-preview`, `writing-voice`, `writing-runbooks`, `responding-to-alerts`, `incident` |
 
 Each theme README says what a skill does and what it needs.
 
