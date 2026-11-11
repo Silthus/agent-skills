@@ -20,10 +20,18 @@ Read the `quality-loop` settings in the user's agent instructions. This loop use
    - new and rising error tracking issues in the scope's code or pages;
    - slow or failing spans, endpoints, and consumers in APM, logs, and metrics, against the same window one week earlier;
    - the observations of the scope's session replay scanners;
-   - the papercut and team channels, and the inbox reports of the scouts the settings name.
+   - the papercut and team channels;
+   - the Inbox, polled with filters: `inbox-reports-list` with the scouts and source products the settings name, `created_after` set to the window start, and `unclaimed=true`. Read only the reports the filters return.
 
    Done when each source returned data, or its failure is written down with the tool and the error.
-3. **Drop the covered ones.** A signal is covered when a person replied to it, an issue is assigned, a PR or ticket links it, another scout reported it, or `signals.md` already holds it. Record it as `covered by <who or link>`. The loop works only on the signals nobody handles.
+3. **Drop the covered ones.** A signal is covered when someone **owns** it:
+   - a person said they are on it;
+   - an issue is assigned;
+   - a PR or ticket links it;
+   - an Inbox report about it has an assignee, a linked PR, or `already_addressed: true`;
+   - `signals.md` already holds it with a status other than `candidate` or `reopened`.
+
+   Check each signal against the Inbox with `inbox-reports-search` on its error text or problem. An unclaimed Inbox report is evidence, not an owner: link it on the signal and keep the signal. Record each covered signal as `covered by <who or link>`. The loop works only on the signals nobody owns, plus the `reopened` rows, which go through Verify and Triage again.
 4. **Verify.** Find the code area of each remaining signal, and decide whether it is real: seen more than once, or once with an error trace or a session that shows it. A signal you cannot tie to code and evidence becomes `rejected: <reason>`.
 5. **Triage.** Score each real signal as reach × severity × confidence:
    - reach is the number of users or teams affected in the window;
@@ -32,7 +40,7 @@ Read the `quality-loop` settings in the user's agent instructions. This loop use
 
    A signal with confidence 0 becomes `needs decision`, with one line for the ritual report. Mark each signal `critical` or `normal` by the critical paths.
 6. **Cut.** The free slots are this loop's WIP limit minus its running lanes. Keep signals in score order until the slots are full. At most one `critical` lane is open at a time. The rest stay `candidate` for the next run. Done when every collected signal has a status in `signals.md`, and `lanes.md` lists the kept ones as `planned`.
-7. **Start lanes.** Start one lane per kept signal, as `quality-loop/references/lane.md` says, with PR type `fix` and the signal's evidence and metric in the brief. Record each lane in `lanes.md`, then end the turn. The end of a normal lane wakes this thread.
+7. **Start lanes.** Start one lane per kept signal, as `quality-loop/references/lane.md` says, with PR type `fix` and the signal's evidence and metric in the brief. When an Inbox report backs the signal, claim it with `inbox-reports-claim` as the lane starts, and put its `claim_id` in the brief and in `lanes.md`. The lane adds its PR URL to the claim when it opens the PR, so a merged PR resolves the report. Settling a lane that ended without a PR releases the claim (`release: true`). Record each lane in `lanes.md`, then end the turn. The end of a normal lane wakes this thread.
 
 The run is done when every collected signal has a status and every kept signal has a lane.
 
