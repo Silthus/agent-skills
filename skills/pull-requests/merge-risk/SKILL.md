@@ -213,3 +213,5 @@ after they approve.
 4. Write it back with `gh pr edit <n> --body-file <file>`.
 
 Done when the description carries one merge-risk block with the current grade.
+With the `fleet` CLI, the judge in `fleet proof gate` fails a grade or door
+that does not follow from the diff and the saved proofs.
