@@ -14,6 +14,11 @@ in which regions, and what limits it. Grade the PR's own increment, together
 with the design it commits us to. In a stack, the increment is the diff
 against its parent PR.
 
+Grade from the **behavior delta**: what real traffic gets at HEAD that it did
+not get on the base. Grade afresh from the current diff and evidence on every
+run. An earlier grade, from a panel, a lens, an old body, or a thread, is a
+claim to check, never evidence.
+
 ## Danger areas
 
 Hunks that touch authentication, permissions, secrets or crypto, billing or
@@ -32,29 +37,6 @@ live on deploy. Without a switch, the change is live on deploy and we fix
 forward. A rollback or a revert is the last resort for a disaster, so the
 callout never plans one.
 
-## Door
-
-Judge the door against the switch-off, never against `git revert`. A
-**two-way door** leaves nothing behind once the switch is off. A **one-way
-door** leaves something that stays: data or schema, a sent message, a public
-contract that SDKs, docs, or callers build on, or a design on a core path that
-other code comes to depend on. Name what we commit to. A door that is two-way
-at merge and turns one-way on a later event, such as an SDK release or a
-docs publish, names that event.
-
-## Incident
-
-Name the worst incident a missed bug in the diff causes for a user:
-
-- **Silent harm**: nobody sees it happen. Messages are dropped, sent twice, or
-  sent to the wrong person, scheduled work does not run, data is lost or
-  wrong.
-- **Broken core action**: a user sees that the product's main task fails,
-  such as saving or sending.
-- **Cosmetic**: a user sees it, and nothing they need is blocked.
-
-When no path leads to an incident, say so in one bullet.
-
 ## Hot paths
 
 A **hot path** is a route that live traffic takes into the diff. Trace each
@@ -64,24 +46,82 @@ changes is on every path that calls it, including paths outside the diff.
 A new entry point is a path of its own, and existing traffic reaches only
 the shared code it calls.
 
+## Behavior delta
+
+Write one **row** for each branch the diff changes on each hot path, and one
+for each change that acts without a branch: a migration's lock and run time,
+a dependency, config, or the query count and load on a hot path. A row holds:
+
+- **Who takes it**: the traffic that reaches it, banded as in Reach.
+- **Base**: what that traffic gets on the base.
+- **HEAD**: what it gets at HEAD. Write "same as base" only when a proof
+  covers the row; otherwise the row is uncovered.
+
+The **incident** of a row is the harm in its HEAD outcome that its base
+outcome lacks:
+
+- **Silent harm**: nobody sees it happen. Messages are dropped, sent twice, or
+  sent to the wrong person, scheduled work does not run, data is lost or
+  wrong.
+- **Broken core action**: a user sees that the product's main task fails,
+  such as saving or sending.
+- **Cosmetic**: a user sees it, and nothing they need is blocked.
+
+Harm the base already caused is no incident. A send the base dropped while
+it logged success, and that HEAD fails visibly on that send alone, loses
+nothing that worked: cosmetic at most. When the new failure stops other work,
+such as the rest of a batch, a retry loop, or the user's save, that work is
+a row of its own. When no row has an incident, say so in one bullet.
+
+**Residual risk** is the bug a reviewer has not found yet. It sits on the
+uncovered rows: the worst incident a missed bug there causes, at that row's
+reach, graded with the rules below as an incident HEAD adds. A proof covers a
+row when it runs inputs that select the row on the base and at HEAD and gets
+the same outcome:
+
+- a shadow diff or a live run over those inputs;
+- tests that run the changed code with its real collaborators up to the
+  boundary the diff touches, such as the provider client, the queue, or the
+  database, and that pass unchanged on the base. A test that mocks the
+  changed code covers nothing.
+
+On a hot path that reaches most, the outcome includes latency, query count,
+and locks; a proof that does not measure them leaves that part uncovered.
+Locking and concurrency are covered only by a proof that runs them
+concurrently.
+
 ## Reach
 
-Measure each hot path's reach from data: the share of active teams or users
-who ran it in the last 30 days, from the product analytics project the
-user's agent instructions name. A new entry point reaches the teams that can
-call it and are likely to, such as the users of the feature it extends. Band
-each path as few, some, or most. Code on a path that every request or event
-runs through reaches most.
+Measure each row's reach from data: the share of active teams or users who
+take it, in the last 30 days, from the product analytics project the user's
+agent instructions name, or from a prod-shape read of the stored rows that
+select it. A new entry point reaches the teams that can call it and are
+likely to, such as the users of the feature it extends. Without a
+measurement, band the row as widely as the code lets traffic reach it. Band
+each row as none, few, some, or most.
 
-Reach counts the traffic whose behavior changes. When the change acts only
-under a condition, such as an unset setting, a flag, or one input shape, band
-the path by who meets that condition: a path that most teams run, changed
-only where a setting is unset, reaches the teams that leave it unset.
+Reach counts the traffic whose behavior changes. Code that every request
+runs through reaches most only where its outcome changes for most: a check
+that every send passes, and that changes the outcome only for one stored
+setting, reaches the teams with that setting. Band a row none only when no
+stored row selects it and no write the product allows can create one;
+otherwise band it by who can make that write.
+
+## Door
+
+Judge the door against the switch-off, never against `git revert`. A
+**two-way door** leaves nothing behind once the switch is off. A **one-way
+door** leaves something that stays and that the base did not leave: data or
+schema, a sent message, a public contract that SDKs, docs, or callers build
+on, or a design on a core path that other code comes to depend on. Name what
+we commit to, on which row. A door that is two-way at merge and turns one-way
+on a later event, such as an SDK release or a docs publish, names that event.
 
 ## Grade
 
-The grade is the true risk: the worst incident on each hot path, weighed by
-that path's reach. The highest path sets the grade.
+The grade is the true risk: the incidents of the rows and the residual risk,
+weighed by reach. Apply every rule below; the highest grade any rule gives
+wins.
 
 - A door that is one-way at merge is high.
 - A design on a core path is graded by what it does at full use, even when
@@ -90,27 +130,37 @@ that path's reach. The highest path sets the grade.
 - A migration that adds or changes a column, in one PR with code in another
   deploy unit that reads it, is high: the reader can go live first and fail
   until the migration runs. Ask for the split in full-send step 1.
-- Silent harm is never low. It is high when the changed behavior reaches
-  some or most, and medium otherwise. The critical paths in the user's agent
-  instructions say what can go wrong there; the incident is still the worst
-  one this diff can cause.
+- Silent harm is never low. It is high when its row reaches some or most,
+  and medium otherwise. The critical paths in the user's agent instructions
+  say what can go wrong there; the incident is still one a row names.
 - A broken core action is medium. It is low only behind a switch-off on a
-  path that reaches few.
+  row that reaches few.
 - Cosmetic is low, even when most users see it.
+- Rows that all reach none or are covered with no incident are low.
 
 Behind a default-off switch-off, grade what the merge exposes with the switch
 off, and add the grade at full rollout when it is higher. More than about
-400 changed production lines raise the grade. Focused tests
-on the risky path, a shadow diff that shows existing paths behave as before,
-and an alert that pages on the incident lower it, but never below the first
-matching rule above. Done when every hot path is traced and banded, every
-danger hunk and every commitment is named, and the grade follows from them.
+400 changed production lines raise the grade one step while any row is
+uncovered.
+
+Done when every hot path is traced, every change on it has a row with its
+reach, every uncovered row is named, every commitment is named, and the
+grade follows from them.
 
 ## Callout
 
-The callout stays short: the headline, one or two incident bullets naming the
-path, who, and the regions, and the switch-off. Never put measured numbers in
-it: the repo may be public. The grade sets the circle and the callout color:
+The callout stays short: the headline, the delta, and the switch-off. Never
+put measured numbers in it: the repo may be public. The bullets say:
+
+- who changes, from what to what, and in which regions;
+- who is unchanged, naming the proof that covers them, such as the shadow
+  diff, the live run, or the tests;
+- each uncovered row and its residual incident.
+
+Each bullet names a row. A bullet that predicts a bug names the uncovered row
+it sits on.
+
+The grade sets the circle and the callout color:
 
 | Grade  | Circle | Callout       |
 | ------ | ------ | ------------- |
@@ -133,7 +183,8 @@ appears only when it has content:
 <!-- merge-risk -->
 > [!WARNING]
 > 🟡 **Merge risk: medium**, 🔴 at full rollout · one-way door once <event>: <what we commit to>
-> - <the incident: the path, what breaks, for whom, in which regions>
+> - <who changes: the branch, from what to what, for whom, in which regions>
+> - <who is unchanged and the proof that covers them, or an uncovered row and its residual incident>
 > - **Switch-off:** `<flag or allowlist>`, or none: live on deploy, fix forward.
 
 ## Rollout
@@ -159,6 +210,12 @@ after they approve.
 3. Put the block under the `Merge Danger` heading when the body has one,
    else right after the Impact section, else right after the problem
    section, else first. Keep the rest of the body byte for byte.
-4. Write it back with `gh pr edit <n> --body-file <file>`.
+4. With the `fleet` CLI, run `fleet proof risk --body <file>` on the new
+   body, and again after each new saved proof. It derives the grade from the
+   diff and the saved proofs with this skill. Regrade from the problems it
+   cites. When you still disagree after one regrade, record a judge gap with
+   `fleet proof gap --kind judge` and your reason. `fleet proof gate` runs
+   the same judge.
+5. Write it back with `gh pr edit <n> --body-file <file>`.
 
 Done when the description carries one merge-risk block with the current grade.

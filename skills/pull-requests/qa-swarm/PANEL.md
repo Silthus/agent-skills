@@ -244,8 +244,10 @@ Production:
 
 Grade:
 
-- Grade the diff with the `merge-risk` rubric from the hunks alone. End with a
-  `GRADE: <low|medium|high> | <the hunk that sets it>` line after `COVERED`.
+- Grade the diff with the `merge-risk` rubric from the hunks and the saved
+  proofs, without the callout. End with a
+  `GRADE: <low|medium|high> | <the branch that sets it: who takes it, base outcome, HEAD outcome>`
+  line after `COVERED`.
 - Check the owed proofs against [`PROOF.md`](PROOF.md). A persisted input, a
   boundary format, or a high grade with no owed proof is a finding.
 

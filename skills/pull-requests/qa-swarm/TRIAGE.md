@@ -24,8 +24,10 @@ before you bucket it, and Reject it when no such code exists.
   standard, such as a documented repo rule, is a Fix: it is cheap and it
   shortens the user's review. Copy that contradicts the decided design or its
   own heading is a Fix, though users see it: the design already decided it.
-  A Risk lens `GRADE` above the merge-risk
-  callout's grade is a Fix, and the higher grade wins.
+  A Risk lens `GRADE` that differs from the merge-risk callout's grade is a
+  Fix toward the grade its row supports. A higher grade holds when real
+  traffic takes the row and either HEAD adds harm there or no proof covers
+  it. Otherwise reject it and cite the proof or the reach read.
 - **Call**: the problem is real and has more than one defensible fix. Pick
   one, fix it, and record the alternative and your reason for the handoff.
 - **Decision**: the answer is **load-bearing**, so the user decides. It is
