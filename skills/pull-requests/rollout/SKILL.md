@@ -39,7 +39,13 @@ the user first. For a stack, check every layer.
 Merge with the method the repo uses. Check the allowed methods and recent
 merged PRs. In a repo with a merge queue, enter the queue, for example with a
 bare `/trunk merge` comment. Stay until GitHub reports the PR as merged. Push
-nothing while the queue holds the PR. A failed queue run is a failed check:
+nothing while the queue holds the PR. Trunk reports queue state only by
+editing one comment, and an edit wakes no PR watch, so never report a PR as
+queued from one read of it. Right after `/trunk merge` in `PostHog/posthog`,
+run `fleet pr queue-wait --repo <owner/repo> --pr <number>` (on `PATH` or at
+`~/dev/fleet/fleet`) in the background and wait on it. Exit 1 prints why the
+queue dropped the PR; for a merge conflict, merge the base forward. Exit 2 is
+a timeout: read the queue's comment and wait again. A failed queue run is a failed check:
 triage it and queue the PR once more. Never use `--admin` or other bypasses.
 
 ### Merge a stack as one
