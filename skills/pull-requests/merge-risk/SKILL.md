@@ -210,12 +210,6 @@ after they approve.
 3. Put the block under the `Merge Danger` heading when the body has one,
    else right after the Impact section, else right after the problem
    section, else first. Keep the rest of the body byte for byte.
-4. With the `fleet` CLI, run `fleet proof risk --body <file>` on the new
-   body, and again after each new saved proof. It derives the grade from the
-   diff and the saved proofs with this skill. Regrade from the problems it
-   cites. When you still disagree after one regrade, record a judge gap with
-   `fleet proof gap --kind judge` and your reason. `fleet proof gate` runs
-   the same judge.
-5. Write it back with `gh pr edit <n> --body-file <file>`.
+4. Write it back with `gh pr edit <n> --body-file <file>`.
 
 Done when the description carries one merge-risk block with the current grade.
