@@ -12,11 +12,23 @@ description: >-
 An explainer lets a reader who knows the system, but not the change, say
 what the change does and why it works, in under a minute and without the
 diff. It is one picture and four to six bullets. The picture shows the
-mechanism; the bullets carry the words.
+mechanism; the bullets carry the words. Only a PR that is hard to
+understand gets one.
 
 ## Steps
 
-1. **Find the mechanism.** Read the PR's own change and the code around it,
+1. **Judge whether the PR needs one.** Read its diff and description as
+   the reader above. It needs an explainer when what it does or why it is
+   correct depends on something the diff does not show: work that crosses
+   services, workers, or processes; an ordering, timing, retry, or
+   concurrency rule; or state that changes over several calls. A new table
+   or model, a UI change, a validator, a route that forwards a call, a
+   config or policy change, or a rename reads straight from the diff and
+   its description, and gets no explainer. When a set of PRs shares one
+   mechanism, the PRs where it happens get the explainer, and the rest get
+   none. Done when you can name what the diff hides from the reader, or
+   you stop here and say the PR reads without one.
+2. **Find the mechanism.** Read the PR's own change and the code around it,
    callers and callees, until you can write three sentences: where the
    change acts in the running system, what happened before and what happens
    now, and why the new behavior is correct or safe. A stacked PR's own
@@ -24,19 +36,21 @@ mechanism; the bullets carry the words.
    commit against the first parent. Done when the "why" sentence names the
    fact it rests on: a timing, a limit, a lock, an ordering, a cache, stored
    state, or another service's behavior.
-2. **Pick the form** from the mechanism, in the table below. Done when you
+3. **Pick the form** from the mechanism, in the table below. Done when you
    can name the form and the one thing a reader sees in it that the bullets
    cannot show as fast. When nothing qualifies, write the bullets alone.
-3. **Draw it.** Draw the data the change moves: the polls, the rows a query
+4. **Draw it.** Draw the data the change moves: the polls, the rows a query
    reads, the calls, the states, the time a caller waits. When the change
    alters that data, draw before and now in the same form, one above the
    other, so the difference is the picture. Name parts with the code's own
    names.
 
-   The picture is sparse: a title of two to four words, labels of a few
-   words, and at most two lines of note under it. Every sentence goes in the
-   bullets. Arrows and messages carry the labels; a Mermaid note holds a few
-   words. Draw the one path or state the "why" rests on, and leave
+   The picture is sparse: a title of two to four words, short labels, and
+   at most two lines of note under it. Every sentence goes in the bullets.
+   Arrows and messages carry the labels; a Mermaid note holds a few words.
+   Write each label as a short phrase with its verb, such as "moves the job
+   to the emailsandbox queue", and each flowchart decision as a question,
+   such as "Is the step id already stored?". Draw the one path or state the "why" rests on, and leave
    error codes, guard lists, and every other branch to the bullets and the
    diff. Give a Mermaid diagram its title in frontmatter
    (`---` / `title: <title>` / `---`), and shade a span with
@@ -49,17 +63,17 @@ mechanism; the bullets carry the words.
    own theme, so for Mermaid the PNG checks layout only. Done when no text
    is clipped or overlaps, and a reader who skips the note still sees what
    changed.
-4. **Write the bullets** in the template below: one fact per bullet, under
+5. **Write the bullets** in the template below: one fact per bullet, under
    25 words, in the code's own names. The explainer owns the mechanism. When
    the PR's description already explains it, move those facts into the
    bullets, and leave the rest of the description with the visible effect,
    the switch, and the risks. Done when every slot of the template is filled.
-5. **Unslop.** Read the `unslop` skill (`~/.agents/skills/unslop/SKILL.md`)
+6. **Unslop.** Read the `unslop` skill (`~/.agents/skills/unslop/SKILL.md`)
    and apply every rule to the bullets and to every label in the picture.
    Where another writing skill disagrees, `unslop` wins. Then hide the
    picture and read the bullets alone, as the reader above. Done when that
    reader can say what the change does and why it works.
-6. **Place it.**
+7. **Place it.**
    - **PR description:** add it as `### How it works` at the end of the
      section that describes the change. Edit the live body, keep everything
      else in it, and read it back after the push. A Mermaid picture goes in
@@ -86,9 +100,6 @@ mechanism; the bullets carry the words.
 | How often something runs, or who waits how long | Timeline: ticks, or bars on one time axis | Canvas |
 | Which rows, keys, or items a query or loop touches | The items as small squares, the touched ones outlined | Canvas |
 | A quantity that builds up and drops | A line over time, before and now | Canvas |
-| Stored values or fields, before and now | A small Markdown table | The bullets' own Markdown, no picture |
-| New tables, fields, or a kind that nothing uses yet | A field table, or no picture; the PR that uses them gets the picture | Markdown, or bullets alone |
-| A rename, a config value, a one-line guard | No picture | Bullets alone |
 
 When the parts and their order are the point, draw a sequence diagram or a
 flowchart, and keep it sparse.
@@ -106,41 +117,41 @@ flowchart, and keep it sparse.
 - <why it works: the fact it rests on, then one bullet per guard, up to three>
 ```
 
-A set of PRs that act on one loop or path can share one picture of it, in
-the form the loop needs, with each PR's number on its place: a shaded span
-of a sequence, an outlined state. Each PR's first bullet then names its
-place, such as "the upload span (#1234) of the flow below". Add the block
-once per set, the same text in every PR of the set, merged PRs included:
-
-```markdown
-<details><summary><The loop>, and where each PR acts</summary>
-
-<picture>
-
-- <three to six bullets on how the loop runs>
-
-| PR | Marked as | Where it acts |
-| --- | --- | --- |
-
-</details>
-```
+When several PRs of a set need an explainer and act on one path, they
+share one picture of it, with each PR's number on its place: a shaded span
+of a sequence, an outlined state. Each of those PRs carries that picture,
+and its first bullet names its place, such as "the upload span (#1234) of
+the flow above".
 
 ## Example
 
-SES holds one MAIL FROM per domain, so stored values are the mechanism: a
-small table, no image.
+A worker hands a step to a second worker and takes it back, so calls in
+order are the mechanism: a sequence diagram.
 
-```markdown
+````markdown
 ### How it works
 
-| | SES identity | Project A row | Project B row |
-| --- | --- | --- | --- |
-| Before | `mail` | `mail` | `bounce` (stale) |
-| Now | `mail` | read from SES | read from SES |
-
-- This PR acts on `EmailIntegration.verify`, which runs when a project verifies a sender on a domain another project also uses.
-- Before, verify sent the sender's stored `mail_from_subdomain` to SES, so one stale row broke the DNS records other projects published.
-- Now, verify reads the MAIL FROM that SES holds, and builds the DNS records it shows from that value.
-- SES holds one MAIL FROM per domain identity, so SES is the source of truth and each row is a copy.
-- A sender row only feeds the DNS records PostHog shows, so a stale copy changes no mail that SES sends.
+```mermaid
+---
+title: Sandbox step round trip
+---
+sequenceDiagram
+    participant H as hogflow worker
+    participant S as emailsandbox worker
+    Note over H: reaches an email_sandbox step
+    alt switch off
+        Note over H: skips the step
+    else switch on
+        H->>S: moves the job to the emailsandbox queue
+        Note over S: runs the step,<br/>stores the outcome
+        S->>H: moves the job back to the hogflow queue
+        Note over H: finishes the step from the outcome
+    end
 ```
+
+- This PR acts on the `email_sandbox` step of a workflow run.
+- Before, the `hogflow` worker had no handler for `email_sandbox`, so a run that reached one failed.
+- Now, `SandboxEmailActionHandler` moves the job to the `emailsandbox` queue. That worker runs the step, stores the outcome, and hands the job back.
+- The job carries the outcome, so `hogflow` finishes the step from it and never sends twice.
+- On `emailsandbox` the executor stops after one action, so no other step type runs there.
+````

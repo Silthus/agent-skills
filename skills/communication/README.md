@@ -3,7 +3,7 @@
 Skills that explain and share work with other people.
 
 - **[explain-diff](./explain-diff/SKILL.md)**: Build a guided, interactive explainer for a PR or diff, with synchronized code excerpts and a quiz, in the runtime's native artifact surface. Invoke it yourself with `/explain-diff`.
-- **[explainer](./explainer/SKILL.md)**: Draw a short visual explainer of a code change: one picture shaped to its mechanism (a sequence, a flowchart, a state diagram, a timeline, or a small table) and a few bullets on where it acts, how it works, and why it works, for a PR description or a chat reply.
+- **[explainer](./explainer/SKILL.md)**: Draw a short visual explainer of a code change: one picture shaped to its mechanism (a sequence, a flowchart, a state diagram, or a timeline) and a few bullets on where it acts, how it works, and why it works, for a PR description or a chat reply.
 - **[incident](./incident/SKILL.md)**: Investigate and communicate a production incident for the incident lead: size it, measure customer impact with pinned numbers and percentages, find the root cause, and draft the updates, impact canvas, recovery, and handover.
 - **[responding-to-alerts](./responding-to-alerts/SKILL.md)**: Respond to a firing alert as an agent: confirm it, run the runbook's read-only checks, and hand every production change to a person with the exact command.
 - **[share-plan](./share-plan/SKILL.md)**: Publish an HTML or Markdown document to an unlisted link through a secret GitHub gist.
