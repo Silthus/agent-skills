@@ -110,9 +110,10 @@ Keep the PR at the size the user's goal needs. Review loops tend to grow a
 PR one cheap-looking fix at a time. Make the most minimal possible changes to
 appease the reviewers. Be careful of scope creep and don't be scared to push
 back. Fix real bugs in the intended case. Decline the rest with a written
-reason, and list them as follow-ups: unneeded tests, guards for edge cases
-that do not matter, extra integration or compatibility, and small performance
-costs. Prefer the fix that deletes or narrows code.
+reason: unneeded tests, guards for edge cases that do not matter, extra
+integration or compatibility, and small performance costs. A real problem the
+PR did not introduce is a Park or a Follow-up by its **Worth** verdict, as
+`qa-swarm/TRIAGE.md` says. Prefer the fix that deletes or narrows code.
 
 Every push gets a final read of its diff: one review from the other model
 family for a fix that changes behavior, and your own `git range-diff` check

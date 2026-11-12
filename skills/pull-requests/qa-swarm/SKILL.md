@@ -52,7 +52,7 @@ For a draft spec, run the [spec pass](SPEC.md) instead of the steps below.
 - **Observe.** A green test suite is test evidence. A proof is something you
   ran and watched in the running system, per [`PROOF.md`](PROOF.md).
 - **Scope.** The PR's goal is the scope. A real problem outside it is a
-  follow-up.
+  Follow-up or a Park, by its **Worth** verdict in the `impact` skill.
 - **Draft.** The PR stays a draft. The user reads the code and marks it ready
   for review.
 - **Comments.** Panel findings stay in the ledger. Every GitHub comment goes
@@ -244,7 +244,8 @@ Report to the user, then stop:
   alternative, so the user can redirect it in one line.
 - **Drafts**: each reply that needs the user's approval, with its thread URL.
 - **Read first**: the danger hunks.
-- **Follow-ups**: real problems outside the goal.
+- **Follow-ups**: real problems outside the goal that earned a build verdict, with their worth lines.
+- **Parked**: real problems the PR did not introduce, below the worth bar, with their tripwires.
 - **Gaps**: each owed proof that could not run, as a Decision for the user;
   a lane that failed and its substitute; a skipped Team lane; a silent bot;
   a repo without CI; a step of the lane gate that could not run, as a

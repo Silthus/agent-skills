@@ -1,6 +1,6 @@
 ---
 name: impact
-description: Link work to the metric that shows, after deploy, whether it worked, and push back on work that pays into no goal. Use when charting a map, starting or opening a PR, or when the user asks what a piece of work is worth.
+description: Link work to the metric that shows, after deploy, whether it worked, push back on work that pays into no goal, and decide whether a fix is worth its code before it is built. Use when charting a map, starting a fix or side fix, opening a PR, or when the user asks what a piece of work is worth.
 ---
 
 # Impact
@@ -18,7 +18,7 @@ Targets and revenue or usage numbers from a private source stay in that source. 
 
 ## Class the work
 
-- **Fix**: bug fixes, refactors, tests, docs, dependency bumps, and internal tooling. Leave the Impact section out, unless an existing metric would show the fix: an error tracking issue, a failure or retry rate, a latency. Then record that metric.
+- **Fix**: bug fixes, refactors, tests, docs, dependency bumps, and internal tooling. Leave the Impact section out, unless an existing metric would show the fix: an error tracking issue, a failure or retry rate, a latency. Then record that metric. A bug fix also runs **Worth** before its first commit.
 - **Feature**: a change to user-facing behavior that fits in one PR. Record a metric when an insight exists or one on existing events can show the change. Otherwise write the no-metric line.
 - **Large feature**: a map, a stack of several PRs, or a new capability behind its own flag. It must have a metric. Build the missing insight or instrumentation first, so a **baseline** collects before users reach the feature. When no metric can show that the feature works, **Ask**.
 
@@ -34,6 +34,29 @@ The metric moves when, and because, this change ships:
 - **Split by flag.** For work behind a feature flag, break the insight down by the flag, so the retro also compares exposed and unexposed users.
 
 Search for an existing insight first: in the goals file, then in the analytics project that the instructions name. When none fits, create one on existing events. When the events are missing, the instrumentation is part of the work. For a large feature, ship it in its own PR at the bottom of the stack, so the baseline collects before the feature ships. For a feature, add it when it is a few lines. Otherwise write the no-metric line and name the instrumentation.
+
+## Worth
+
+A bug fix earns its code only when it changes what users meet. Before the first commit of any fix, including a side fix, a review follow-up, a bug a test found, and the user's own request, write its **worth line**. An exempt area still runs Worth.
+
+1. **Reach.** Read the evidence that already exists first: the signal, the error tracking issue, the logs, the PR's own prod-shape read. Count in this order and stop at the first that answers:
+   - **failures**: how often the exact failure happened, and to how many users or teams, over a window that says so (up to 90 days; count an outage as one incident);
+   - **exposure**: how many stored rows, senders, or teams are in the state the fix handles today;
+   - **no trace**: neither can be read. Name the query that could not see it.
+
+   A zero on a path opened in the last 30 days is not evidence yet. Widen the search only when the verdict turns on it.
+2. **Harm.** 3 for data loss, wrong or missing delivery, or a blocked task; 2 for a visible error with a workaround; 1 for a cosmetic or internal-only problem.
+3. **Cost.** The production lines you expect, the new concepts (a column, state, queue, counter, retry, flag, env var, or config key), and whether it runs on a hot path.
+4. **Verdict.** **Build** when one of these holds, else **park**:
+   - failures were observed;
+   - exposure is above zero and harm is 3, or the fix adds no new concept;
+   - it is an **always-build** class: an auth or access bypass, a send to a suppressed or opted-out recipient, a duplicate or wrong-recipient send, a billing or quota leak, or data loss. It still needs a path a real input can take, and the smallest fix.
+
+   A regression the current PR introduces is no new fix: fix it in that PR.
+
+Write the worth line to the **worth log** that the user's agent instructions name: the failure, the reach with its source and window, the harm, the cost, the verdict, and for a park, the **tripwire** (the query or event whose firing reopens it). The PR gets one line without numbers: `Worth: <log id>`. A parked fix gets no branch, no thread, and no PR. Tell the user the verdict in one line when they asked for the fix; they can overrule it.
+
+Done when every fix you start has a worth line and a build verdict, or sits parked with its tripwire.
 
 ## Ask
 

@@ -40,7 +40,7 @@ Every signal the signal loop has seen, so no signal is handled twice. The Inbox 
 | ID | Source | First seen | Last seen | Problem | Code area | Class | Score | Status | Metric | Report |
 ```
 
-Status is one of `candidate`, `lane <id>`, `covered by <owner or link>`, `rejected: <reason>`, `needs decision`, or `fixed in <PR>`.
+Status is one of `candidate`, `lane <id>`, `covered by <owner or link>`, `parked: <tripwire>`, `reopened`, `rejected: <reason>`, `needs decision`, or `fixed in <PR>`. A row's Score and Status carry its worth line from the `impact` skill; Source names the door it came through, such as `side fix`, `review`, or `lane <id>`.
 
 `Report` is the Inbox report id when the Inbox held the signal when the loop found it, `filed <report id>` when the loop filed it, or `miss` when no report holds it. It is empty on rows from before 2026-11-11. The ritual counts the misses per source from this column.
 
@@ -57,7 +57,7 @@ Each lane has one row with its id, loop, row or signal, class, box, thread link,
 One JSON line per settled lane and per coordinator run.
 
 ```json
-{"id":"2026-11-05-q1","loop":"quality","kind":"lane","module":"<name>","stage":"cover","type":"test","class":"normal","pr":"<url>","lines":{"prod":0,"test":120},"proof":["base-green","head-green","mutation 61->78"],"review_rounds":2,"findings":{"real":1,"rejected":2},"stamp":"approved","merged":"<sha>","deploy":"ok","outcome":"merged","minutes":95,"lessons":["❌ <what did not work, and why>"]}
+{"id":"2026-11-05-q1","loop":"quality","kind":"lane","module":"<name>","stage":"cover","type":"test","class":"normal","pr":"<url>","lines":{"prod":0,"test":120},"proof":["base-green","head-green","mutation 61->78"],"review_rounds":2,"findings":{"real":1,"rejected":2},"stamp":"approved","merged":"<sha>","deploy":"ok","outcome":"merged","worth":"mattered","minutes":95,"lessons":["❌ <what did not work, and why>"]}
 ```
 
-`outcome` is one of `merged`, `ready` (a critical lane's draft, waiting for the user), `stamp-refused`, `abandoned: <reason>`, `reverted`, or `no-op: <reason>`.
+`worth` is `mattered`, `silent`, or `unknowable` on a `fix` lane once the ritual graded it, else absent. `outcome` is one of `merged`, `ready` (a critical lane's draft, waiting for the user), `stamp-refused`, `abandoned: <reason>`, `reverted`, or `no-op: <reason>`.

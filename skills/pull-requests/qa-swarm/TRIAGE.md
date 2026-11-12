@@ -18,8 +18,9 @@ before you bucket it, and Reject it when no such code exists.
 
 ## Buckets
 
-- **Fix**: the problem is real, inside the goal, and has one sensible fix.
-  Make the smallest honest fix and close every sibling site with it. Prefer
+- **Fix**: the problem is real, inside the goal, and has one sensible fix,
+  and either the PR introduces it or it earns a build verdict under
+  **Worth** in the `impact` skill. Make the smallest honest fix and close every sibling site with it. Prefer
   deleting an unneeded path to hardening it. A nit that breaks a named
   standard, such as a documented repo rule, is a Fix: it is cheap and it
   shortens the user's review. Copy that contradicts the decided design or its
@@ -38,9 +39,15 @@ before you bucket it, and Reject it when no such code exists.
   the failure: the input, what broke, and the saved evidence, so the user
   weighs an observed failure, not a predicted one.
 - **Follow-up**: the problem is real but outside the goal or in code the PR
-  does not touch. A final-read finding whose cause the fix diff did not
-  introduce is a Follow-up, except a sibling site the fix missed, which
-  reopens that fix's item as a Fix. Record it for the handoff.
+  does not touch, and it earns a build verdict under **Worth**. A final-read
+  finding whose cause the fix diff did not introduce is a Follow-up, except a
+  sibling site the fix missed, which reopens that fix's item as a Fix. Record
+  it for the handoff with its worth line.
+- **Park**: the problem is real and the PR did not introduce it, but it
+  earns a park verdict under **Worth**: no observed failure, and no exposure
+  that its harm or size justifies. Write its worth line with the tripwire to
+  the worth log, and give the reason with the reach read. A parked item gets
+  no follow-up, no thread, and no PR.
 - **Reject**: the premise is wrong; the code, a caller, or the framework
   already prevents it; the input cannot occur at the call sites; or it asks
   to add abstraction, configuration, or defensive checks with no bug behind
@@ -109,7 +116,8 @@ reviewer's brief.
   Review, or carries an automated-comment callout. Act per the
   `leaving-pr-comments` skill without approval: resolve the thread with no
   reply after you push the fix for a Fix or Call item, and reply with the
-  reason for a Reject or Follow-up item. An item that waits on a Decision
+  reason for a Reject, Park, or Follow-up item. A Park reply names the reach
+  read without production numbers. An item that waits on a Decision
   gets its reply after the user decides.
 - **Human thread**: a person wrote any comment in it, or you cannot tell. Fix
   a Fix or Call item and add a 👍 to their comment, per

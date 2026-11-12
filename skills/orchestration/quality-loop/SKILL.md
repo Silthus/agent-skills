@@ -31,12 +31,12 @@ Each module in scope moves through these stages in order, one at a time:
 
 1. **Load.** Pull the ledger and read `limits.md`. When `Paused` is `yes`, record a `no-op` run and end.
 2. **Settle.** Settle each lane in `lanes.md` that ended since the last run, as **Settle** below says.
-3. **Find.** Read `backlog.md`. On the first run, or when `hotpaths.md` is older than seven days, rebuild the ranking first, as step 5 of [learn.md](references/learn.md) says. Done when every module in scope has a row with its stage and **hot-path score**.
+3. **Find.** Read `backlog.md`. On the first run, or when `hotpaths.md` is older than seven days, rebuild the ranking first, as step 6 of [learn.md](references/learn.md) says. Done when every module in scope has a row with its stage and **hot-path score**.
 4. **Triage.** For each row, name the next PR its stage needs and grade it:
    - reach is the module's hot-path score;
-   - confidence is high when the seam is clear, the tests run without services a fresh box lacks, and the change fits the line limits, and low otherwise;
+   - confidence is high when the seam is clear, the tests run without services a fresh box lacks, the change fits the line limits, and the PR can name its worth as its type in [lane.md](references/lane.md) asks, and low otherwise;
    - the class is `critical` when the PR touches a critical path, and `normal` otherwise.
-5. **Cut.** The free slots are this loop's WIP limit minus its running lanes. Keep high-confidence rows in score order until the slots are full. At most one `critical` lane is open at a time. Done when `lanes.md` lists the kept rows as `planned` and `backlog.md` gives each skipped row its reason.
+5. **Cut.** The free slots are this loop's WIP limit minus its running lanes. Keep high-confidence rows in score order until the slots are full. Slots may stay empty: a run that starts no lane because nothing earned one is a good run. At most one `critical` lane is open at a time. Done when `lanes.md` lists the kept rows as `planned` and `backlog.md` gives each skipped row its reason.
 6. **Start lanes.** Start one lane per kept row, as [lane.md](references/lane.md) says. Record each lane's machine, thread, and task in `lanes.md`, then end the turn. The end of a normal lane wakes this thread.
 
 ## Settle
@@ -48,7 +48,7 @@ Settle a lane when it ends, or when a later run finds that it ended.
 3. For a critical lane with outcome `ready`, set its state to `ready` and stop there. The user reviews the draft from the lane's thread in the T3 sidebar, and the lane ships it on their word.
 4. For every other outcome, check it against GitHub and append the lane's record to `runs.jsonl`. Move the backlog row to its next stage when the stage's done criterion holds. Mark the lane `settled` in `lanes.md`.
 5. When the lane holds an Inbox claim, settle the claim too. A lane with a PR: check that the report lists the PR, and attach it with `inbox-reports-claim` when it does not. A lane without a PR: release the claim with `release: true`, and set its signal back to `candidate`.
-6. A bug the lane found and left out of its PR becomes a `candidate` row in `signals.md`, with source `lane <id>`. The next signal-loop run verifies it like any other collected signal.
+6. A bug the lane found and left out of its PR, a Follow-up from its reviews, and a side fix it proposed each become a `candidate` row in `signals.md`, with source `lane <id>`. The next signal-loop run verifies it and runs Worth like any other collected signal.
 7. Archive the lane's thread.
 
 A lane is settled when its record is in `runs.jsonl`, its Inbox claim carries its PR or is released, and its thread is archived. A critical lane at `ready` stays in `lanes.md` with state `ready`, and each later run checks it again.
