@@ -31,6 +31,17 @@ Right before the merge, run `git fetch` and check the PR again. Never merge
 when it is BEHIND or DIRTY, or when base commits that landed after the last
 green run touch this PR's files. Rebase, push, and wait for green again.
 
+Right before every merge or queue entry, run the **deploy-order check** when
+the `fleet` CLI is available:
+`fleet pr deploy-order --repo <owner/repo> --pr <number>`. Exit 0 lets the
+PR enter. Exit 1 refuses it and prints the PR to wait for: a migration this
+PR reads that is not live in every production region yet, or a migration
+mixed with another deploy unit in this PR. Exit 2 means the deploy state is
+unknown and waits the same way. On exit 1 or 2, do not enqueue: report the
+PR it names, or the unknown state, and enter the queue only after a later
+run exits 0. For a stack, check every layer that enters. Without the CLI,
+apply **Deploy order** below by hand.
+
 Right before the merge or queue entry, read the PR's comments and reviews
 once more. A **person's comment** the user has not answered holds it, per
 full-send's merge gate, even under a merge grant with every check green: ask
@@ -50,22 +61,23 @@ triage it and queue the PR once more. Never use `--admin` or other bypasses.
 
 ### Merge a stack as one
 
-Merge a stack with one queue entry, not one per layer. First get every layer
-approved: a teammate's review or, under `stamp-pr`, a stamp on each layer.
-Then post one bare `/trunk merge` comment on the top PR of the stack. The
-queue collapses the stack and tests and merges it as one, which is much
-faster than queuing each layer in turn. Do not queue a layer while a layer
-below it still waits for approval; the queue drops a PR that stays not ready.
+Merge approved layers with one queue entry, not one per layer. A layer is
+approved by a teammate's review or, under `stamp-pr`, a stamp. Post one bare
+`/trunk merge` comment on the top approved layer. The queue collapses the
+layers below it and tests and merges them as one, which is much faster than
+queuing each layer in turn. Do not queue a layer while a layer below it
+still waits for approval; the queue drops a PR that stays not ready.
 
 Deploy order still wins. When a layer reads what a lower layer adds, collapse
 the layers up to and including the one that adds it, follow that merge to its
 production deploy, then collapse the rest.
 
-A layer that waits on a person splits the stack too. When the approval bot
-refuses a layer, or a layer passes the review deadline in the user's PR
-workflow, offer the user to merge the **approved bottom** now: the layers from
-the base up that are approved and safe to deploy without the layers above.
-Queue it on its top layer, and merge the rest the same way once it is approved.
+An **approved bottom** merges as soon as it is approved: the layers from the
+base up that are approved, green, and safe to deploy without the layers
+above. Do not wait for the layers above or for a review deadline. Under a
+merge grant that covers it, queue it on its top layer. Otherwise offer it to
+the user at once, on the daily merge decision when the user's agent
+instructions have one. Merge the rest the same way once it is approved.
 
 ### Deploy order
 
@@ -157,6 +169,11 @@ After each stage change or Hold, append one line to the rollout log and push it:
 
 Use `null` for a missing flag, next check, or thread. The note carries no
 numbers or customer data.
+
+When the user's agent instructions name a deploy ledger, the ledger writes
+the `deployed` line. Write one by hand only when the ledger has not run:
+pull the log after the deploy, and append the line when it still has none
+for this PR.
 
 ## Check
 

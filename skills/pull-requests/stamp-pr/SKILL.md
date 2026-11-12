@@ -74,6 +74,9 @@ Replace full-send's step 6:
      the user's PR workflow has a rule for a PR that waits on a person, start
      it now.
 
-For a stack, stamp every layer before you merge any of them, then merge the
-stack as one, per `rollout`. When a layer needs a person, offer to merge the
-approved bottom first, per `rollout`.
+For a stack, take the base in one pass right before you ask for the stamps,
+per **Base branch** in `babysit-pr`; after that, update only for a conflict,
+because each update dismisses the stamps. Merge the **approved bottom** as
+soon as it is stamped, per `rollout`: the layers from the base up that are
+stamped, green, and safe to deploy without the layers above. The rest merges
+the same way once stamped.

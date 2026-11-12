@@ -41,6 +41,11 @@ branch conflicts.
   `watch_pull_request`: the parent or conductor that owns the stack watches.
   A conductor that hands a PR to a lane checks that some thread still watches
   it. Do not watch PRs you do not own.
+- **Hand the PR over before you settle.** A thread that settles, archives, or
+  moves to another machine while it owns an open PR leaves that PR
+  **ownerless**. First give each open PR a new owner that links and watches
+  it: the conductor, the coordinator, or a successor thread. Name the new
+  owner in your final report.
 - **A wake is news, not a merge decision.** Read the PR yourself before you
   act.
 - **Keep the watch through handoffs.** A report, a park, or a PR that waits
@@ -153,6 +158,12 @@ Keep an eye on the base branch and rebase when needed. `watch_pull_request`
 reports conflicts only, so check for BEHIND yourself before you report the PR
 ready. Update only for a conflict, or for BEHIND when the repo requires an
 up-to-date branch: every update restarts CI.
+
+A stack takes the base in one pass, right before its approvals or stamps:
+update the bottom layer, then carry it up through each layer above. After
+that, update only for a conflict, or for BEHIND in a repo that requires an
+up-to-date branch and has no merge queue. An update can dismiss an approval,
+and a merge queue tests the stack against the latest base anyway.
 
 A rebase must not change what the PR changes. Before it, save
 `git diff --name-only origin/<base>...HEAD`. After it, run the same command:

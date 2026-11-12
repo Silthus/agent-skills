@@ -60,14 +60,24 @@ or an open PR. Skip the steps that are already done, and check them.
    into thin vertical slices, one PR each. Each slice delivers something a
    user can use, holds one concern, and has at most about 400 changed
    production lines. Independent slices ship in parallel as separate PRs.
-   Stack a PR only on a PR it needs; a stack aims for 5 PRs and never holds
-   more than 10. Work from a map's stack ticket builds the slices that ticket
-   lists. A schema migration and its readers in other deploy units are
+   Stack a PR only on a PR it needs; a new stack holds at most 3 PRs, and more
+   work becomes the next stack. Work from a map's stack ticket builds the
+   slices that ticket lists. A schema migration and its readers in other deploy units are
    separate slices: the migration PR, with the model and API code that deploys
    with it, sits at the bottom, and each worker or frontend change that reads
    the new column or field stacks on it as its own PR. `rollout` merges each
-   reader only after the migration is deployed to production. Complete each slice with the smallest change that works. Fix the case that happened, not every case
-   that could. If you are on the default branch, create a branch first.
+   reader only after the migration is deployed to production.
+   **Slice to the stamp** when the user's agent instructions name an approval
+   bot for this repo, as `stamp-pr` uses: before you write code, list the
+   planned paths in a file, one per line with its estimated changed lines,
+   and run `fleet pr forecast --repo <owner/repo> --paths <file>`. Once the
+   branch has commits, run it again with `--branch <name>`. Exit 1 means the
+   bot would refuse the work as one PR: cut it into the slices it prints.
+   Each migration is its own PR, the deny-listed hunks go in the smallest PR,
+   and every other layer stays under the size cap. Cut by behavior, so each
+   slice deploys alone. Complete each slice with the smallest change that
+   works. Fix the case that happened, not every case that could. If you are
+   on the default branch, create a branch first.
    Follow the PR workflow in the user's agent instructions. Put a runtime
    change that `merge-risk` grades medium or high behind a feature flag.
 2. **Prove it.** Get proof for every change you made. See "Proof".
@@ -134,6 +144,8 @@ Full confidence means all of these are true on the latest commit:
   and bot reviews follow the review-bot line above.
 - The branch is up to date with the default branch, and GitHub reports it as
   mergeable.
+- The deploy-order check of `rollout` passes right before the merge or queue
+  entry.
 
 Never use `--admin` or other bypasses. You can ignore automated reviews that
 request "needs human review" if you have high confidence in your changes.

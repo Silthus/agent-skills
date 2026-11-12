@@ -51,7 +51,9 @@ When the user's agent instructions name an approval bot for this repo, as
 It matches the changed paths and size against the bot's own policy files. On
 a likely refusal it requests the owning teams from CODEOWNERS and owners.yaml,
 so their review overlaps CI and the proof gate instead of starting after
-them. Exit 0 means the forecast ran, whatever it predicts. Run it again after
+them. The slices were already cut to the bot's rules before code, per
+**Slice to the stamp** in full-send step 1. Exit 0 means the forecast ran,
+whatever it predicts. Run it again after
 a push that adds paths. Report any path it prints as having no owning team.
 It never posts to Slack and never asks the bot for a run.
 
@@ -77,6 +79,13 @@ Turn this on only when the user's agent instructions say that a PR passing
 their ready gate is marked ready by the agent. A draft then means agents are
 still working on it, and ready means ready for a person. The instructions
 name the gate; it adds to the merge gate above and never replaces it.
+
+Ready is a check, not a claim. When the `fleet` CLI is available, the gate
+passes only when `fleet proof gate` exits 0 on the final head. That needs a
+finished panel round on the PR (`fleet proof review --lens ...`, as
+`qa-swarm` runs it), with the head covered by that panel or by a final read
+after it. A single-reviewer round does not count. Never mark, report, or
+hand back a PR as ready before that exit 0.
 
 When the gate passes on the final head:
 
