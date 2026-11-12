@@ -14,8 +14,9 @@ metadata:
 
 # Full Stop
 
-Do the same work as `full-send`, but stop with a draft PR ready for the user's
-review. Never mark it ready for review, and never merge it.
+Do the same work as `full-send`, but stop with a PR ready for the user's
+review. Keep it a draft, unless the user's agent instructions turn on
+**Ready on green** below. Never merge it.
 
 Read [full-send](../full-send/SKILL.md) and follow its workflow, proof rules,
 review, and babysitting steps 1 to 5. An explicit "full stop" request, or the
@@ -33,8 +34,8 @@ You may commit, push, rebase, fix conflicts, and use `--force-with-lease` on
 this task's branch. Never mark the PR ready for review, request reviewers,
 merge, enable auto-merge, enter a merge queue, push to the default branch,
 bypass branch protection, ask the approval bot for a run or add its label, or
-delegate those actions. One exception: the code-owner request in "Ask code
-owners at draft time" below.
+delegate those actions. Two exceptions: the code-owner request in "Ask code
+owners at draft time", and the steps of "Ready on green", both below.
 
 Disable existing auto-merge and remove the PR from any merge queue before
 work begins; check again before each push. Report these changes. If you
@@ -65,15 +66,39 @@ Fetch the target branch and check the live PR's head, base, checks, reviews,
 and mergeability. Confirm it is open, still a draft, and not set to merge
 without the user. If someone else merged it, report that instead.
 
-- **Ready for your review:** the gate passes. Leave the PR open as a draft.
+- **Ready for your review:** the gate passes. Leave the PR open as a draft,
+  or follow "Ready on green" when it is on.
 - **Blocked:** explain what prevents readiness, what you tried, and what is
   needed. Follow full-send's rules for asking the user.
 
+## Ready on green
+
+Turn this on only when the user's agent instructions say that a PR passing
+their ready gate is marked ready by the agent. A draft then means agents are
+still working on it, and ready means ready for a person. The instructions
+name the gate; it adds to the merge gate above and never replaces it.
+
+When the gate passes on the final head:
+
+1. Mark the PR ready for review. Request no reviewers; the repo assigns them.
+2. Babysit it per `babysit-pr` until every check and bot review that runs
+   only on ready PRs has finished on the head, each failure is fixed, and
+   each new finding is fixed or answered and resolved.
+3. When the user's agent instructions name an approval bot for this repo,
+   wait until its own prerequisites are met, such as other bot reviews
+   finished, then ask it for one run on the head, as `stamp-pr` does. Do not
+   merge on its approval. Record its verdict and reasons, and run it again
+   after every push.
+
+A push after the flip that changes behavior goes back through the gate. If
+the gate fails after the flip, convert the PR back to a draft, fix it, and
+start again. Report the bot's verdict in place of the forecast below.
+
 ## Forecast the stamp
 
-When the PR is ready for your review and the user's agent instructions name
-an approval bot for this repo, as `stamp-pr` uses, forecast its verdict on the
-final head. The bot refuses drafts, and a passing run posts a real approval,
+When the PR is ready for your review, "Ready on green" is off, and the
+user's agent instructions name an approval bot for this repo, as `stamp-pr`
+uses, forecast its verdict on the final head. The bot refuses drafts, and a passing run posts a real approval,
 so never run it here. Predict the verdict instead:
 
 - Run `fleet pr forecast --repo <owner/repo> --pr <number>` on the final
@@ -92,7 +117,8 @@ In T3 Code, keep the watch through the handoff, per `babysit-pr`. Unwatch
 only right before a question, and watch again once the user answers.
 Report the PR link, final head, verdict, proof, reviewer outcome, merge risk,
 stamp forecast, and remaining risks. Label the forecast as a prediction, not
-the bot's verdict. State that the PR is still an unmerged draft.
+the bot's verdict. State whether the PR is still a draft or marked ready, and
+that it is unmerged.
 
 The user can continue from here with "full send" or "stamp it". That skill
 starts from this PR as it stands.
