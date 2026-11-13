@@ -147,9 +147,29 @@ Done when every hot path is traced, every change on it has a row with its
 reach, every uncovered row is named, every commitment is named, and the
 grade follows from them.
 
+## Tier
+
+The **tier** says who decides the PR's asks, under the user's agent
+instructions. A PR is **critical** when any criterion holds:
+
+- (a) the diff touches a critical path that the user's agent instructions
+  list for the repo;
+- (b) the grade at merge is high;
+- (c) the door is one-way;
+- (d) it adds a migration;
+- (e) it changes auth, permissions, or infra;
+- (f) it makes an irreversible public release, such as an SDK publish;
+- (g) it sends something to people outside the team.
+
+A repo with no critical-path list uses (b) to (g). Every other PR is
+**non-critical**. Set the tier afresh with the grade on every run. Write it as
+the callout's last bullet: `**Tier:** critical (<letters>: <what holds>)`,
+such as `**Tier:** critical (a: <path>; d)`, or `**Tier:** non-critical`.
+
 ## Callout
 
-The callout stays short: the headline, the delta, and the switch-off. Never
+The callout stays short: the headline, the delta, the switch-off, and the
+tier. Never
 put measured numbers in it: the repo may be public. The bullets say:
 
 - who changes, from what to what, and in which regions;
@@ -186,6 +206,7 @@ appears only when it has content:
 > - <who changes: the branch, from what to what, for whom, in which regions>
 > - <who is unchanged and the proof that covers them, or an uncovered row and its residual incident>
 > - **Switch-off:** `<flag or allowlist>`, or none: live on deploy, fix forward.
+> - **Tier:** <critical (<letters>: <what holds>), or non-critical>
 
 ## Rollout
 
@@ -212,6 +233,7 @@ after they approve.
    section, else first. Keep the rest of the body byte for byte.
 4. Write it back with `gh pr edit <n> --body-file <file>`.
 
-Done when the description carries one merge-risk block with the current grade.
-With the `fleet` CLI, the judge in `fleet proof gate` fails a grade or door
-that does not follow from the diff and the saved proofs.
+Done when the description carries one merge-risk block with the current grade
+and tier. With the `fleet` CLI, the judge in `fleet proof gate` fails a grade or
+door that does not follow from the diff and the saved proofs, and a Tier line
+that says non-critical while the diff touches a listed critical path.

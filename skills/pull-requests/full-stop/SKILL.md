@@ -133,5 +133,13 @@ stamp forecast, and remaining risks. Label the forecast as a prediction, not
 the bot's verdict. State whether the PR is still a draft or marked ready, and
 that it is unmerged.
 
+With the `fleet` CLI, the handoff carries the end-of-run report: run
+`fleet decision report --pr <owner/repo#n>...` with every PR of the lane,
+put its output after the lines above, and post it once as a comment on the
+bottom PR. In a public repo, check it against the public-repo rule of the
+user's agent instructions first. In a Wayfinder lane, the lane rules post it
+on the ticket instead. After the user reverses a decision, run the report
+again and edit that comment. End the handoff with the merge-word line below.
+
 The user can continue from here with "full send" or "stamp it". That skill
 starts from this PR as it stands.

@@ -123,7 +123,7 @@ Record the proof the way the user's PR workflow says, such as
 `fleet proof require` and `fleet proof save`.
 
 When you cannot find a way to prove a change, you do not have full confidence.
-Ask the user.
+Record a gap; who accepts it follows **Gaps** in `PROOF.md` of `qa-swarm`.
 
 ## Merge gate
 
@@ -162,10 +162,12 @@ link, what blocks you, and the options with your recommendation first.
 
 Ask only when you cannot continue alone:
 
-- You cannot prove the change.
+- You cannot prove the change, and **Gaps** in `PROOF.md` of `qa-swarm`
+  leaves the gap to the user.
 - The merge gate cannot pass, and you cannot fix that yourself: the same check
   fails twice for the same cause (`fleet pr blockers --record` exits 3, see
-  **Progress** in `babysit-pr`), or the review arbiter refuses another round.
+  **Progress** in `babysit-pr`), or the review arbiter refuses another round and the user's agent
+  instructions keep that decision.
 - `merge-risk` grades the PR high, or calls it a one-way door. Ask before the
   merge.
 - A person's comment holds the merge, per the merge gate. Name the comment,

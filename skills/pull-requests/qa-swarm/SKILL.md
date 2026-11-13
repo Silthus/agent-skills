@@ -149,8 +149,10 @@ A round works on one HEAD. Run its steps in order.
    reads the findings so far. It reserves the round unless a later finding
    contradicts an earlier one or the same finding keeps coming back after its
    fix; then it refuses with the reason. At six panel rounds it refuses
-   without asking. Either refusal is a Decision for the user; record their
-   answer with `--override "<date> \"<their words>\""` and
+   without asking. Decide either refusal yourself under the user's agent
+   instructions when they let you, and run the round with
+   `--agent "<reason>"`; otherwise it is a Decision for the user, and you
+   record their answer with `--override "<date> \"<their words>\""` and
    `--thread <the T3 thread where they answered>`. Without the CLI, ask the same question of a
    one-shot subagent cast as a lookup per the user's model selection policy,
    give it the ledger's findings, and record its answer there.
@@ -196,7 +198,7 @@ prints them; answer them with `fleet proof respond ... --round final`. A final r
 never counts as a panel round. A fix from a final read is a new commit, so it
 gets its own final read, until a read comes back clean. From the third final
 read on, the arbiter checks each one the same way, and at six final reads
-`fleet proof` refuses without asking. Either refusal is a Decision.
+`fleet proof` refuses without asking. Either refusal is decided as above.
 Skip the final read when a review already covered HEAD. A Fix item you cannot
 close becomes a Decision, and the handoff is Blocked.
 
@@ -242,14 +244,16 @@ Report to the user, then stop:
   Decisions, the unaccepted gaps, or a red check.
 - The merge risk and its first bullet.
 - The rounds, and the number of fixed and rejected items per source.
-- **Decisions**: each load-bearing question with your recommended answer.
-- **Calls made**: each choice between defensible options, with the
-  alternative, so the user can redirect it in one line.
+- **Decisions**: each load-bearing question the PR's tier leaves to the user,
+  with your recommended answer.
+- **Calls made**: each choice between defensible options, as a 🤖 decision
+  line with the alternative, so the user can redirect it in one line.
 - **Drafts**: each reply that needs the user's approval, with its thread URL.
 - **Read first**: the danger hunks.
 - **Follow-ups**: real problems outside the goal that earned a build verdict, with their worth lines.
 - **Parked**: real problems the PR did not introduce, below the worth bar, with their tripwires.
-- **Gaps**: each owed proof that could not run, as a Decision for the user;
+- **Gaps**: each owed proof that could not run, with who accepted it per
+  Gaps in [`PROOF.md`](PROOF.md), or as a Decision for the user;
   a lane that failed and its substitute; a skipped Team lane; a silent bot;
   a repo without CI; a step of the lane gate that could not run, as a
   Decision unless the full gate on HEAD runs that step.

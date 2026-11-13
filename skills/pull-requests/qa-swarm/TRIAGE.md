@@ -30,14 +30,18 @@ before you bucket it, and Reject it when no such code exists.
   traffic takes the row and either HEAD adds harm there or no proof covers
   it. Otherwise reject it and cite the proof or the reach read.
 - **Call**: the problem is real and has more than one defensible fix. Pick
-  one, fix it, and record the alternative and your reason for the handoff.
+  one, fix it, and record it for the handoff as a 🤖 decision line per
+  `pr-description`, with its class and the alternative you rejected.
 - **Decision**: the answer is **load-bearing**, so the user decides. It is
   load-bearing when it changes behavior users see, a public contract, stored
   data, cost, or the PR's scope, or when the fix needs a migration, a new
   dependency, a new abstraction, or a new configuration option. Record your
   recommended answer. A decision to accept a risk carries the run that shows
   the failure: the input, what broke, and the saved evidence, so the user
-  weighs an observed failure, not a predicted one.
+  weighs an observed failure, not a predicted one. When the user's agent
+  instructions let you decide two-way-door choices on a non-critical PR
+  (its `merge-risk` Tier line), such a choice is a Call, unless it adds a
+  public contract or a user-visible choice on a shipped surface.
 - **Follow-up**: the problem is real but outside the goal or in code the PR
   does not touch, and it earns a build verdict under **Worth**. A final-read
   finding whose cause the fix diff did not introduce is a Follow-up, except a

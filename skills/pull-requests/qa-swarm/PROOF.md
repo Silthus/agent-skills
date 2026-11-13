@@ -95,11 +95,23 @@ Done when the checks `rollout` schedules ran and their results are saved.
 ## Gaps
 
 A **gap** is an owed proof that could not run. It names the proof, the reason,
-and what stays unknown. A gap is a Decision for the user, so the handoff stays
-Blocked until the user accepts it in answer to that gap. The user's agent
-instructions may hold a standing rule that accepts every gap of one kind, such
-as a proof that waits for access; that rule is the acceptance, recorded as a
-standing rule, never as the user's words.
+and what stays unknown. Who accepts it follows the PR's tier, from the `Tier:`
+line of its `merge-risk` callout:
+
+- **Non-critical**: accept the gap yourself, with your reason and the option
+  you rejected, except a `panel` gap.
+- **Critical**: accept only `judge` and `post-deploy-watch` gaps yourself.
+- **Ungraded**: grade the PR with `merge-risk` first.
+
+Every other gap is a Decision for the user, and the handoff stays Blocked
+until the user accepts it in answer to that gap. Fix a failing required CI
+check; a gap never covers it. A proof the user named stays owed at any tier:
+record their words with `--keep-owed`. Before you ask, look the gap up with
+`fleet decision list --pr <owner/repo#n> --live`: a live decision in scope
+answers it. When a head turns the PR critical, your own acceptances on it
+lapse; decide or ask again. The user's agent instructions may hold a standing
+rule that accepts every gap of one kind; that rule is the acceptance,
+recorded as a standing rule, never as the user's words.
 
 ## Record
 
@@ -147,11 +159,17 @@ proof storage enforces this file:
   order, that starts with `fixed` or `rejected`: `1. fixed in <sha>: <how>`,
   `2. rejected: <why>`. The receipt counts only that format; any other answer
   shows as written and counts as unknown.
-- `fleet proof gap ... --kind <kind> --reason "<reason>"` records a gap, and
-  `--accept "<date> \"<the user's answer to this gap>\"" --thread <T3 thread id>`
-  records the user's acceptance. The quoted words must be in a message the
-  user typed in that thread, or in their answer to a question tool. A standing
-  rule of the agent instructions is recorded once with
+- `fleet proof gap ... --kind <kind> --reason "<reason>"` records a gap's
+  reason; run it again to change the reason. Record your own acceptance with
+  `fleet decision record --mark 🤖 --class proof-gap --kind <kind> --pr <owner/repo#n> --question '<q>' --answer '<a>' --rejected '<option>' --reason '<why>'`,
+  and the user's with
+  `fleet decision record --mark 👤 --words '<date> "<their words>"' --thread <T3 thread id> --class proof-gap --kind <kind> --pr <owner/repo#n>`,
+  with `--mark 👍` when they picked your recommendation, one `--pr` for each
+  PR the answer covers, and `--keep-owed` for a proof they named.
+  The quoted words must be in a message the user typed in that thread, or in
+  their answer to a question tool, and that question names every PR the
+  answer covers. A standing rule of the agent instructions is recorded once
+  with
   `fleet proof standing --kind <kind> --until <date> --rule "<the rule, word for word>"`.
 - `fleet proof gate ...` exits 0 when the owed proofs are recorded, each has
   evidence or an accepted gap, HEAD is reviewed, CI on HEAD is green or has an

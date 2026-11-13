@@ -88,9 +88,8 @@ body edit, never before.
   of four or more digits, a percentage, a thousands separator, an email
   address, or an HTML entity. Rewrite that field without it: save the kind's
   `--ran` and `--result` again, or pass the whole `--not-checked` list
-  again, and put the detail in an evidence note. Never record an accepted
-  gap again to change its reason, because that drops the acceptance; ask the
-  user. Then run the receipt again.
+  again, and put the detail in an evidence note. For a gap reason, record
+  the gap again with `fleet proof gap`. Then run the receipt again.
 - Exit 1: publishing, GitHub, or the body failed, and the message names the
   fix: repair broken markers by hand, connect a gateway with
   `./fleet mcphub connect <machine>`, or shorten the evidence notes and lens
@@ -136,7 +135,11 @@ sorted 👤, 👍, 🤖:
 - **Where**: a link to the comment that holds the decision and its details.
 
 Record each decision where it is made, in the ticket's handoff comment or
-the map, as a **decision line**: `- <mark> **<question>** <answer>`.
+the map, as a **decision line**:
+`- <mark> **<question>** <answer> (<who>, <class>, <where>)`. The mark is 👤,
+👍, or 🤖, as in Who. The class is the ask class: `proof-gap`, `review`,
+`merge`, `deploy`, `secret`, `design`, `scope`, or `status`. A 🤖 line adds
+`Rejected: <option>.` to its answer.
 Decisions made in the agent session or a review round, with no ticket
 comment or map to hold them, go into one PR comment: the
 `leaving-pr-comments` callout, then the decision lines. On the user's own
@@ -147,8 +150,9 @@ the same question replaces the earlier one, and its row replaces the
 earlier row.
 
 When the `fleet` CLI is available, `fleet decisions <map URL>` collects a
-Wayfinder map's decision lines into the table; add the rows for the PR
-comment's lines. A decision without a line gets one in the PR comment,
+Wayfinder map's decision lines into the table, and
+`fleet decision list --pr <owner/repo#n>` prints the PR's decisions from the
+decision ledger as decision lines; add the rows for the PR comment's lines. A decision without a line gets one in the PR comment,
 classified from its transcript. A PR with no row keeps one line instead:
 `No load-bearing decisions.`
 

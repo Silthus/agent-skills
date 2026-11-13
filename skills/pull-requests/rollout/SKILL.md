@@ -131,7 +131,8 @@ The default cadence, unless the user names another:
    as the PostHog deploy-signal memory describes. In other repos, wait on the
    repo's deploy signal: a deploy workflow run with
    `gh run watch <id> --exit-status`, or a release tag. When no deploy shows up within 24 hours,
-   record a gap and ask. Then **mark the deploy** on each insight that the
+   record a gap and decide it or ask, per **Gaps** in `PROOF.md` of
+   `qa-swarm`. Then **mark the deploy** on each insight that the
    PR's Impact section links: in PostHog, an annotation at the deploy time
    that reads `<owner/repo>#<number> deployed`, scoped to that insight
    (`dashboard_item`, the numeric ID behind the link's short ID) or to that
@@ -255,7 +256,8 @@ Outside a map, run the `lessons` harvest for the PR once the rollout settles.
 ## Finish
 
 1. At Done, run `fleet proof gate ... --landed`. Exit 0 ends the watch. Exit 3
-   means gaps wait for acceptance: ask the user. Exit 1 names a missing proof,
+   means gaps wait for acceptance: accept or ask, per **Gaps** in `PROOF.md`
+   of `qa-swarm`. Exit 1 names a missing proof,
    an unreviewed head, CI not green on the head, or a failed judge: fix a
    missing proof, and record an unreviewed head on a merged PR as a gap.
 2. At Done, schedule a check two weeks after 100% that starts a `full-stop`
@@ -263,6 +265,7 @@ Outside a map, run the `lessons` harvest for the PR once the rollout settles.
    from the code, delete the flag at that PR's Done.
 3. Record a gap with `fleet proof gap ... --kind post-deploy-watch --reason
    "<reason>"` when the deploy signal or a project is unreachable, or no
-   deploy shows up in time. Then ask the user to accept it.
+   deploy shows up in time. Then accept it yourself, as a `post-deploy-watch`
+   gap, per **Gaps** in `PROOF.md` of `qa-swarm`.
 
 Report each flag and its stage, each check's verdict, and the next check.
