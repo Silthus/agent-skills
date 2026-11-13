@@ -146,8 +146,7 @@ The default cadence, unless the user names another:
    hour after the deploy is clean.
 4. **10%**: 24 hours after Internal.
 5. **50%**: 48 hours after 10%.
-6. **100%**: on the first working day, Monday to Friday, at least 3 days after
-   50%.
+6. **100%**: at least 3 days after 50%.
 7. **Done**: 24 hours after 100%.
 
 A PR that `merge-risk` grades low goes from Internal to 100% after a clean
