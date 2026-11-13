@@ -110,9 +110,26 @@ proof storage enforces this file:
   records the owed kinds: `live-run`, `ui-walk`, `prod-shape`,
   `cross-version`, `shadow-diff`, `post-deploy-watch`. A PR whose conditions
   above all fail records `--none --reason "<why>"` instead.
-- `fleet proof save ... --kind <kind> <files>` saves a proof's evidence for
-  HEAD, and takes only screenshots for `ui-walk`. Evidence proves its own
-  commit; after a new commit, save new evidence, or record
+- `fleet proof run [--repo <owner/repo> --pr <number>] --kind <kind> -- <command> [argument...]`
+  runs a shell proof on the local HEAD and saves its output as evidence. It
+  takes no `--commit`, and `ui-walk` takes no runs. The judge marks its files
+  as captured by the Fleet runner, so use it for every proof a command can
+  show. Commit first: it refuses modified files and untracked files that Git
+  does not ignore. It saves only a run that exits 0 with text output while
+  HEAD and the tree stay unchanged.
+  The runner uses no shell, but your shell still splits the line at an
+  unquoted `|`, `&&`, `;` or `>`, and expands an unquoted `~`, `$VAR` or glob
+  first. Put anything that needs a shell in one quoted argument:
+  `sh -c '<commands>'`. When the proof expects the command to fail, print its
+  status so the run exits 0 and saves: `sh -c '<command>; echo "exit=$?"'`.
+  On a worktree with a worktree box, such as a PostHog worktree, run the
+  command on the box, so its mirror check lands in the evidence. Use the same
+  `fleet` path for both calls:
+  `~/dev/fleet/fleet proof run --kind live-run -- ~/dev/fleet/fleet worktree-box run -- '<command>'`.
+- `fleet proof save ... --kind <kind> <files>` saves what the runner cannot
+  capture, such as screenshots, binary output, MCP results, and notes, as
+  evidence for HEAD, and takes only screenshots for `ui-walk`. Evidence proves
+  its own commit; after a new commit, run or save new evidence, or record
   `--reuse-from <sha> --reason "<why it still proves HEAD>"`.
 - `fleet proof gap ... --kind <kind> --reason "<reason>"` records a gap, and
   `--accept "<date> \"<the user's answer to this gap>\"" --thread <T3 thread id>`
