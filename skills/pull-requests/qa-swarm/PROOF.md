@@ -162,13 +162,12 @@ proof storage enforces this file:
 - `fleet proof gap ... --kind <kind> --reason "<reason>"` records a gap's
   reason; run it again to change the reason. Record your own acceptance with
   `fleet decision record --mark 🤖 --class proof-gap --kind <kind> --pr <owner/repo#n> --question '<q>' --answer '<a>' --rejected '<option>' --reason '<why>'`,
-  and the user's with
-  `fleet decision record --mark 👤 --words '<date> "<their words>"' --thread <T3 thread id> --class proof-gap --kind <kind> --pr <owner/repo#n>`,
-  with `--mark 👍` when they picked your recommendation, one `--pr` for each
-  PR the answer covers, and `--keep-owed` for a proof they named.
-  The quoted words must be in a message the user typed in that thread, or in
-  their answer to a question tool, and that question names every PR the
-  answer covers. A standing rule of the agent instructions is recorded once
+  and the user's answer to your question tool with
+  `fleet decision record --mark 👤 --class proof-gap --kind <kind> --pr <owner/repo#n>`:
+  `--mark 👍` when they picked your recommendation, one `--pr` for each PR
+  the answer covers, which the question names, and `--keep-owed` for a proof
+  they named. For words the user typed in a T3 thread, add
+  `--words '<date> "<their words>"' --thread <T3 thread id>`. A standing rule of the agent instructions is recorded once
   with
   `fleet proof standing --kind <kind> --until <date> --rule "<the rule, word for word>"`.
 - `fleet proof gate ...` exits 0 when the owed proofs are recorded, each has
