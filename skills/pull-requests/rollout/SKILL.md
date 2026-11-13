@@ -49,7 +49,9 @@ the user first. For a stack, check every layer.
 
 Merge with the method the repo uses. Check the allowed methods and recent
 merged PRs. In a repo with a merge queue, enter the queue, for example with a
-bare `/trunk merge` comment. Stay until GitHub reports the PR as merged. Push
+bare `/trunk merge` comment: `gh pr comment <number> --repo <owner/repo>
+--body '/trunk merge'`, alone in its call and with nothing else in the body.
+Agent settings may allow exactly that form. Stay until GitHub reports the PR as merged. Push
 nothing while the queue holds the PR. Trunk reports queue state only by
 editing one comment, and an edit wakes no PR watch, so never report a PR as
 queued from one read of it. Right after `/trunk merge` in `PostHog/posthog`,
