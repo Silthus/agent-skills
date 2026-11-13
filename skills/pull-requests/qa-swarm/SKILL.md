@@ -164,8 +164,10 @@ A round works on one HEAD. Run its steps in order.
    HEAD, and failed check per [`TRIAGE.md`](TRIAGE.md). Done when each one is
    in the ledger with exactly one bucket. With the `fleet` CLI, also record
    your answer to each finding of the round with
-   `fleet proof respond ... --round <number> <responses file>`: fixed in which
-   commit, or rejected and why. The gate's judge checks each answer against HEAD.
+   `fleet proof respond ... --round <number> <responses file>`, one numbered
+   item per finding in the findings' order, as [`PROOF.md`](PROOF.md) says:
+   `1. fixed in <sha>: <how>`, `2. rejected: <why>`. The gate's judge checks
+   each answer against HEAD.
 3. **Fix** every Fix and Call item. Fix a bug red first with the `tdd` skill:
    a test that fails on the bug, then the fix. Close the sibling sites a
    finding names in the same commit. Run the lane gate, verify the behavior
@@ -222,7 +224,8 @@ that as a gap.
 Behavior that only production can show belongs to the post-deploy watch,
 which the handoff names. Done when the description carries the final
 evidence and gaps, a merge risk that matches the final diff, and the
-Decisions block. With the `fleet` CLI, `fleet proof gate` also exits 0 or 3.
+Decisions block. With the `fleet` CLI, `fleet proof gate` also exits 0 or 3,
+and `fleet proof receipt` then exits 0 on HEAD.
 
 ## 5. Hand off
 

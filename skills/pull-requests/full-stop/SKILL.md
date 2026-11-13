@@ -84,8 +84,12 @@ Ready is a check, not a claim. When the `fleet` CLI is available, the gate
 passes only when `fleet proof gate` exits 0 on the final head. That needs a
 finished panel round on the PR (`fleet proof review --lens ...`, as
 `qa-swarm` runs it), with the head covered by that panel or by a final read
-after it. A single-reviewer round does not count. Never mark, report, or
-hand back a PR as ready before that exit 0.
+after it. A single-reviewer round does not count. After each
+`fleet proof gate` on a new head, run `fleet proof receipt` as
+`pr-description` says under Proof. Ready also needs a receipt run on the
+final head that exits 0 and prints `receipt current` or `receipt written`,
+with no warning for a missing line, caption or screenshot URL. Never mark,
+report, or hand back a PR as ready before both.
 
 When the gate passes on the final head:
 
@@ -99,8 +103,8 @@ When the gate passes on the final head:
    merge on its approval. Record its verdict and reasons, and run it again
    after every push.
 
-A push after the flip that changes behavior goes back through the gate. If
-the gate fails after the flip, convert the PR back to a draft, fix it, and
+Every push after the flip goes back through the gate and then the receipt,
+as above. If the gate fails after the flip, convert the PR back to a draft, fix it, and
 start again. Report the bot's verdict in place of the forecast below.
 
 ## Forecast the stamp

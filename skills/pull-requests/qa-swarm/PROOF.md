@@ -131,6 +131,22 @@ proof storage enforces this file:
   evidence for HEAD, and takes only screenshots for `ui-walk`. Evidence proves
   its own commit; after a new commit, run or save new evidence, or record
   `--reuse-from <sha> --reason "<why it still proves HEAD>"`.
+- For the proof receipt, give each kind one line of what ran and one of what
+  it showed: `fleet proof save ... --kind <kind> --ran '<what ran>' --result '<what it showed>'`,
+  with its files or, after `fleet proof run`, without files. Save each
+  screenshot with its own caption:
+  `fleet proof save ... --kind ui-walk --caption '<what it shows>' <screenshot>`.
+  The receipt lists screenshots in the order of their first caption. The body
+  is public: the receipt refuses a number of four or more digits, a
+  percentage, a thousands separator, an email address, or an HTML entity in
+  these lines, in gap reasons, and in not-checked items. Put such detail in
+  notes saved as Markdown evidence, which show only in the team-visible full
+  receipt.
+- `fleet proof respond ... --round <number> <responses.md>` saves your answers
+  to a review round. Write one numbered item per finding, in the findings'
+  order, that starts with `fixed` or `rejected`: `1. fixed in <sha>: <how>`,
+  `2. rejected: <why>`. The receipt counts only that format; any other answer
+  shows as written and counts as unknown.
 - `fleet proof gap ... --kind <kind> --reason "<reason>"` records a gap, and
   `--accept "<date> \"<the user's answer to this gap>\"" --thread <T3 thread id>`
   records the user's acceptance. The quoted words must be in a message the

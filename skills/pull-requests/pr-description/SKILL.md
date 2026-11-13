@@ -32,10 +32,12 @@ it.
    [full body](references/full-body.md) says.
 2. Add each insert below in the place it names. Edit the live body, and keep
    every image, link, ticked box, and note it already holds.
-3. Push the body and read it back. Done when the live body holds the
-   merge-risk block, the Impact section unless `impact` leaves it out, a
-   line for each owed proof, and the latest decision line for every decided
-   question.
+3. Push the body. With the `fleet` CLI, once `fleet proof gate` has run on
+   HEAD, run `fleet proof receipt` as Proof says. Read the body back. Done
+   when the live body holds the merge-risk block, the Impact section unless
+   `impact` leaves it out, the proof receipt of HEAD when the gate has run on
+   HEAD (or, without the `fleet` CLI, a line for each owed proof), and the
+   latest decision line for every decided question.
 
 Each time work continues on the PR, refresh the inserts in the same edit as
 the rest of the body.
@@ -65,9 +67,42 @@ the map.
 ## Proof
 
 When the work ran proofs per [`PROOF.md`](../qa-swarm/PROOF.md) of the
-`qa-swarm` skill, list each owed proof with its evidence link or its gap,
-in the template's testing section. Link the evidence beside each line that
-`fleet proof gate` passes. Report CI the way the repository's skill says.
+`qa-swarm` skill and the `fleet` CLI is available, do not list the proofs by
+hand. After `fleet proof gate` on a new head, run
+`fleet proof receipt --repo <owner/repo> --pr <number> --commit <full SHA>`.
+It writes the receipt into the template's testing section, between its
+`fleet-proof-receipt` markers: a row per owed proof, the review and judge
+rows, what was not checked, the gaps, and the link to the full receipt.
+Write only your own reason for this test approach, above the markers (the
+template's rationale line when it has one), and never edit between the
+markers. The receipt goes under a "How did you test this code?" heading, and
+adds that heading at the end of the body when the body has none. Name what the proofs did not check with
+`--not-checked '<item>'`, once per item; a later run without the flag keeps
+the list. The command edits the live body itself, so run it after your own
+body edit, never before.
+
+- A warning names a kind without its two lines or a screenshot without a
+  caption or a published URL, with the command that fixes it. Run that
+  command, then the receipt again.
+- Exit 2: the body guard refused a field and names it. It refuses a number
+  of four or more digits, a percentage, a thousands separator, an email
+  address, or an HTML entity. Rewrite that field without it: save the kind's
+  `--ran` and `--result` again, or pass the whole `--not-checked` list
+  again, and put the detail in an evidence note. Never record an accepted
+  gap again to change its reason, because that drops the acceptance; ask the
+  user. Then run the receipt again.
+- Exit 1: publishing, GitHub, or the body failed, and the message names the
+  fix: repair broken markers by hand, connect a gateway with
+  `./fleet mcphub connect <machine>`, or shorten the evidence notes and lens
+  answers of a page over the budget. Apply it and run the receipt again; a
+  rerun repairs a half-written receipt. When the same message comes back,
+  stop and report it.
+- Exit 3: the hub ledger cannot be reached, and nothing was written. Run the
+  receipt again once the hub answers.
+
+Without the `fleet` CLI, list each owed proof with its evidence link or its
+gap in the template's testing section. Report CI the way the repository's
+skill says.
 
 Store proof files outside the checkout, so they outlive the worktree. When
 the `fleet` CLI is available (on `PATH` or at `~/dev/fleet/fleet`), save

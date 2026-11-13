@@ -124,7 +124,12 @@ Every push gets a final read of its diff: one review from the other model
 family for a fix that changes behavior, and your own `git range-diff` check
 for a rebase or a reworded fix. With the `fleet` CLI, run
 `fleet proof review ... --scope final --base <last reviewed SHA> --phase babysit`
-and answer it with `fleet proof respond ... --round final <responses file>`.
+and answer it with `fleet proof respond ... --round final <responses file>`,
+one numbered item per finding as
+[`PROOF.md`](../qa-swarm/PROOF.md) says: `1. fixed in <sha>: <how>`,
+`2. rejected: <why>`. After each push, run `fleet proof gate`, then
+`fleet proof receipt` as `pr-description` says under Proof, so the body's
+receipt names HEAD.
 Record a `range-diff` check with `review-start` and `review-finish` in the
 same phase. Without the CLI, record both in the ledger. From the third final
 read, `fleet proof` asks its arbiter first, as in `qa-swarm`. Its refusal, or
