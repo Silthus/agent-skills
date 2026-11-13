@@ -9,7 +9,7 @@ Write one template per ticket type at `$(git rev-parse --git-common-dir)/wayfind
 - the map URL, the code repo, and the ticket, as context pointers per **Shared notes** in [`SHIP.md`](SHIP.md);
 - the `Lessons:` line of the map's **Notes**, verbatim, or `Lessons: none`;
 - the wall-time cap, the ticket claim, the durable park and resolution protocol, the report before idle, and that downstream dispatch belongs to the conductor;
-- decision lines in the shape of the lane rules below. A template written before 2026-11-13 shows ✅ decision lines: rewrite them in that shape;
+- decision lines in the shape of the lane rules below. A template written before 2026-11-13 shows ✅ decision lines: rewrite them in that shape. A template whose `fleet decision report` rule lacks `--lane`: add it;
 - the prescribed skill, and the order to read its `SKILL.md` directly when the Skill tool refuses it, as it does `to-spec`;
 - **Casting** from [`SKILL.md`](SKILL.md), and the `fleet` CLI's resolved path;
 - for an `implement` ticket, [`SHIP.md`](SHIP.md) from **Stack thread** on;
@@ -38,7 +38,7 @@ bun <this skill's directory>/scripts/lane-prompt.ts <template> <ticket> --allow 
 - Before you merge a pull request, post a ticket comment `Still owed after merge: <steps>` that lists every step left, such as a flag rollout, a log watch, and the resolution. After the merge, edit it to start with `Merged <sha>.` Any thread can finish the lane from it.
 - To save a memory, update the topic note that covers it, or add one topic note when none does.
 - Write each decision line as `- <mark> **<question>** <answer> (<who>, <class>, <where>)`: 👤 for the human's own call, 👍 for their yes to your recommendation, 🤖 for your own decision, which adds `Rejected: <option>.` to its answer. The class is one of `proof-gap`, `review`, `merge`, `deploy`, `secret`, `design`, `scope`, `status`.
-- When your ticket resolves or hands back, the lane has pull requests, and the `fleet` CLI is available, run `fleet decision report --pr <owner/repo#n>...` with every pull request of the lane. Put its output in the resolution or handback comment, and the same text in your final message, before its question and `NEEDS_HUMAN:` line.
+- When your ticket resolves or hands back, the lane has pull requests, and the `fleet` CLI is available, run `fleet decision report --pr <owner/repo#n>... --lane <this ticket as owner/repo#n>` with every pull request of the lane. Put its output in the resolution or handback comment, and the same text in your final message, before its question and `NEEDS_HUMAN:` line.
 - Record what did not work as ❌ lines in your park, handback, and resolution comments, in the shape of the `lessons` skill: `- ❌ **<what you tried>** <what happened, and why>`. Write one for each case its **❌ lines** section lists.
 - When a turn ends waiting on the human, make the last line of your final message `NEEDS_HUMAN: <what is needed, from whom>`. `fleet lanes` reads it, so the conductor sees the ask even when the human cannot reach your thread.
 ```

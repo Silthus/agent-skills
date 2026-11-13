@@ -28,6 +28,17 @@ methods Proof needs, even when a project file says to ask first, for example
 before computer use. Use those methods directly. Its permissions to mark the
 PR ready, merge, and roll out do not apply. The overrides below take precedence.
 
+## Kickoff intake
+
+A lane that a map's conductor started reads its stack ticket's `## Intake`
+section when it has one: its intake ran at the build-plan park, and its lane
+key is that ticket. Any other lane runs the kickoff intake in
+[INTAKE.md](INTAKE.md) before its first change. After intake, a lane puts a
+secret only per **Late puts** there. Once each PR exists, run
+`fleet proof require` with each proof the user named in the proof plan. When
+one cannot be produced, ask about that gap in a question that names the PR,
+and record the answer with `--keep-owed`, per `PROOF.md` of `qa-swarm`.
+
 ## No merging
 
 You may commit, push, rebase, fix conflicts, and use `--force-with-lease` on
@@ -134,12 +145,19 @@ the bot's verdict. State whether the PR is still a draft or marked ready, and
 that it is unmerged.
 
 With the `fleet` CLI, the handoff carries the end-of-run report: run
-`fleet decision report --pr <owner/repo#n>...` with every PR of the lane,
-put its output after the lines above, and post it once as a comment on the
-bottom PR. In a public repo, check it against the public-repo rule of the
-user's agent instructions first. In a Wayfinder lane, the lane rules post it
-on the ticket instead. After the user reverses a decision, run the report
-again and edit that comment. End the handoff with the merge-word line below.
+`fleet decision report --pr <owner/repo#n>... --lane <lane key>` with every
+PR of the lane, put its output after the lines above, and post it once as a
+comment on the bottom PR. `--lane` adds the revoke link of each lane secret
+and the lane's late puts. In a public repo, check it against the public-repo
+rule of the user's agent instructions first. In a Wayfinder lane, the lane
+rules post it on the ticket instead. After the user reverses a decision, run
+the report again and edit that comment. End the handoff with the merge-word
+line below.
+
+A lane started on its own runs `fleet secret drop --lane <lane key>` once
+its last PR merges or closes, or the user ends the lane; the nightly sweep
+deletes what a stalled lane leaves within 7 days. In a map, the conductor
+drops a stack's lane secrets when its ticket closes.
 
 The user can continue from here with "full send" or "stamp it". That skill
 starts from this PR as it stands.

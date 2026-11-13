@@ -87,7 +87,7 @@ A spec reaches the frontier as **stacks** of draft pull requests. Each pull requ
 
 ### Build-plan park
 
-After a spec ticket closes, and before any of its stack threads launches, the conductor parks the build plan as one HITL question on the map: a map comment with the plan and the question "Approve this build plan, or edit it?", and `wayfinder:awaiting-human` on the map. End the turn with the plan as the final reply and the question last. Apply the human's edits to the stack tickets and the board, remove the label, then launch. The mode column recommends; it grants nothing.
+After a spec ticket closes, and before any of its stack threads launches, the conductor parks the build plan as one HITL question on the map: a map comment with the plan and the question "Approve this build plan, or edit it?", and `wayfinder:awaiting-human` on the map. End the turn with the plan as the final reply and the question last. Apply the human's edits to the stack tickets and the board. Then run the kickoff intake in `INTAKE.md` of the `full-stop` skill once for all of the spec's stacks, each stack ticket as its lane key, so every stack ticket has its `## Intake` section. Remove the label, then launch. The mode column recommends; it grants nothing.
 
 ### Stacks board
 
@@ -180,10 +180,10 @@ The worker earns its handoff through the proof gate and the review in [`SHIP.md`
 
 On any worker notification, read the tracker per **Reading the frontier** (with `fleet frontier`, one call, then a view of only the ticket that changed); never message the worker merely because it notified.
 
-- **Closed** → verify the resolution, reconcile the runtime attention state, then re-query the frontier.
+- **Closed** → verify the resolution, reconcile the runtime attention state, then re-query the frontier. For an `implement` ticket with the `fleet` CLI, run `fleet secret drop --lane <owner/repo#n>` once its resolution carries the end-of-run report.
 - **Open + `wayfinder:awaiting-human`** → parked HITL. Surface it once, then stay silent until the human acts.
 - **Open + assigned, no awaiting label** → active, queued, or orphaned. Use the runtime addendum to distinguish them without interrogating the worker.
-- **Invalidated by another resolution** → record why, stop or retire its runtime worker, clear its human-attention state, and update or close the ticket through Wayfinder's scope rules.
+- **Invalidated by another resolution** → record why, stop or retire its runtime worker, run `fleet secret drop --lane <owner/repo#n>` for an `implement` ticket, clear its human-attention state, and update or close the ticket through Wayfinder's scope rules.
 
 The tracker is semantic truth; a worker, a human-attention affordance, and the conductor's own context are caches. Treat a compaction as a resume: reload the map and its **Notes**, re-read the runtime addendum, and [`T3.md`](T3.md) in T3 Code, and run their **Recovery**, then query the frontier per **Conductor loop** before you dispatch.
 
