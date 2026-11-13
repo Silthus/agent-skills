@@ -99,7 +99,8 @@ For [#channel](<channel-link>):
 &nbsp;
 
 **In a team thread**, such as a reply about one topic or a review ask to a teammate, drop the bold section headers, the section emoji, and the theme nesting.
-Write one plain lead sentence (the ask or the result), then a flat list of at most 5 PRs or one stack, each about 12 words plus its link, and name the PR to start with.
+Write one plain lead sentence (the ask or the result), then a list with one item per topic and its PR links together.
+Name the PR to start with only when the order matters.
 Follow the short-form rules of the `writing-voice` skill when it is installed.
 
 Keep the update concise and use no em dashes.

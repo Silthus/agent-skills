@@ -31,9 +31,9 @@ Read the file for the mode before you draft.
 
 ## Core voice
 
-- Be direct and short. Lead with the result or the ask, then the detail the
-  reader needs to act. Stay warm and collaborative: the warmth comes from a
-  small emoji or a "Thanks!", not from extra sentences.
+- Be direct, short, and plain. Lead with the result or the ask, then the
+  detail the reader needs to act. When in doubt, write less: no title, no
+  sign-off. Stay warm in small ways: a thanks by name, a "please", one emoji.
 - Decide. Name the tempting option, say why it fails, then give the better
   one. Name trade-offs honestly: "brittle", "fragile", "false solution".
 - Give a reason when the reader needs it to act or agree. One reason per
@@ -49,9 +49,10 @@ Read the file for the mode before you draft.
   names, replace provider jargon with plain words.
 - Credit collaborators by name, with a small thanks.
 - Give the number when one exists: "97% faster", not "much faster".
-- Sound like a person, not a changelog. No jokes on demand, no corporate
-  phrasing ("suffers the same pain", "greatly increasing"), and no tidy
-  parallel lists where one sentence does.
+- Sound like a person, not a changelog. No jokes on demand, no "Happy to
+  ..." offers, and no tidy parallel lists where one sentence does.
+- Never invent personal content: a reason, a feeling, or a check-in that is
+  not in your input.
 
 The draft is done when it matches its mode file and a final read finds no em
 dash.
