@@ -56,7 +56,14 @@ A bug fix earns its code only when it changes what users meet. Before the first 
 
 Write the worth line to the **worth log** that the user's agent instructions name: the failure, the reach with its source and window, the harm, the cost, the verdict, and for a park, the **tripwire** (the query or event whose firing reopens it). The PR gets one line without numbers: `Worth: <log id>`. A parked fix gets no branch, no thread, and no PR. Tell the user the verdict in one line when they asked for the fix; they can overrule it.
 
-Done when every fix you start has a worth line and a build verdict, or sits parked with its tripwire.
+A **side fix**, one found while working on something else, also names its **evidence class** in its row: an incident, a user report, measured numbers, or code reading alone.
+
+- **Code reading alone** parks it, whatever the verdict: its row gets a tripwire, and the user's daily digest lists it. Ask nothing.
+- **An incident, a user report, or measured numbers**: ask the user, with the evidence class and the verdict, unless their instructions let you decide it.
+- **A fix the user names, approves, or picks from the digest** launches; the handoff carries its log id. On a parked row, write their `build anyway` into the verdict, so the next retro can grade it.
+- **Over 150 authored lines**, a side-fix PR needs measured numbers, or it goes to the user as a decision.
+
+Done when every fix you start has a worth line and a build verdict, or sits parked with its tripwire, and every side fix names its evidence class.
 
 ## Ask
 
