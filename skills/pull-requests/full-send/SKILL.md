@@ -184,6 +184,10 @@ Ask only when you cannot continue alone:
 Decide everything else yourself with sensible defaults, and list those decisions
 in the report.
 
+When the user's agent instructions set question checkpoints or windows, bundle
+these questions into one card for the next checkpoint, and ask at once only for
+the exceptions they name.
+
 If no question tool is available, or the tool returns no answer, take the safe
 path: leave the PR open and unmerged, and start your final message with the
 question.
