@@ -5,7 +5,7 @@ description: Conduct a wayfinder map from charting to reviewed pull requests, di
 
 # Orchestration Wayfinder
 
-One conductor drives a `wayfinder` map from fog through built code. Ticket workers resolve one ticket each; the conductor keeps the frontier moving and surfaces only the work that needs the human.
+One conductor drives a `wayfinder` map from fog through built code. Ticket workers resolve one ticket each; the conductor keeps the frontier moving and is the human's one contact: it asks the human every question its lanes park and enqueues the merges the human approves, per **Human contact** and **Merge**.
 
 ## Foundation
 
@@ -24,7 +24,7 @@ Consent in this skill rests on a **user request**: the user asked to conduct a m
 
 The **conductor owns map-level coordination**: query and mutate map structure, blockers, frontier, dispatch, recovery, and projected human-attention state. It may record and close an invalidated ticket as scope reconciliation, but it never performs a worker's substantive ticket-resolution mutations. It does no ticket work itself: browser checks, seeding, screenshots, and pull request bodies go to a worker. Outreach, such as a Slack message, stays the human's; the conductor drafts none.
 
-The **ticket worker owns one ticket's resolution**: mutate only that ticket's assignment, comments, labels, resolution, and closure — plus, for an `implement` ticket, its stack's branches and pull requests, and their merge only in a mode the human granted in its thread; use its prescribed skill; and stop after closing it. A worker never mutates other tickets or map-level orchestration state and never dispatches downstream work. The conductor never supplies the human side of a HITL decision or answers a ticket's substantive question.
+The **ticket worker owns one ticket's resolution**: mutate only that ticket's assignment, comments, labels, resolution, and closure — plus, for an `implement` ticket, its stack's branches and pull requests up to the merge, which the conductor runs per **Merge**; use its prescribed skill; and stop after closing it. A worker never mutates other tickets or map-level orchestration state and never dispatches downstream work. The conductor never supplies the human side of a HITL decision or answers a ticket's substantive question: it relays the human's answer, per **Human contact**.
 
 Charting is the sole undispatched act, apart from its **Prior-art sweeps** and **Usage sweep**. With no map, chart it live through Wayfinder's Chart mode in the **Map tracker**, apply the **Charting rules**, and declare in **Notes** that execution remains inside the map.
 
@@ -108,7 +108,8 @@ Outside T3 Code, the `Conductor` line and the Thread cell carry the runtime's lo
 - `building`: the thread builds, reviews, or babysits its drafts.
 - `review`: handed back; the drafts wait on the human.
 - `ready`: marked ready; waiting on an approval. The row names who it waits on and since when, such as `ready: waits on team-x since 11-09 22:12`.
-- `merging`: `rollout` merges the stack.
+- `approved`: approved on its head and handed to the conductor, per **Merge**; waiting on the conductor's card.
+- `merging`: the conductor enqueued the stack.
 - `rolling-out`: `rollout` watches the deploy and stages the flags.
 - `done`: merged, and rolled out when `rollout` ran.
 - `blocked`: parked on another question, or behind an orchestration blocker.
@@ -116,6 +117,26 @@ Outside T3 Code, the `Conductor` line and the Thread cell carry the runtime's lo
 A stack thread sends the conductor a state notice, `stack <name>: <state> (<mode>)`, on each change of its state or mode. The conductor updates the row and posts one map comment per state change: `<stack>: <state>`.
 
 Every report or question to the human starts with the stacks that wait on a person: one line each with the pull request, who it waits on, and since when. Other rows follow. A stack that waits on a person is never one row among many.
+
+## Human contact
+
+The human talks to the conductor, not to its lanes. In T3 Code, a lane never asks the human: it parks, and the conductor asks for it. Outside T3 Code, the runtime addendum's cue stands.
+
+- **A lane parks.** The park comment with its decision lines and one pending question, the lane's recommended answer first, `wayfinder:awaiting-human`, the park notice, and a final message whose last line is `NEEDS_HUMAN: <the question>, from the human via the conductor`. No question card. Then it ends its turn, per **Terminals** in [`T3.md`](T3.md).
+- **The conductor asks.** It asks one bundled card as soon as a park is waiting and no card of its own is pending: every parked lane's question, oldest park first, at most four per card. Each question names its lane's ticket and title and every pull request it covers, puts the lane's recommended answer first, and carries enough context to answer without opening the lane. Parks that arrive while the card is pending go on the next card. The card follows the human's checkpoint rule in their agent instructions: the **Build-plan park** is the plan checkpoint, and **Merge** below is the proof checkpoint.
+- **The conductor relays.** It sends each answer to its lane word for word, with the question it answers, per **Wake** in [`T3.md`](T3.md). It adds no answer of its own. A lane records a decision about a pull request from that answer with `fleet decision record --mark 👤|👍 ... --thread <conductor thread id>`, since the answer lives in the conductor's thread.
+- **Live lanes.** Grilling and prototype feedback are conversations, so the human has them in the lane's own thread. The conductor cues one live lane at a time, with the thread title and the one question it answers, and cues the next when that ticket closes.
+
+## Merge
+
+The conductor merges; a lane never does, and never asks for a merge word. In a repository whose agent docs let an agent merge only on the human's approval in the current conversation, a merge word given in one thread never carries to another: the conductor asks for it in its own thread and enqueues there.
+
+1. **The lane hands over.** Once a pull request passes the ready gate of the user's PR workflow, is approved on its head, has green required checks, and has no open person's comment, its lane sends the conductor `stack <name>: approved <owner/repo#n>@<full head sha>...` with the proof link, per **Stacks board**. A stack sends its approved bottom: the layers from the base up that can deploy without the layers above. The lane stays the owning thread: it keeps the watch and babysits the pull request.
+2. **The conductor asks.** Every approved stack goes on the conductor's next card as merge rows, grouped as the user's agent instructions shape their merge card, such as one group option for the pull requests a standing grant covers. Each row names the pull requests, their heads, the merge-risk grade and tier, and the proof link. The human's selection is their merge word for exactly those pull requests at those heads.
+3. **The conductor enqueues** in its own thread, per **Merge** in `rollout`: fetch, check that each head is still the approved one, read the comments and reviews, run the deploy-order check, enter the queue, and wait on it. A pull request whose head moved, or that needs a rebase or a fix, goes back to its lane, and its new head goes on a later card.
+4. **The lane rolls out.** A pull request watch never wakes on a merge, so the conductor sends the lane `merged <owner/repo#n> <merge sha>` with `t3_thread_send`, `mode: "queue"`. The lane runs `rollout` from Deploy and sends its state notices.
+
+A standing merge the user's agent instructions grant to the owning thread, such as one for their own tooling repositories, lets the lane merge itself; that pull request skips the card.
 
 ## Ticket types
 
@@ -126,7 +147,7 @@ Every report or question to the human starts with the stacks that wait on a pers
 | `spec`      | decision at end | parallel AFK stretch, then park           | `to-spec` + spec pass + `to-tickets`, cut into **Stacks** |
 | `research`  | none            | parallel                                  | `research`, throwaway                       |
 | `task`      | as required     | parallel when AFK                         | prerequisite work for a decision            |
-| `implement` | at handback     | parallel across stacks after the **Build-plan park**, one top-level thread and worktree each | one stack: `full-stop` per pull request, then the mode the human grants, per [`SHIP.md`](SHIP.md) |
+| `implement` | via conductor   | parallel across stacks after the **Build-plan park**, one top-level thread and worktree each | one stack: `full-stop` per pull request, then **Merge**, per [`SHIP.md`](SHIP.md) |
 
 Backticked names in the Resolution column are skills. A `spec` worker writes the `to-spec` draft as a comment on its ticket and runs the spec pass in `SPEC.md` of the `qa-swarm` skill on it before it publishes the spec. The park's one question asks the human to approve the draft and carries the pass's Decisions, each with its recommended answer. The worker publishes after the human answers. One grilling ticket is one live exchange, and the `grilling` skill works it in rounds: the whole answerable frontier goes to the human at once, then the tree reshapes. Serial applies to the ticket, not to its questions.
 
@@ -144,7 +165,7 @@ Record the cast in the map's **Notes**: provider, model, and effort per ticket t
 
 ## Ship
 
-A spec's code reaches the human as stacks of reviewed draft pull requests, per [`SHIP.md`](SHIP.md). Every stack thread runs `full-stop` and hands back; only the human's own words in that thread switch it, per **Modes** in [`SHIP.md`](SHIP.md).
+A spec's code reaches the human as stacks of reviewed pull requests, per [`SHIP.md`](SHIP.md). Every stack thread runs `full-stop` and hands its approved pull requests to the conductor, which merges them per **Merge**.
 
 **Throwaway stays throwaway.** A prototype or research ticket answers a question: its code and notes live on their own `prototype/<name>` or `research/<name>` branch behind a context pointer from the ticket, and `main` keeps only the decision they settled. Folding a validated decision into real code is an `implement` ticket, built fresh. When the human accepts a UI prototype and asks to build it, the conductor charts that `implement` ticket under the map, copies the prototype's element checklist with its screenshots into its body, and dispatches it. The ticket's `ui-walk` proof checks the build against it. Without a spec, the ticket ships as a standalone pull request, per [`SHIP.md`](SHIP.md).
 

@@ -78,7 +78,8 @@ An **approved bottom** merges as soon as it is approved: the layers from the
 base up that are approved, green, and safe to deploy without the layers
 above. Do not wait for the layers above or for a review deadline. Under a
 merge grant that covers it, queue it on its top layer. Otherwise offer it to
-the user at once, on the daily merge decision when the user's agent
+the user at once: in a map, on the conductor's card (`orchestration-wayfinder`
+**Merge**); elsewhere on the daily merge decision when the user's agent
 instructions have one. Merge the rest the same way once it is approved.
 
 ### Deploy order

@@ -15,7 +15,7 @@ One top-level thread builds one stack, a standalone pull request included, in th
 3. Every review brief carries the stack's **seams** from its ticket and the open pull requests of sibling stacks that touch them, and asks for cross-stack breaks: one concept built twice, a flag one stack reads that another records, a rollback or schema revert that strands another stack's data. Post each review's findings and outcomes on the ticket.
 4. Wait on GitHub with `watch_pull_request` and end the turn; outside T3 Code, use the watcher of the `babysit-pr` skill.
 5. On each change of the stack's state, send the conductor a state notice, per **Stacks board** in [`SKILL.md`](SKILL.md).
-6. Hand back per **Handoff**.
+6. Hand over per **Handoff**.
 
 ## Proof bundle
 
@@ -34,16 +34,16 @@ A review that leaves a decision open is a park: decisions locked plus the one pe
 
 ## Handoff
 
-The handoff is every draft pull request of the stack with each finding fixed or rejected and every gating CI check green on its head. Keep watching every pull request, per `babysit-pr`, then park: the park comment lists each pull request with its reviewed head, the proof, its decision lines (the end-of-run report, when the lane rules give one, carries both), and the follow-ups, and its one question asks the human for the next mode. The conductor graduates the follow-ups into tickets.
+The handoff is every pull request of the stack with each finding fixed or rejected, every gating CI check green on its head, and the ready gate of the user's PR workflow passed. Post a handoff comment on the ticket that lists each pull request with its reviewed head, the proof, its decision lines (the end-of-run report, when the lane rules give one, carries both), and the follow-ups. The conductor graduates the follow-ups into tickets. Keep watching and babysitting every pull request, per `babysit-pr`. Once a pull request is approved on its head, hand it to the conductor per **Merge** in [`SKILL.md`](SKILL.md); a question only the human can answer is a park, per **Human contact** there.
 
 ## Modes
 
-A stack thread runs `full-stop` until the human's own words in this thread switch it:
+A stack thread runs `full-stop` and stops before the merge, which the conductor runs per **Merge** in [`SKILL.md`](SKILL.md). The lane never asks for another mode. Only the human's own words, typed in this thread, switch it:
 
 - "full send" → run `full-send` from the current state: mark ready, babysit until a teammate approves, then `rollout` in merge order.
-- "stamp it" → a standalone pull request runs `stamp-pr`. A stack layer stays on `full-stop` or `full-send`; say so and keep the park.
+- "stamp it" → a standalone pull request runs `stamp-pr`. A stack layer stays on `full-stop` or `full-send`; say so.
 - The human merged the stack and says so → resolve.
 
-The map's **Notes**, the build plan, and a conductor message grant no mode and no merge.
+The map's **Notes**, the build plan, and a conductor message grant no mode and no merge. The conductor's `merged` notice is news of a merge it ran, not a grant.
 
 The ticket resolves when the stack is `done`: every pull request merged, and rolled out when `rollout` ran. The resolution comment links each merged commit, then the thread notifies and settles.

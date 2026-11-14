@@ -45,7 +45,7 @@ Settle a lane when it ends, or when a later run finds that it ended.
 
 1. Read the last line of its final reply: `PR <url>, head <sha>, outcome <outcome>`, or `NEEDS_HUMAN: <what>`.
 2. For `NEEDS_HUMAN`, ask the user with the question tool, in one card with every other lane that waits on them, send each answer to its lane's thread, and leave the lanes running.
-3. For a critical lane with outcome `ready`, set its state to `ready` and stop there. The user reviews the draft from the lane's thread in the T3 sidebar, and the lane ships it on their word.
+3. For a critical lane with outcome `ready`, set its state to `ready` and stop there. Its PR goes on the user's daily merge card as its own row, per their agent instructions, and the lane rolls it out once that merge lands.
 4. For every other outcome, check it against GitHub and append the lane's record to `runs.jsonl`. Move the backlog row to its next stage when the stage's done criterion holds. Mark the lane `settled` in `lanes.md`.
 5. When the lane holds an Inbox claim, settle the claim too. A lane with a PR: check that the report lists the PR, and attach it with `inbox-reports-claim` when it does not. A lane without a PR: release the claim with `release: true`, and set its signal back to `candidate`.
 6. A bug the lane found and left out of its PR, a Follow-up from its reviews, and a side fix it proposed each become a `candidate` row in `signals.md`, with source `lane <id>`. The next signal-loop run verifies it and runs Worth like any other collected signal.
@@ -61,4 +61,4 @@ On the ritual day, after settling, run [learn.md](references/learn.md). It grade
 
 ## Asking the user
 
-The user is asked about a lane's `NEEDS_HUMAN`, a rollout that found a bad signal, a revert, or a change outside the scope paths. Critical lanes reach the user on their own, when they are ready to ship. The coordinator decides everything else, writes the reason into the ledger, and the ritual reports it.
+The user is asked about a lane's `NEEDS_HUMAN`, a rollout that found a bad signal, a revert, or a change outside the scope paths. Lanes never ask the user themselves: every lane's PR reaches the user on the daily merge card, the ones a standing merge grant covers as one group, unless the grant lets this coordinator enqueue them itself. The coordinator decides everything else, writes the reason into the ledger, and the ritual reports it.

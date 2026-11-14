@@ -23,8 +23,17 @@ ask each item once. Leave out what the map, the ticket, or the user's agent
 instructions already answer.
 
 - **All work**: the proof plan, with each proof the user names; the tier
-  forecast (`merge-risk` **Tier**); the merge route; the StampHog forecast,
-  when the user's agent instructions name an approval bot.
+  forecast (`merge-risk` **Tier**); the mode and merge route; the StampHog
+  forecast, when the user's agent instructions name an approval bot.
+- **Mode**: **full send** once the gate passes, or **proof first**: the lane
+  comes back once with the proof before the merge decision. Recommend full
+  send for a non-critical tier forecast and proof first for a critical one.
+  Where the user's word counts only for a head it has seen, as in a repository
+  whose agent docs demand approval in the current conversation for the named
+  PR, full send takes the PR straight to the user's merge decision, such as
+  their daily merge card or a map conductor's card, without a proof review. A
+  map's stacks always merge through the conductor (`orchestration-wayfinder`
+  **Merge**).
 - **SDK sends**: backend prerequisites and deploy order; the SDK branch and
   head matrix; region, test project, and sender; the recipient inbox and read
   access to it; the project key with its send scope; what "delivered" means;
@@ -69,7 +78,7 @@ decisions: ask each as its own question, not as an intake item.
 ## Intake
 - Proof plan: <proofs, and each proof the user named>
 - Tier forecast: <critical (letters) or non-critical>
-- Merge route: <merge queue, merge word, or grant>
+- Mode: <full send or proof first>; merge route: <merge queue, merge word, conductor, or grant>
 - StampHog forecast: <likely approve, or likely refuse and why, or none>
 - Flag key: <key>
 - First identities: <who sees it first>

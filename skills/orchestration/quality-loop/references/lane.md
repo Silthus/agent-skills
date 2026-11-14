@@ -5,7 +5,7 @@ A lane is one T3 thread that ships one PR for the quality loop or the signal loo
 There are two kinds of lane:
 
 - A **normal lane** touches no critical path. It runs `full-send` with the approval bot, in its own worktree, and ends merged and deployed.
-- A **critical lane** touches a critical path. It runs `full-stop` on the coordinator's machine and ends with a reviewed, proven, green draft PR. The user reads it in the T3 sidebar, and the lane ships it with `full-send` on their word.
+- A **critical lane** touches a critical path. It runs `full-stop` on the coordinator's machine and ends with a reviewed, proven, green PR. In the quality loop, it never asks the user: its PR goes on the user's daily merge card as its own row, and the lane rolls it out once that merge lands. In the signal loop, the user reads it in the T3 sidebar, and the lane ships it with `full-send` on their word.
 
 ## Start a lane
 
@@ -14,7 +14,7 @@ Write the **lane brief** first. It holds:
 - the loop, the ledger row or signal with its evidence, the class, and the PR type;
 - the path of this file, `quality-loop/references/lane.md`;
 - for a signal with an Inbox report: the report id and the coordinator's `claim_id`;
-- for a normal lane: "You cannot reach the user. When you need them, end your turn with a last line `NEEDS_HUMAN: <what, from whom>`."
+- for a normal lane, and for every quality-loop lane: "You cannot reach the user. When you need them, end your turn with a last line `NEEDS_HUMAN: <what, from whom>`."
 
 Then start the lane:
 
@@ -47,8 +47,8 @@ A change that needs two types becomes two lanes. Every PR stays inside the line 
 4. **Review.** Get reviews from the other model family until a review finds nothing new. Add `qa-swarm` when `merge-risk` grades the PR medium or higher, and for every critical lane.
 5. **Ship.** Write the PR with `pr-description`, without production numbers. A `fix` links its signal's metric in an Impact section, as the `impact` skill says. When the brief names an Inbox report, attach the PR to it as soon as the PR exists: `inbox-reports-claim` with the report id, the `claim_id`, and `pull_requests`. Then append a `note` artefact with the same `claim_id` that names the PR's type, its proof, and its review rounds. A merged PR resolves the report.
    - **Normal lane:** `stamp-pr`. The user gave "stamp it" for every normal lane. When the approval bot refuses twice, convert the PR to a draft and end with outcome `stamp-refused` and the bot's reason.
-   - **Critical lane:** `full-stop`. Babysit the draft until its checks are green and every bot finding is fixed or answered. Then end the turn with outcome `ready` and a final reply the user can decide from: the problem, the change, the proof, the review rounds, the merge-risk grade, and what a teammate's review should check. When the user answers "full send" in this thread, continue with `full-send`.
+   - **Critical lane:** `full-stop`. Babysit the draft until its checks are green and every bot finding is fixed or answered. Then end the turn with outcome `ready` and a final reply the user can decide from: the problem, the change, the proof, the review rounds, the merge-risk grade, and what a teammate's review should check. In the quality loop, keep the watch; when the thread that ran the merge card sends `merged <PR> <merge sha>`, run step 6 from Deploy. In the signal loop, when the user answers "full send" in this thread, continue with `full-send`.
 6. **Roll out.** Merge and roll out with `rollout`, and watch the module's errors and latency through the deploy. When the rollout needs later stages, schedule them on the coordinator's machine before you end, because the lane's worktree goes away.
 7. **End.** Put the lane's record line for `runs.jsonl` in the final reply, in the format of `ledger.md`, with a ❌ line for each thing that did not work. The last line is `PR <url>, head <sha>, outcome <outcome>`.
 
-A normal lane is done when its PR is merged and deployed, or when it stops with a recorded outcome. A critical lane is done the same way after the user's word. Until then, it rests at outcome `ready`.
+A normal lane is done when its PR is merged and deployed, or when it stops with a recorded outcome. A critical lane is done the same way after the user's word, or after the merge card's merge in the quality loop. Until then, it rests at outcome `ready`.
