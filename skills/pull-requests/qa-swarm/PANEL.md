@@ -158,6 +158,24 @@ settled. The pass runs once, before and outside the round count and
 `fleet proof`; the review that follows reads its fixes. Done when every
 finding has a bucket and every Fix and Call item is committed.
 
+### Size contract
+
+After the design pass, compare the branch with the Cost that its spec or
+`impact` worth line states: production lines and new concepts. Run
+`fleet pr size --base <base> --lines <n> --concepts <n>`. Without the CLI,
+count the added non-test lines, and the new flags, env vars, config keys, and
+files, with `git diff`.
+
+- Within 1.5 times the estimate, or no estimate: nothing runs. With no
+  estimate, write `Size: no estimate` in the PR body.
+- Over 1.5 times the estimate: one delete pass runs. Cast it like the design
+  pass, with the Anti-Overengineering lens narrowed to its **delete** rung, and
+  give it the spec and the worth line. Each hunk that cites no spec line and
+  no worth line is a delete finding. Cut each one without triage, then run
+  the lane gate and the count again. When the branch is still over, add a
+  Decision row to the PR body with the count, the estimate, and the lines the
+  kept hunks cite.
+
 ## Lenses
 
 Round one runs every lens, and Sweep last. UI and Systems run only when their trigger holds.
