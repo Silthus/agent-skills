@@ -29,7 +29,7 @@ Each module in scope moves through these stages in order, one at a time:
 
 ## Coordinator run
 
-1. **Load.** Pull the ledger and read `limits.md`. When `Paused` is `yes`, record a `no-op` run and end.
+1. **Load.** Pull the ledger and read `limits.md`. When `Paused` is `yes`, settle the lanes that ended, record a `no-op` run, and end. `Paused: no` is the user's start for the loop as a whole, so its lanes skip the **Start** step of the `impact` skill.
 2. **Settle.** Settle each lane in `lanes.md` that ended since the last run, as **Settle** below says.
 3. **Find.** Read `backlog.md`. On the first run, or when `hotpaths.md` is older than seven days, rebuild the ranking first, as step 6 of [learn.md](references/learn.md) says. Done when every module in scope has a row with its stage and **hot-path score**.
 4. **Triage.** For each row, name the next PR its stage needs and grade it:

@@ -17,7 +17,7 @@ Read the `quality-loop` settings in the user's agent instructions. This loop use
 
 ## Coordinator run
 
-1. **Load.** Pull the ledger and read `limits.md`. When `Paused` is `yes`, record a `no-op` run and end. Settle the lanes that ended, as the **Settle** section of the `quality-loop` skill says.
+1. **Load.** Pull the ledger and read `limits.md`. When `Paused` is `yes`, record a `no-op` run and end. Settle the lanes that ended, as the **Settle** section of the `quality-loop` skill says. As in that skill, `Paused: no` is the loop's start, so its lanes skip **Start** in `impact`.
 2. **Intake.** Read the Inbox first:
    - `inbox-reports-list` with the scouts and source products the settings name, `created_after` set to the window start, and `unclaimed=true`;
    - `inbox-reports-list` with `assignee=mine`, for the reports this user's agents still hold.

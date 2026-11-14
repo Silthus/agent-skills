@@ -1,6 +1,6 @@
 ---
 name: impact
-description: Link work to the metric that shows, after deploy, whether it worked, push back on work that pays into no goal, and decide whether a fix is worth its code before it is built. Use when charting a map, starting a fix or side fix, opening a PR, or when the user asks what a piece of work is worth.
+description: Decide whether new work starts now or parks, decide whether a fix is worth its code, push back on work that pays into no goal, and link work to the metric that shows, after deploy, whether it worked. Use before you start a map, feature, prototype, research toward code, fix, or side fix, when the user voices an idea mid-task, when you open a PR, or when the user asks what a piece of work is worth.
 ---
 
 # Impact
@@ -9,12 +9,35 @@ Every PR that can move a number links the insight that will show it. Fourteen da
 
 ## Find the goals
 
-Read the goals sources and exemptions that the user's agent instructions name. Usually that is a public team goals page and a private goals file with the targets, the leading metrics, and the insights that measure them. When the instructions name no goals source, ask the user for the goal once.
+Read the goals sources and exemptions that the user's agent instructions name. Usually that is a public team goals page and a private goals file with the targets, the leading metrics, and the insights that measure them. When the instructions name no goals source, ask the user for the goal once. The instructions may also name a **focus list**, the few items that count until a date, an **ideas list** for parked work, and where the **pressure** numbers come from.
 
-- **Exempt** work skips the check and gets no Impact section.
+- **Exempt** work skips the goal check and gets no Impact section.
 - **Pushback-exempt** work skips **Push back** and asks nothing.
 
 Targets and revenue or usage numbers from a private source stay in that source. The linked insight carries the numbers, so the Impact section never quotes them.
+
+## Start
+
+Before new work begins, decide **start now** or **park**. New work is a map, a feature, a prototype, research that will lead to code, a fix or side fix, or an idea the user voices mid-task; a ticket of a map that already started is not. Take three readings, each from a source you can name. A reading without a source is `unknown`, and `unknown` never counts toward a start.
+
+1. **Fit and evidence.** Fit: on the focus list, paying into a goal (by **Push back**'s scope test), or neither. Evidence: what shows users need it: an incident, a user report, a count, or only code reading or a chat. A fix's evidence is its **Worth** line: a park verdict parks it, and a build verdict brings its evidence class.
+2. **Pressure.** What already waits on people: threads waiting on the user, the user's ready PRs waiting on a teammate's review, and focus-list work still open. It is **high** above 5 waiting threads or 10 waiting PRs, unless the instructions set other limits.
+3. **Attention cost.** The user's attention until the work is done, not agent run time, in counts: decisions and questions it brings back, PRs a person must review, days it stays open, whether it touches a hot path or an area where the user's lead asked for care, and whether it can be proven and merged without a person.
+
+**Verdict.** Take the first rule that holds:
+
+1. An **always-build** class (see **Worth**) with a path a real input can take: start now.
+2. On the focus list, with evidence beyond code reading or a chat: start now. The focus item's own finish line counts as evidence.
+3. No focus list exists, the work pays into a goal with an incident, a report, or a count, and pressure is not high: start now.
+4. Everything else parks.
+
+A start that needs more than 2 reviews by people or more than 3 decisions starts as its thinnest slice within those counts, and the rest parks with the tripwire "slice merged". Exempt work skips all of this and starts; its verdict line still states the attention cost.
+
+Tell the user the verdict in one line with its readings, such as `Park: off the focus list, code reading only · 12 threads, 20 PRs waiting (high) · 2 reviews, 3 decisions, about 4 days open.` A park off the focus list that has an incident, a report, or a count goes to the user as a question, park recommended, when pressure is not high and their instructions do not let you decide it; every other park asks nothing, and the user's daily digest lists it. The verdict never blocks: the user overrules it in one word, either way. Record their word and the date on the park line, or as a decision line on the work (see `pr-description`), so a later retro can grade it.
+
+A park writes one line, a fix's to the worth log and all other work's to the ideas list: what the work is, the reason with the three readings, and the **tripwire**, the observable event that reopens it: a date, a count crossing a number, a user report, or the focus item finishing. A parked item gets no branch, no thread, and no PR. When its tripwire fires, decide again.
+
+Done when every piece of new work has a verdict line with three sourced readings, each start rests on a rule, an exemption, or the user's word, and each park has its line and tripwire.
 
 ## Class the work
 
@@ -54,16 +77,9 @@ A bug fix earns its code only when it changes what users meet. Before the first 
 
    A regression the current PR introduces is no new fix: fix it in that PR.
 
-Write the worth line to the **worth log** that the user's agent instructions name: the failure, the reach with its source and window, the harm, the cost, the verdict, and for a park, the **tripwire** (the query or event whose firing reopens it). The PR gets one line without numbers: `Worth: <log id>`. A parked fix gets no branch, no thread, and no PR. Tell the user the verdict in one line when they asked for the fix; they can overrule it.
+Write the worth line to the **worth log** that the user's agent instructions name: the failure, the reach with its source and window, the harm, the cost, the verdict, and the evidence class (an incident, a user report, measured numbers, or code reading alone). Then run **Start**, which parks the fix or starts it. The PR gets one line without numbers: `Worth: <log id>`, and a launched side fix's handoff carries the log id. Over 150 authored lines, a side-fix PR needs measured numbers, or it goes to the user as a decision.
 
-A **side fix**, one found while working on something else, also names its **evidence class** in its row: an incident, a user report, measured numbers, or code reading alone.
-
-- **Code reading alone** parks it, whatever the verdict: its row gets a tripwire, and the user's daily digest lists it. Ask nothing.
-- **An incident, a user report, or measured numbers**: ask the user, with the evidence class and the verdict, unless their instructions let you decide it.
-- **A fix the user names, approves, or picks from the digest** launches; the handoff carries its log id. On a parked row, write their `build anyway` into the verdict, so the next retro can grade it.
-- **Over 150 authored lines**, a side-fix PR needs measured numbers, or it goes to the user as a decision.
-
-Done when every fix you start has a worth line and a build verdict, or sits parked with its tripwire, and every side fix names its evidence class.
+Done when every fix has a worth line with its evidence class, and its **Start** verdict.
 
 ## Ask
 
@@ -80,7 +96,7 @@ Record the answer as a decision line (see `pr-description`).
 
 Check the work against the goals: which objective it pays into, and whether the payoff lands inside the objective's Scope line. Revenue or usage moved in from outside the scope counts as zero. When an objective with a revenue or usage target has no Scope line, ask which lines it counts. When the work moves usage onto another engine or path, compare what each unit costs to run there with the path it replaces.
 
-Push back before you go on when the work pays into no objective, when its payoff falls outside the scope, when it costs more to run than the path it replaces without in-scope revenue that covers the extra cost, or when the usage brief or the code shows that it reaches clearly fewer users than open work it would delay. Name the higher-impact work when you can see it. Offer three choices: carry on, reshape, or drop. The user decides. Record the choice as a decision line.
+Push back before you go on when its payoff falls outside the scope, when it costs more to run than the path it replaces without in-scope revenue that covers the extra cost, or when the usage brief or the code shows that it reaches clearly fewer users than open work it would delay. Name the higher-impact work when you can see it. Offer three choices: carry on, reshape, or drop. The user decides. Record the choice as a decision line.
 
 Put every question you cannot settle from the goals, the work, and the code to the user in one short round with the `grilling` skill. Keep grilling until the questions are settled or the calling skill's round limit is reached. At the limit, hand the open questions back to the calling skill.
 
