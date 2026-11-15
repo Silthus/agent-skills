@@ -161,8 +161,9 @@ change owes no watch.
 Check one hour after each stage change, then every 24 hours, and right before
 the next stage. The last check before a stage is its gate. Schedule each check
 with the harness's scheduler: in T3 Code, one `schedule_task` bound to this
-thread, updated after each check to the next one. Without a scheduler, park the
-next check with its due time, the PR, the head SHA, and the ledger path.
+thread, updated after each check to the next one, and settle between checks,
+per **Settle between checks**. Without a scheduler, park the next check with
+its due time, the PR, the head SHA, and the ledger path.
 
 After each stage change or Hold, append one line to the rollout log and push it:
 
@@ -232,6 +233,39 @@ a row, follow "Before you ask". After a rollback, the flag never advances on
 its own. It advances only when the user says so, or when a fix has
 merged and passed its own rollout.
 
+## Settle between checks
+
+A clean rollout stays off the user's list; the thread comes back to them only
+with a problem or something to look at.
+
+Once the deploy is confirmed and the next check is scheduled, and after each
+check with nothing for the user (an **Advance**, a first Hold, or a roll-back
+signal that waits for its confirming check): save the check per **Check**,
+append the rollout-log line a stage change or Hold owes, and schedule the next
+check or finish. Confirm that the scheduler lists the next check, bound to
+this thread with its due time. Then settle the thread (in T3 Code,
+`t3_thread_organize` with `action: settle` and no `threadId`) and end the turn
+with a short report, the stage, the verdict, and the next check, closed with
+the user's closing form for a thread that waits on its own check. The bound
+check wakes the thread on its own, and settles it again when it is clean.
+Settle only while no question waits on the user; while one does, restate it in
+full instead.
+
+The thread stays unsettled and asks with the question tool for: a rollback or
+a second Hold ("Before you ask"), a gap only the user can accept, a check that
+could not run again on its retry an hour later, or a flag that waits on the
+user's word to advance.
+
+The woken turn may not read this skill, so each check's prompt names it and
+carries the rule: the PR, the flag, the stage, the check to run, and "Run the
+`rollout` Check. With nothing for the user and no question pending: record the
+check, schedule the next one, settle this thread, and end with the stage and
+the next check. Otherwise ask with the question tool."
+
+A lane of a conductor settles the same way and sends the conductor its state
+notices; for a problem it parks with the conductor, per `orchestration-wayfinder`,
+instead of asking.
+
 ## Before you ask
 
 The user gets a finding with the evidence and a way out already prepared:
@@ -254,7 +288,8 @@ other public text carry the conclusion only.
 
 Record the rollback or the second Hold as a ❌ line, per the `lessons` skill:
 on the map's ticket when the PR belongs to a map, whose harvest collects it.
-Outside a map, run the `lessons` harvest for the PR once the rollout settles.
+Outside a map, run the `lessons` harvest for the PR once the rollout ends: at
+Done, or once the user decides the rollback.
 
 ## Finish
 
@@ -271,4 +306,5 @@ Outside a map, run the `lessons` harvest for the PR once the rollout settles.
    deploy shows up in time. Then accept it yourself, as a `post-deploy-watch`
    gap, per **Gaps** in `PROOF.md` of `qa-swarm`.
 
-Report each flag and its stage, each check's verdict, and the next check.
+When the thread comes back to the user, report each flag and its stage, each
+check's verdict, and the next check.

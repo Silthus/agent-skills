@@ -103,7 +103,8 @@ changes. In T3 Code that is `watch_pull_request`. This thread owns the PR:
 keep the watch until it merges or closes, also when you stop before the
 merge, per `babysit-pr`. After the merge, `rollout` schedules
 its own checks: send the step 8 report with the rollout state and the next
-check, and `rollout` reports each stage after that.
+check, then settle the thread between checks, per **Settle between checks** in
+`rollout`.
 
 ## Proof
 
