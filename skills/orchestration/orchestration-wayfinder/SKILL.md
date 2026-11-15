@@ -196,7 +196,7 @@ The worker earns its handoff through the proof gate and the review in [`SHIP.md`
 3. On each conductor wake and before completion, health-check lanes whose last durable activity is older than 15 minutes; do not create a polling lane.
 4. A lane reports durably before idle; no report means orphaned, not done. Reconcile durable ticket state before any redispatch.
 5. Reap every lane and remove its worktree before declaring the map complete.
-6. The conductor owns waits as event/state transitions, never background pollers or chained blocking waits; the T3 hold in [`T3.md`](T3.md) is neither. A compaction ends every background shell and monitor the conductor started, so the conductor waits on worker notifications.
+6. The conductor owns waits as event/state transitions, never background pollers or chained blocking waits; the T3 sweep in [`T3.md`](T3.md) is a scheduled wake, not a poller. A compaction ends every background shell and monitor the conductor started, so the conductor waits on worker notifications.
 
 ## Wake law
 
