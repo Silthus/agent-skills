@@ -155,8 +155,9 @@ The default cadence, unless the user names another:
 
 A PR that `merge-risk` grades low goes from Internal to 100% after a clean
 check 24 hours later. A runtime change without a flag gets checks one hour
-and 24 hours after the deploy; a low one only the first. A PR with no runtime
-change owes no watch.
+and 24 hours after the deploy; a low one only the first. A PR with a flag-off
+hunk gets the same checks, and its one-hour check comes before any flag
+stage. A PR with no runtime change owes no watch.
 
 Check one hour after each stage change, then every 24 hours, and right before
 the next stage. The last check before a stage is its gate. Schedule each check
@@ -185,7 +186,10 @@ Map each changed path to its signals once: the services, error groups, log
 sources, and metrics that carry it. Every path gets at least one signal, or the
 report names it unmonitored. Compare the window since the last check with the
 flag on against the flag off, using the `$feature/<key>` event property, or
-without a flag, with the 24 hours before the deploy. Read:
+without a flag, with the 24 hours before the deploy. A **flag-off hunk**
+(`merge-risk` **Switch-off**) changes the flag-off side too, so that side is
+no baseline: compare its paths with the 24 hours before the deploy, the
+errors and latency of each endpoint it touches. Read:
 
 - Error tracking: new issues whose stack frames hit the changed files, and
   error rates.
@@ -214,6 +218,8 @@ Each check ends in one verdict:
     at least 5 affected users or 20 occurrences.
   - The error rate with the flag on is more than twice the rate with it off,
     with at least 50 errors in the flag-on group.
+  - On an endpoint a flag-off hunk touches, the error rate or the p95
+    latency since the deploy is more than twice the 24 hours before.
   - A support ticket clearly ties a breakage to the change.
   - Delivery failures, data loss, or a security problem that the change caused.
 - **Hold** when errors run 1.2 to 2 times the flag-off rate, a ticket might be
@@ -225,8 +231,9 @@ check finds one, schedule the confirming check 30 minutes later. Delivery
 failures, data loss, and security problems roll back at once. To roll back,
 set the flag to its previous stage. A rollback or a revert of a reviewed PR is
 a reviewer miss: once the cause is known, record it with
-`fleet proof miss --commit <final head SHA> --source rollback|revert --finding "<the cause the review should have flagged>"`. A runtime change without a flag cannot
-roll back: prepare a revert and ask.
+`fleet proof miss --commit <final head SHA> --source rollback|revert --finding "<the cause the review should have flagged>"`. A runtime change without a flag, a
+flag-off hunk included, cannot roll back with the flag: prepare a revert and
+ask.
 
 On Hold, keep the stage and investigate. After a rollback, or a second Hold in
 a row, follow "Before you ask". After a rollback, the flag never advances on

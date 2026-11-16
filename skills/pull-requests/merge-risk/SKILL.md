@@ -37,6 +37,17 @@ live on deploy. Without a switch, the change is live on deploy and we fix
 forward. A rollback or a revert is the last resort for a disaster, so the
 callout never plans one.
 
+A flag switches off only its on side. A **flag-off hunk** is changed code
+that runs with the flag off: an else branch, a filter or guard applied to
+everyone without the feature, shared code the flagged work changed. It is
+live on deploy for everyone the flag excludes. Give each flag-off hunk its
+own row on every hot path it reaches. Grade it and judge its door as code
+with no switch-off: live on deploy, fix forward. It reaches every request
+that runs it, even where its results match the base, and its outcome
+includes latency, query count, and the query plan. Only a proof against the
+base covers it, since a flag-on against flag-off comparison runs HEAD on both
+sides and never the base.
+
 ## Hot paths
 
 A **hot path** is a route that live traffic takes into the diff. Trace each
@@ -139,9 +150,9 @@ wins.
 - Rows that all reach none or are covered with no incident are low.
 
 Behind a default-off switch-off, grade what the merge exposes with the switch
-off, and add the grade at full rollout when it is higher. More than about
-400 changed production lines raise the grade one step while any row is
-uncovered.
+off, every flag-off hunk included, and add the grade at full rollout when it
+is higher. More than about 400 changed production lines raise the grade one
+step while any row is uncovered.
 
 Done when every hot path is traced, every change on it has a row with its
 reach, every uncovered row is named, every commitment is named, and the
