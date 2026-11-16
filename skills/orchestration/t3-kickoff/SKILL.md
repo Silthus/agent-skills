@@ -46,6 +46,7 @@ Without any of them, `kickoff` makes no workspace or quota check.
    - `--title "<title>"`: the thread title. Add `--auto-title` to let the server replace it.
    - `--model <slug>`: choose with the model selection policy in the user's agent instructions, when one exists; otherwise the runtime defaults. Pass it explicitly. A wrong slug lists the offered slugs.
    - `--worktree new|none`: `new` checks out `origin/<base>` into a fresh `t3code/<hex>` worktree and runs the project setup script; `none` runs in the project checkout. `--base` sets the base branch (default `master`).
+   - `--service-tier <tier>` runs a Codex model on a faster tier, such as `fast` or `ultrafast`. A tier the model does not offer prints a warning, and the thread starts on the standard tier.
    - `--plan` starts in plan mode. `--help` lists the rest.
 3. On a machine that has not run the script before, run the command with `--dry-run` first. Done when it prints `dry run ok: project ... offers <model>`.
 4. Run the command without `--dry-run`:

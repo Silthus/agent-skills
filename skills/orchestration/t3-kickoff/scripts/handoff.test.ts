@@ -112,6 +112,13 @@ describe("modelFlags", () => {
     ]);
   });
 
+  test("carries a Codex thread's reasoning effort and service tier", () => {
+    const selection = { instanceId: "codex", model: "gpt-6.1-sol", options: [{ id: "reasoningEffort", value: "high" }, { id: "serviceTier", value: "ultrafast" }] };
+    expect(modelFlags(selection)).toEqual([
+      "--provider", "codex", "--model", "gpt-6.1-sol", "--effort", "high", "--context-window", "none", "--service-tier", "ultrafast",
+    ]);
+  });
+
   test("omits options the thread does not set", () => {
     expect(modelFlags({ instanceId: "codex", model: "gpt-6.1-sol", options: [] })).toEqual([
       "--provider", "codex", "--model", "gpt-6.1-sol", "--effort", "none", "--context-window", "none",

@@ -63,7 +63,12 @@ export function modelFlags(selection: ModelSelection): string[] {
     const value = selection.options?.find((o) => o.id === id)?.value;
     return typeof value === "string" ? value : "none";
   };
-  return ["--provider", selection.instanceId, "--model", selection.model, "--effort", option("effort"), "--context-window", option("contextWindow")];
+  const effort = option("effort") === "none" ? option("reasoningEffort") : option("effort");
+  const tier = option("serviceTier");
+  return [
+    "--provider", selection.instanceId, "--model", selection.model, "--effort", effort, "--context-window", option("contextWindow"),
+    ...(tier === "none" || tier === "default" ? [] : ["--service-tier", tier]),
+  ];
 }
 
 export function shellQuote(value: string): string {

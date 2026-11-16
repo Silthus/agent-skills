@@ -50,6 +50,7 @@ create options:
   --model <slug>            model slug (default claude-opus-5-5)
   --provider <instanceId>   provider instance (default claudeAgent = Claude Code)
   --effort <level>          reasoning effort option (default high; "none" to omit)
+  --service-tier <tier>     Codex service tier, such as fast or ultrafast (default: the standard tier)
   --context-window <size>   context window option (default 1m; "none" to omit)
   --worktree new|none       new: fresh worktree on t3code/<hex> (default new)
   --base <branch>           base branch for the worktree (default master)
@@ -238,6 +239,7 @@ async function create(flags: Flags): Promise<void> {
   const provider = str(flags, "provider", "claudeAgent")!;
   const effort = str(flags, "effort", "high")!;
   const contextWindow = str(flags, "context-window", "1m")!;
+  const serviceTier = str(flags, "service-tier");
   const worktree = scratch ? "none" : str(flags, "worktree", "new")!;
   if (worktree !== "new" && worktree !== "none") die("--worktree must be new or none");
   const base = str(flags, "base", "master")!;
@@ -264,14 +266,24 @@ async function create(flags: Flags): Promise<void> {
       const slugs: string[] = (prov.models ?? []).map((m: any) => m.slug);
       if (slugs.length && !slugs.includes(model)) fail(`model "${model}" not offered by ${provider}; have: ${slugs.join(", ")}`);
 
+      // Claude takes `effort`; Codex takes `reasoningEffort` and `serviceTier`, as the model's option descriptors say.
+      const descriptors: Array<{ id: string; options?: Array<{ id: string }> }> =
+        (prov.models ?? []).find((m: any) => m.slug === model)?.capabilities?.optionDescriptors ?? [];
+      const offers = (id: string) => descriptors.some((d) => d.id === id);
       const options: Json[] = [];
-      if (effort !== "none") options.push({ id: "effort", value: effort });
+      if (effort !== "none") options.push({ id: offers("reasoningEffort") && !offers("effort") ? "reasoningEffort" : "effort", value: effort });
       options.push({ id: "fastMode", value: false });
       if (contextWindow !== "none") options.push({ id: "contextWindow", value: contextWindow });
+      if (serviceTier) {
+        const tiers = descriptors.find((d) => d.id === "serviceTier")?.options?.map((o) => o.id) ?? [];
+        // A missing tier must not stop the thread, such as an incident that starts from Slack: it starts on the standard tier.
+        if (tiers.includes(serviceTier)) options.push({ id: "serviceTier", value: serviceTier });
+        else log(`warning: ${provider}/${model} offers no service tier "${serviceTier}" (have: ${tiers.join(", ") || "none"}); using the standard tier`);
+      }
       const modelSelection = { instanceId: provider, model, options };
 
       if (flags["dry-run"]) {
-        log(`dry run ok: project ${project.title} (${project.id}) at ${project.workspaceRoot}; ${provider} offers ${model}`);
+        log(`dry run ok: project ${project.title} (${project.id}) at ${project.workspaceRoot}; ${provider} offers ${model}; options ${JSON.stringify(options)}`);
         return;
       }
 
