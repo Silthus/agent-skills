@@ -129,7 +129,8 @@ the observed behavior and any verification gaps.
 
 A round works on one HEAD. Run its steps in order.
 
-1. **Review.** Read [`PANEL.md`](PANEL.md) and pick the round's lenses. With
+1. **Review.** Read [`PANEL.md`](PANEL.md) and pick the round's lenses, with
+   Security when the diff has a hunk in a security danger area. With
    the `fleet` CLI, start the panel on HEAD with one `--lens` per lens:
    `fleet proof review --repo <owner/repo> --pr <number> --commit <full SHA> --lens <lens> --lens <lens> ...`,
    plus `--scope fixes --base <previous round's SHA>` for round two and later.

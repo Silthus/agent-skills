@@ -10,6 +10,13 @@ agent instructions, or with the runtime defaults when there is no policy:
 - **Fresh-eyes lane**: the policy's **fresh-eyes** model, or a strong model
   from the author's family. It runs Fresh eyes and UI, with UI cast by the
   policy's UI defaults when it has them.
+- **Security lane**: the policy's **Deep security review** model, or the
+  Review lane's model when the policy has none. It runs Security, and only
+  when the diff has a hunk in a security danger area of the `merge-risk`
+  skill: authentication, permissions, secrets or crypto, or a sandbox, a
+  guard, or machine access. Without the CLI, start it on that model where the
+  runtime can pick one; otherwise run it on the Review lane's model and report
+  the substitution as a gap.
 - **Team lane**: the Review lane's model. It runs one lens per PostHog Review
   perspective of the area's owners and the author, see [Team](#team).
 
@@ -73,7 +80,7 @@ patterns and personas, or `security-audit`, and the security or review docs
 that the repo's agent docs point to. With the `fleet` CLI, every `REVIEW.md`
 above the changed files reaches every lens on its own; pass only the rest. Each brief carries the material for its
 lens after the lens text: incident patterns to Correctness and Risk, the
-security audit and security docs to Risk, personas to Fresh eyes. The hunting
+security audit and security docs to Risk and Security, personas to Fresh eyes. The hunting
 grounds below stay the floor. Name in the ledger the material each lens
 received.
 
@@ -268,6 +275,30 @@ Grade:
   line after `COVERED`.
 - Check the owed proofs against [`PROOF.md`](PROOF.md). A persisted input, a
   boundary format, or a high grade with no owed proof is a finding.
+
+### Security
+
+Can an attacker turn this change into access, data, or code execution they
+should not have? Risk covers the common classes on every PR; this lens goes
+deep on a diff in a security area. A finding names the source, the sink, the
+missing control, an exploit request or input, and why it is reachable.
+
+- Inputs: trace every value the diff reads from a caller, a file, the
+  network, a model, or another tenant to each sink it reaches, across files
+  and services.
+- Trust boundaries the diff adds or moves: a check that runs after the work,
+  a check on one path but not on its siblings, an allow by default, a confused
+  deputy, a token or capability passed further than it was meant to go.
+- Guards, allowlists, redaction, and validators: list the bypass classes, such
+  as encodings, case, path forms, alternate syntax, indirect references, and
+  race windows, and test each one against the code.
+- Secrets and credentials: where they are read, logged, cached, stored, or
+  sent, and who can read them there.
+- Sandboxes and machine access: escapes through file paths, symbolic links,
+  environment variables, arguments, or spawned processes.
+
+Drop defense in depth without an exploit chain. When the model's safety system
+blocks a request, report the blocked part as a gap, not as a finding.
 
 ### Design
 
