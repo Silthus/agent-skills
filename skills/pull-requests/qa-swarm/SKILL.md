@@ -32,10 +32,13 @@ metadata:
 The swarm takes a branch to a draft PR that the user can merge after one read.
 The bar: the user finds nothing that a reviewer, a review bot, or CI would have
 found. Fresh reviewers from two model families review the change, you fix what
-holds, and a second, narrow round reviews your fixes. Later fixes get final
-reads until one comes back clean. Past two rounds or two final reads, an
+holds, and a second, narrow round reviews your fixes. Later fixes get one
+last read. The **review budget** is three reviews, panel rounds and final reads
+together: the panel, the fixes read, and the last read. Past two, an
 **arbiter** decides whether the next review runs, so the user decides only
-when reviewers contradict each other or the loop stops converging.
+when reviewers contradict each other or the loop stops converging. At three,
+review stops. A small PR (docs only, or under 50 authored lines at a low
+merge-risk grade) gets one combined lens, one read, and no final read.
 
 For a draft spec, run the [spec pass](SPEC.md) instead of the steps below.
 
@@ -148,14 +151,17 @@ A round works on one HEAD. Run its steps in order.
    Past round two, `fleet proof review` asks the arbiter first, a cheap model that
    reads the findings so far. It reserves the round unless a later finding
    contradicts an earlier one or the same finding keeps coming back after its
-   fix; then it refuses with the reason. At six panel rounds it refuses
-   without asking. Decide either refusal yourself under the user's agent
-   instructions when they let you, and run the round with
+   fix; then it refuses with the reason. Decide that refusal yourself under
+   the user's agent instructions when they let you, and run the round with
    `--agent "<reason>"`; otherwise it is a Decision for the user, and you
    record their answer with `--override "<date> \"<their words>\""` and
    `--thread <the T3 thread where they answered>`. Without the CLI, ask the same question of a
    one-shot subagent cast as a lookup per the user's model selection policy,
    give it the ledger's findings, and record its answer there.
+   At the review budget `fleet proof` refuses and asks nothing, and
+   `--agent` cannot pass it: only the user's own `--override` runs another
+   review, and you do not ask for one. Close each open blocker or major per
+   **At the budget** in [`TRIAGE.md`](TRIAGE.md).
    While the panel runs,
    wait at most 15 minutes until the review bots of the repo's recent PRs have
    reviewed HEAD and the **gating checks** on HEAD have finished. Record a bot
@@ -187,19 +193,17 @@ trigger in [`PANEL.md`](PANEL.md) holds, and their briefs carry the fix diff,
 only renamed, reworded, or reformatted code, round two skips the panel, waits
 for the bots and checks, and goes straight to the final read.
 
-Round two is the last planned panel. Fix what it finds and push. Every commit after
-the last reviewed one then gets a **final read**: one fresh reviewer from the
-review lane reads the fix diff since that commit,
-`git diff <last reviewed SHA>...HEAD`, in place of the full diff, with the
-lens brief of the findings those fixes close. With the `fleet` CLI, run it
-with `fleet proof review ... --scope final --base <last reviewed SHA>`: the CLI
-runs the other family's reviewer on the fix diff, records its findings, and
-prints them; answer them with `fleet proof respond ... --round final`. A final read
-never counts as a panel round. A fix from a final read is a new commit, so it
-gets its own final read, until a read comes back clean. From the third final
-read on, the arbiter checks each one the same way, and at six final reads
-`fleet proof` refuses without asking. Either refusal is decided as above.
-Skip the final read when a review already covered HEAD. A Fix item you cannot
+Round two is the last planned panel. Fix what it finds and push. The commits
+after the last reviewed one then get the **last read**, a final read: one
+fresh reviewer from the review lane reads every fix since the first panel
+round, `git diff <first panel SHA>...HEAD`, with the Correctness lens, so a
+bug that a fix brought in shows on the cumulative fix diff. With the `fleet`
+CLI, run it with `fleet proof review ... --scope final --base <last reviewed SHA>`:
+the CLI takes the range from the panel commit, runs the other family's
+reviewer on it, records its findings, and prints them; answer them with
+`fleet proof respond ... --round final`. The last read spends the budget, so a
+fix from it gets no further read: close its findings per **At the budget** in
+[`TRIAGE.md`](TRIAGE.md). Skip the final read when a review already covered HEAD. A Fix item you cannot
 close becomes a Decision, and the handoff is Blocked.
 
 Done when every ledger item is fixed, rejected, or a Decision, and the full

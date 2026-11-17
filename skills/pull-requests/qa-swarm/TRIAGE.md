@@ -4,8 +4,16 @@ Every panel finding, review thread, bot comment, and failed check ends in
 exactly one bucket. The `qa-swarm` and `babysit-pr` skills both triage by
 these rules.
 
-Make the most minimal possible changes to appease the reviewers. Be careful
+Only blocker and major findings, and findings without a severity, need an
+answer. A minor or a nit is noted: it needs no response, no fix, and no new
+read. Make the smallest change that closes each blocker and major. Be careful
 of scope creep and don't be scared to push back.
+
+A `TESTS:` block names tests that break the outside-in test rule. Its items
+have no severity, and each needs an answer like a finding. Their fix is to
+rewrite the test through a public seam or delete it, in a commit that changes
+or deletes only test files, so the quiet-commit carry keeps the review and no
+new read runs.
 
 ## Verify
 
@@ -95,13 +103,27 @@ without the CLI: name the finding a repeat cause and its fix a move to a new
 place there, so the arbiter reads the next round as progress. A sibling site a fix
 missed reopens that fix's item as a Fix instead.
 
+## At the budget
+
+When `fleet proof` reports the review budget spent, it asks nothing more.
+For each open blocker or major, either revert the fix that brought it in
+with `git revert`, which keeps the review, or list it in a `## Known issues`
+section of the PR body, one `- <blocker|major>: <file:line> <finding>` item
+each, and answer it `<n>. known: <why>`. The gate holds a `known` answer
+whose file:line no `Known issues` item names. A blocker or major that
+the last read found in the fixes since the panel is a fix's regression:
+revert that fix, never list it, and never carry it as a Follow-up. An open
+blocker in `Known issues` holds the merge; the user's merge word accepts the
+majors. Do not ask the user for another review.
+
 ## Misses and review rules
 
 A Fix from a human thread, a bot thread, or a failed check is a **miss** when
 a finished `fleet proof review` round or final read had read the problem and
 not flagged it. Record each miss once:
 `fleet proof miss --commit <reviewed SHA> --source human|bot|ci --finding "<what the reviewer should have flagged>" --file <path> --line <n> --url <thread or run>`.
-A panel finding is never a miss. The misses are the reviewer's eval set.
+Add `--introduced-by-fix` when a review fix brought the problem in, between
+the first panel commit and HEAD. A panel finding is never a miss. The misses are the reviewer's eval set.
 
 A miss, or a Fix from a human thread, teaches the reviewers a rule. When a
 lint rule, a type, or a check can enforce it, add that check, per

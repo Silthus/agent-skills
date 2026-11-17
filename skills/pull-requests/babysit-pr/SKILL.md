@@ -132,8 +132,10 @@ one numbered item per finding as
 receipt names HEAD.
 Record a `range-diff` check with `review-start` and `review-finish` in the
 same phase. Without the CLI, record both in the ledger. From the third final
-read, `fleet proof` asks its arbiter first, as in `qa-swarm`. Its refusal, or
-the ceiling of six final reads, stops the push and is a question for the user.
+read, `fleet proof` asks its arbiter first, as in `qa-swarm`. Its refusal
+stops the push and is a question for the user. At three final reads the
+budget is spent: `fleet proof` asks nothing, and you close each open blocker
+or major per **At the budget** in [`TRIAGE.md`](../qa-swarm/TRIAGE.md).
 
 ## Progress
 
