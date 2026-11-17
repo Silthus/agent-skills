@@ -4,7 +4,7 @@ A drill proves the page works for a reader who knows nothing else. Each drill is
 
 ## The world sheet
 
-Before the first drill, write down the world: for each check, mitigation, and scenario, the exact output the reader gets. Take it from your test runs. For an untested step, take it from the code or the vendor's documented response, and mark it made up.
+Before the first drill, write down the world: for each check, mitigation, and scenario, the exact output the reader gets. For each link, write what its panel shows: the title, the axis unit and range, and the line's current value. Take it from your test runs. For an untested step, take it from the code or the vendor's documented response, and mark it made up.
 
 ## Playing the world
 
@@ -22,8 +22,13 @@ Send the output and nothing more: no hints, and no answers to its questions. A q
 Run it twice: once where the first fitting mitigation works, and once where it fails.
 
 ```text
-You were just paged at 3am. You are tired. Follow this runbook exactly as
-written. You know nothing about the system beyond the page.
+You were just paged. You are tired, and your agent is starting on it.
+First read only the top section of this runbook. In three short lines,
+say what is broken, who is hit, and which link you open. Then wait.
+
+When the panel shows, say whether the alert fires and which value on the
+screen tells you. Then follow the rest of the runbook exactly as written.
+You know nothing about the system beyond the page.
 
 For each check or mitigation, say which one and exactly what you type or
 click. Then wait for the result. Do only what the page says. When the page
@@ -35,8 +40,10 @@ you stuck. When you are done or told to page someone, say END and why.
 
 It passes when the reader:
 
+- names what is broken and who is hit from the top alone, in plain words;
+- reads the firing value off the panel, in the unit the top states;
 - reaches END on the page's own words, at confirmed recovery for the working fix and at the page for the failing one;
-- copies every command unchanged, with nothing filled in;
+- copies every command and URL unchanged, swapping at most the one id a step names;
 - matches every `If` condition to a result it saw, and never says STUCK, asks a question, or chooses between two readings of a line.
 
 ## Agent drill
@@ -68,7 +75,7 @@ It passes when the agent:
 
 ## After a failed drill
 
-Fix the line the reader stalled on, not the reader. Then run the same drill again with a new subagent. A page that only passes with a smarter reader fails at 3am.
+Fix the line the reader stalled on, not the reader. Then run the same drill again with a new subagent. A page that only passes with a smarter reader fails the night it matters.
 
 Rerun only what a fix touches: the drill and scenario that read the changed lines. A change to the checks or mitigations reruns both drills on the scenarios that reach it. A change to `AGENT.md` reruns the agent drill. Sibling pages that differ only in values, such as one per metric, share one drill set; give the sibling one person drill on the working fix.
 

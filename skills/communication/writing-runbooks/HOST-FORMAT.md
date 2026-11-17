@@ -20,14 +20,14 @@ Done when you can state the typical length and the Mitigation style in one line 
 
 | This skill | In the host format |
 | --- | --- |
-| The page sections in [PAGE.md](PAGE.md) | The host's own headings, in the host's order. Its mitigation section holds the conditional bullets, least destructive first. |
-| Test status, the test log, and drill results | The PR description. |
-| Notes for agents | Nothing, by default: the `responding-to-alerts` skill reads a normal runbook. When an agent truly needs one fact the page lacks, such as the query for a graph link, add it as one line beside that check. |
+| The page sections in [PAGE.md](PAGE.md) | The host's own headings, in the host's order. Its first section is the top, for the person. Its mitigation section holds the conditional bullets, least destructive first. |
+| Test status, the test log, drill results, and backtests | The PR description. |
+| Queries and facts for agents | In the check that uses them, in the agent body below the top. The `responding-to-alerts` skill reads the page as is. |
 | `mitigate.sh` | A script next to the runbook with the same name and `.sh`, such as `ConsumerLagHigh.sh`, when the host's checker only reads `.md` files. Otherwise link it from where the host keeps scripts. |
 | The alert description | The fact, the value, and the user impact, worded like the mature runbooks' alerts. |
 | The runbook URL | Keep what the host generates. |
 
-Check the file with the host's checker and with this skill's, naming the section that holds the fix:
+Check the file with the host's checker and with this skill's, naming the section that holds the fix. This skill's checker reads the first section as the top:
 
 ```sh
 bun <this skill>/scripts/check-runbook.ts alerts/runbooks/ConsumerLagHigh.md --section Mitigation

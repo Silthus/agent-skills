@@ -12,10 +12,14 @@ const vague = ["if needed", "as needed", "if necessary", "should", "probably", "
 const offPage: [RegExp, string][] = [
   [/\bUNTESTED\b/, "test status goes in the PR description, not on the page"],
   [/^\s*(Partly )?[Tt]ested \d{4}-\d{2}-\d{2}\b/, "test status goes in the PR description, not on the page"],
-  [/\bYou are the person\b/, "drop the role line: the page has one reader"],
-  [/^\s*Agents:/, "drop the agents line: responding-to-alerts reads the page as is"],
-  [/^#{2,4} For agents\s*$/, "drop the agent section: one line beside a check, or nothing"],
+  [/^\s*(History|Backtest):/i, "backtests and past fires go in the PR description, not on the page"],
+  [/\bread (it|this) at your desk\b/i, "drop the aside: say what to look at and what to do"],
+  [/\bYou are the person\b/, "drop the role line: the top serves the person, the body the agent"],
+  [/^\s*Agents:/, "drop the agents line: responding-to-alerts reads the body as is"],
+  [/^#{2,4} For agents\s*$/, "drop the agent section: put each query in its check"],
 ];
+
+const maxTopLines = 8;
 
 // Lines that turn Mitigation into a flowchart instead of conditional bullets.
 const flowchart: [RegExp, string][] = [
@@ -58,6 +62,7 @@ export function checkRunbook(target: Target): Report {
   }
   if (lines.length > maxLines) warn(undefined, `${lines.length} lines: proven runbooks run 40 to ${maxLines}; cut background to a link`);
   checkLines(lines, offPage, add);
+  checkTop(lines, target.hostFormat ? undefined : "Symptoms", add, warn);
 
   const fix = sectionOf(lines, target.section);
   if (!fix) {
@@ -74,6 +79,19 @@ export function checkRunbook(target: Target): Report {
   checkScript(target.scriptPath, page, add);
   if (!target.hostFormat) report.problems.push(...checkAgentPage(target.pagePath));
   return report;
+}
+
+// The top is Symptoms, or a host format's first section: the paged person reads it while their agent works the body.
+function checkTop(lines: Line[], title: string | undefined, add: Add, warn: Add): void {
+  const prose = outsideFences(lines);
+  const first = lines.find((line) => prose.has(line) && (title ? line.text.trim() === `## ${title}` : line.text.startsWith("## ")));
+  if (!first) return;
+  const top = sectionOf(lines, first.text.slice(3).trim()) ?? [];
+  const fence = top.find((line) => line.text.trim().startsWith("```"));
+  if (fence) add(fence.number, `move the code below "${first.text}": the top is plain words for the person`);
+  if (!top.some((line) => /https?:\/\//.test(line.text))) add(first.number, `link one or two panels under "${first.text}" that show the firing value`);
+  const filled = top.filter((line) => line.text.trim()).length;
+  if (filled > maxTopLines) warn(first.number, `${filled} lines under "${first.text}": keep the top to what is broken, who is hit, and the links`);
 }
 
 // A heading inside a code fence, such as a `# prod-us` shell comment, is code, not a section boundary.

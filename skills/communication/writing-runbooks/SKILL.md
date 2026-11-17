@@ -1,15 +1,15 @@
 ---
 name: writing-runbooks
-description: Write an alert runbook that a half-awake engineer paged at 3am can follow to stop the bleeding, with every step tested. Use when adding or changing an alert, when writing, fixing, re-testing, or reviewing a runbook, or when an alert has no runbook. Use it alongside a repository's own alert or runbook format or skill, such as `create-alert`: it writes to the shape of that repository's mature runbooks.
+description: Write an alert runbook with a quick plain-language top for the paged person and a precise body for their agent, with every step tested. Use when adding or changing an alert, when writing, fixing, re-testing, or reviewing a runbook, or when an alert has no runbook. Use it alongside a repository's own alert or runbook format or skill, such as `create-alert`: it writes to the shape of that repository's mature runbooks.
 ---
 
 # Writing runbooks
 
-The reader was asleep two minutes ago. They may be on a phone, tired, or not fully sober. They read one line, do one thing, and look for one result. Their only job is to stop the bleeding. Root cause waits until morning.
+A runbook has two readers. An agent runs most investigations: it reads every check, runs every query, and follows every branch. The person paged beside it reads the **top**: what is broken, who is hit, and one or two links to see it, while their agent digs. Root cause waits until morning.
 
-A warning that only posts to a channel has a different reader: someone who sees it hours later, at a desk. Write the same steps for them, and size every lookback in a query to the alert's age, not to the last few minutes.
+Write the top for that person, in plain words. Write everything below it for the agent: precise, parseable, one line per branch. A person who works without an agent follows the same body, because every link and command in it is complete.
 
-Every line on the page serves that reader. Test status and drill results go in the PR description, never on the page.
+Every line serves one of those readers. Test status, drill results, and backtests go in the PR description, never on the page.
 
 **A repository with its own runbook format** wins. Write to the shape of its mature runbooks, as [HOST-FORMAT.md](HOST-FORMAT.md) describes. Most repositories that have alerts have one.
 
@@ -28,7 +28,7 @@ runbooks/<alert-name>/
 
 2. **Scope the alert.** Read the alert rule: its query, threshold, labels, tier, and where it notifies. Then read what the alert has meant before: past incidents, postmortems, alert threads, and the service's code and deploy config. Done when you can name what is broken for users, the one check that confirms it, at most three known mitigations, and the person or rotation to page when they fail. Another alert's runbook counts as a mitigation: "Follow `<runbook>` first." A mitigation that depends on unmerged or undeployed work is not live yet: write it, and list it as untested in the PR description. When no mitigation is known, stop and ask the user; as a subagent, stop and report it. A runbook with an invented fix is worse than none.
 
-3. **Write the page** from the rules in [PAGE.md](PAGE.md): checks that say what to look for, then short conditional mitigations, least destructive first. In a host format, fit them under the host's headings, as [HOST-FORMAT.md](HOST-FORMAT.md) describes.
+3. **Write the page** from the rules in [PAGE.md](PAGE.md): the top, then checks that say what each result means, then short conditional mitigations, least destructive first. Open every link you write and read its panel: the threshold in your text is a number on that panel's axis, in its unit. In a host format, fit them under the host's headings, as [HOST-FORMAT.md](HOST-FORMAT.md) describes.
 
 4. **Write `mitigate.sh`** from [template.sh](template.sh) only when a mitigation takes three or more commands, or a wait-and-check loop. Rules are in [SCRIPT.md](SCRIPT.md). The page then runs it with one line: `curl -fsSL <url> | bash`.
 
@@ -37,7 +37,7 @@ runbooks/<alert-name>/
    - Run every production change once on a dev or staging environment, or in a drill a person leads. Log what it printed and how long it took.
    - A step with no recorded run is untested. Its expected result comes from the code or the vendor's docs. List it in the log as untested, and tell the user.
 
-6. **Write `AGENT.md`** from [AGENT-PAGE.md](AGENT-PAGE.md), in the folder layout only, and only when an agent needs something the page lacks. In a host format, add at most one line beside a check, as [HOST-FORMAT.md](HOST-FORMAT.md) describes.
+6. **Write `AGENT.md`** from [AGENT-PAGE.md](AGENT-PAGE.md), in the folder layout only, and only when an agent needs something the page lacks, such as the alert's labels or its access. Queries belong on the page, in their checks.
 
 7. **Run both drills** in [DRILLS.md](DRILLS.md). Fix the page at every point where a drill reader stalled, guessed, or went off the page, then run that drill again. Done when every drill passes on the final page, as [DRILLS.md](DRILLS.md) defines.
 

@@ -10,4 +10,4 @@ Skills that explain and share work with other people.
 - **[share-plan](./share-plan/SKILL.md)**: Publish an HTML or Markdown document to an unlisted link through a secret GitHub gist.
 - **[share-preview](./share-preview/SKILL.md)**: Share a running app, Storybook, or static build from a Coder workspace as a private Coder link.
 - **[writing-voice](./writing-voice/SKILL.md)**: Michael's writing voice for Slack messages, emails, GitHub comments, PR descriptions, and docs. Copy it and adapt the rules and examples to your own voice.
-- **[writing-runbooks](./writing-runbooks/SKILL.md)**: Write an alert runbook that a half-awake engineer can follow at 3am, in the shape of the repository's proven runbooks, with every step tested, a checker, and an optional `curl | bash` mitigation script.
+- **[writing-runbooks](./writing-runbooks/SKILL.md)**: Write an alert runbook with a quick plain-language top for the paged person and a precise body for their agent, in the shape of the repository's proven runbooks, with every step tested, a checker, and an optional `curl | bash` mitigation script.

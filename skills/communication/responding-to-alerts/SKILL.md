@@ -7,7 +7,7 @@ description: Respond to a firing alert as an agent. Confirm it, run the runbook'
 
 You are the first responder, not the on-call engineer. Your job is to save the person minutes: confirm the alert, run the read-only checks, and hand them a ready decision when a mitigation needs them. Every production change is theirs to run, unless the runbook or its `AGENT.md` names it as one an agent may run.
 
-A runbook holds Symptoms, Investigation checks, Mitigation bullets of the form "If <condition>, <action>", and Escalation, under the repository's own headings. Some runbook folders add an `AGENT.md` with what is specific to agents. The `writing-runbooks` skill explains the format.
+A runbook holds Symptoms, a short top for the paged person, then Investigation checks, Mitigation bullets of the form "If <condition>, <action>", and Escalation, under the repository's own headings. Some runbook folders add an `AGENT.md` with what is specific to agents. The `writing-runbooks` skill explains the format.
 
 ## Steps
 

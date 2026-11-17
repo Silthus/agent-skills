@@ -15,11 +15,13 @@ const mitigation = `Least destructive first.
 - If lag grows with no deploy, page the platform rotation now.
 - Confirm recovery: lag below 2,000 on the graph for 10 minutes.`;
 
-const page = (fix = mitigation, symptoms = "Events reach dashboards late. Users see stale numbers.") => `# Consumer lag high
+const symptoms = "Events reach dashboards late. Users see stale numbers.\nSee it: [lag](https://grafana.example.com/d/lag?from=now-1h). Firing: above 2,000 events for 10 minutes.";
+
+const page = (fix = mitigation, top = symptoms) => `# Consumer lag high
 
 ## Symptoms
 
-${symptoms}
+${top}
 
 ## Investigation
 
@@ -58,43 +60,61 @@ describe("checkRunbook", () => {
     ]);
   });
 
-  test("test status, role lines, and agent sections on the page fail", () => {
-    const symptoms = [
+  test("test status, history, role lines, and agent sections on the page fail", () => {
+    const top = [
+      symptoms,
       "UNTESTED: steps 1 and 3 have no recorded run.",
       "Partly tested 2026-11-09 on prod-eu by Sam.",
       "You are the person: run every step yourself.",
       'Agents: read "For agents" under Investigation.',
+      "History: from 2026-08-15 to 2026-11-13, this alert would have paged 2 times.",
+      "This warning pages nobody. Read it at your desk.",
       "",
       "### For agents",
     ].join("\n");
-    expect(checkRunbook(targetOf(folder(page(mitigation, symptoms)))).problems).toEqual([
-      "README.md:5: test status goes in the PR description, not on the page",
-      "README.md:6: test status goes in the PR description, not on the page",
-      "README.md:7: drop the role line: the page has one reader",
-      "README.md:8: drop the agents line: responding-to-alerts reads the page as is",
-      "README.md:10: drop the agent section: one line beside a check, or nothing",
+    expect(checkRunbook(targetOf(folder(page(mitigation, top)))).problems).toEqual([
+      "README.md:7: test status goes in the PR description, not on the page",
+      "README.md:8: test status goes in the PR description, not on the page",
+      "README.md:9: drop the role line: the top serves the person, the body the agent",
+      'README.md:10: drop the agents line: responding-to-alerts reads the body as is',
+      "README.md:11: backtests and past fires go in the PR description, not on the page",
+      "README.md:12: drop the aside: say what to look at and what to do",
+      "README.md:14: drop the agent section: put each query in its check",
+    ]);
+  });
+
+  test("the top is a few plain lines with a link to see it", () => {
+    const query = "Lag is high.\n```promql\nsum(kafka_consumergroup_lag)\n```";
+    expect(checkRunbook(targetOf(folder(page(mitigation, query)))).problems).toEqual([
+      'README.md:6: move the code below "## Symptoms": the top is plain words for the person',
+      'README.md:3: link one or two panels under "## Symptoms" that show the firing value',
+    ]);
+    const long = `${symptoms}\n${"Users see stale numbers.\n".repeat(8)}`;
+    expect(checkRunbook(targetOf(folder(page(mitigation, long)))).warnings).toEqual([
+      'README.md:3: 10 lines under "## Symptoms": keep the top to what is broken, who is hit, and the links',
     ]);
   });
 
   test("a goto flow with step tags and You see lines fails", () => {
     const flow = "1. [safe] Open the graph.\n   You see: a line above 2,000.\n   Below? Go to step 4.";
     expect(checkRunbook(targetOf(folder(page(flow)))).problems).toEqual([
-      'README.md:14: drop the step tag: a production change names its "Costs:" and "Undo:"',
-      "README.md:15: say what to look for in the check itself, not on a You see: line",
-      'README.md:16: write "If <condition>, <action>." bullets, not a jump to another step',
+      'README.md:15: drop the step tag: a production change names its "Costs:" and "Undo:"',
+      "README.md:16: say what to look for in the check itself, not on a You see: line",
+      'README.md:17: write "If <condition>, <action>." bullets, not a jump to another step',
     ]);
   });
 
   test("placeholders and vague words fail; long sentences and long pages only warn", () => {
     const fix = "- If lag grows, restart <deployment> and wait if needed.\n- If the restart did not help and lag keeps growing across every partition in both regions with no recent deploy on record, page the platform rotation now.";
-    const report = checkRunbook(targetOf(folder(page(fix, "Events arrive late.\n".repeat(90)))));
+    const report = checkRunbook(targetOf(folder(page(fix, symptoms + "\n" + "Events arrive late.\n".repeat(90)))));
     expect(report.problems).toEqual([
-      'README.md:104: "if needed" is vague: write the exact value or action',
-      "README.md:104: fill in <deployment>",
+      'README.md:106: "if needed" is vague: write the exact value or action',
+      "README.md:106: fill in <deployment>",
     ]);
     expect(report.warnings).toEqual([
-      "README.md: 109 lines: proven runbooks run 40 to 100; cut background to a link",
-      'README.md:105: 27 words: split "If the restart did not help and lag keep..."',
+      "README.md: 111 lines: proven runbooks run 40 to 100; cut background to a link",
+      'README.md:3: 92 lines under "## Symptoms": keep the top to what is broken, who is hit, and the links',
+      'README.md:107: 27 words: split "If the restart did not help and lag keep..."',
     ]);
   });
 
@@ -134,7 +154,8 @@ alert: ConsumerLagHigh
 
 ## Symptoms
 
-Consumers fall behind under load, and this paragraph may run as long as the daytime reader likes it to.
+Consumers fall behind under load. Events reach dashboards late.
+See it: [lag](https://grafana.example.com/d/lag). Firing: above 2,000 events.
 
 ## Investigation
 
