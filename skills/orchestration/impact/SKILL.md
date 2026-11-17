@@ -1,6 +1,6 @@
 ---
 name: impact
-description: Decide whether new work starts now or parks, decide whether a fix is worth its code, push back on work that pays into no goal, and link work to the metric that shows, after deploy, whether it worked. Use before you start a map, feature, prototype, research toward code, fix, or side fix, when the user voices an idea mid-task, when you open a PR, or when the user asks what a piece of work is worth.
+description: Decide whether new work starts now or parks, decide whether a fix or performance change is worth its code, push back on work that pays into no goal, and link work to the metric that shows, after deploy, whether it worked. Use before you start a map, feature, prototype, research toward code, fix, or side fix, when the user voices an idea mid-task, when you open a PR, or when the user asks what a piece of work is worth.
 ---
 
 # Impact
@@ -18,22 +18,22 @@ Targets and revenue or usage numbers from a private source stay in that source. 
 
 ## Start
 
-Before new work begins, decide **start now** or **park**. New work is a map, a feature, a prototype, research that will lead to code, a fix or side fix, or an idea the user voices mid-task; a ticket of a map that already started is not. Take three readings, each from a source you can name. A reading without a source is `unknown`, and `unknown` never counts toward a start.
+Before new work begins, decide **start now** or **park**. New work is a map, a feature, a prototype, research that will lead to code, a fix or side fix, an idea the user voices mid-task, or a map ticket that opens a **new front**: one off the map's original checklist, or one whose case is a watch metric missing its bar. The map's other tickets ran Start with the map. Take three readings, each from a source you can name. A reading without a source is `unknown`, and `unknown` never counts toward a start.
 
-1. **Fit and evidence.** Fit: on the focus list, paying into a goal (by **Push back**'s scope test), or neither. Evidence: what shows users need it: an incident, a user report, a count, or only code reading or a chat. A fix's evidence is its **Worth** line: a park verdict parks it, and a build verdict brings its evidence class.
+1. **Fit and evidence.** Fit: on the focus list, paying into a goal (by **Push back**'s scope test), or neither. Evidence class: what shows users need it: an **incident**, a **user report**, a **count** (measured failures or users hit), **metric only** (an internal number, no user behind it), or **code reading** (a chat included). A watch metric missing its bar is metric only: a signal to investigate, never the case for building. A fix's evidence is its **Worth** line: a park verdict parks it, and a build verdict brings its evidence class.
 2. **Pressure.** What already waits on people: threads waiting on the user, the user's ready PRs waiting on a teammate's review, and focus-list work still open. It is **high** above 5 waiting threads or 10 waiting PRs, unless the instructions set other limits.
 3. **Attention cost.** The user's attention until the work is done, not agent run time, in counts: decisions and questions it brings back, PRs a person must review, days it stays open, whether it touches a hot path or an area where the user's lead asked for care, and whether it can be proven and merged without a person.
 
 **Verdict.** Take the first rule that holds:
 
 1. An **always-build** class (see **Worth**) with a path a real input can take: start now.
-2. On the focus list, with evidence beyond code reading or a chat: start now. The focus item's own finish line counts as evidence.
+2. On the focus list, with an incident, a report, or a count: start now. The focus item's own finish line counts as evidence for the work charted to reach it; a new front brings its own.
 3. No focus list exists, the work pays into a goal with an incident, a report, or a count, and pressure is not high: start now.
 4. Everything else parks.
 
 A start that needs more than 2 reviews by people or more than 3 decisions starts as its thinnest slice within those counts, and the rest parks with the tripwire "slice merged". Exempt work skips all of this and starts; its verdict line still states the attention cost.
 
-Tell the user the verdict in one line with its readings, such as `Park: off the focus list, code reading only · 12 threads, 20 PRs waiting (high) · 2 reviews, 3 decisions, about 4 days open.` A park off the focus list that has an incident, a report, or a count goes to the user as a question, park recommended, when pressure is not high and their instructions do not let you decide it; every other park asks nothing, and the user's daily digest lists it. The verdict never blocks: the user overrules it in one word, either way. Record their word and the date on the park line, or as a decision line on the work (see `pr-description`), so a later retro can grade it.
+Tell the user the verdict in one line with its readings, the evidence class, and for a fix or performance change its **Worth** harm, such as `Park: off the focus list, metric only, harm 1 · 12 threads, 20 PRs waiting (high) · 2 reviews, 3 decisions, about 4 days open.` Every card that offers new work, a plan card or a map's scope card, carries this line, so the user calls the impact before the work starts. A park off the focus list that has an incident, a report, or a count goes to the user as a question, park recommended, when pressure is not high and their instructions do not let you decide it; every other park asks nothing, and the user's daily digest lists it. The verdict never blocks: the user overrules it in one word, either way. Record their word and the date on the park line, or as a decision line on the work (see `pr-description`), so a later retro can grade it.
 
 A park writes one line, a fix's to the worth log and all other work's to the ideas list: what the work is, the reason with the three readings, and the **tripwire**, the observable event that reopens it: a date, a count crossing a number, a user report, or the focus item finishing. A parked item gets no branch, no thread, and no PR. When its tripwire fires, decide again.
 
@@ -41,7 +41,7 @@ Done when every piece of new work has a verdict line with three sourced readings
 
 ## Class the work
 
-- **Fix**: bug fixes, refactors, tests, docs, dependency bumps, and internal tooling. Leave the Impact section out, unless an existing metric would show the fix: an error tracking issue, a failure or retry rate, a latency. Then record that metric. A bug fix also runs **Worth** before its first commit.
+- **Fix**: bug fixes, refactors, tests, docs, dependency bumps, and internal tooling. Leave the Impact section out, unless an existing metric would show the fix: an error tracking issue, a failure or retry rate, a latency. Then record that metric. Bug fixes and performance changes also run **Worth** before their first commit.
 - **Feature**: a change to user-facing behavior that fits in one PR. Record a metric when an insight exists or one on existing events can show the change. Otherwise write the no-metric line.
 - **Large feature**: a map, a stack of several PRs, or a new capability behind its own flag. It must have a metric. Build the missing insight or instrumentation first, so a **baseline** collects before users reach the feature. When no metric can show that the feature works, **Ask**.
 
@@ -60,7 +60,7 @@ Search for an existing insight first: in the goals file, then in the analytics p
 
 ## Worth
 
-A bug fix earns its code only when it changes what users meet. Before the first commit of any fix, including a side fix, a review follow-up, a bug a test found, and the user's own request, write its **worth line**. An exempt area still runs Worth.
+A fix or performance change earns its code only when it changes what users meet. Before the first commit of any of them, including a side fix, a review follow-up, a new-front map ticket, a bug a test found, and the user's own request, write its **worth line**. An exempt area still runs Worth.
 
 1. **Reach.** Read the evidence that already exists first: the signal, the error tracking issue, the logs, the PR's own prod-shape read. Count in this order and stop at the first that answers:
    - **failures**: how often the exact failure happened, and to how many users or teams, over a window that says so (up to 90 days; count an outage as one incident);
@@ -68,18 +68,19 @@ A bug fix earns its code only when it changes what users meet. Before the first 
    - **no trace**: neither can be read. Name the query that could not see it.
 
    A zero on a path opened in the last 30 days is not evidence yet. Widen the search only when the verdict turns on it.
-2. **Harm.** 3 for data loss, wrong or missing delivery, or a blocked task; 2 for a visible error with a workaround; 1 for a cosmetic or internal-only problem.
+2. **Harm.** 3 for data loss, wrong or missing delivery, or a blocked task; 2 for a visible error with a workaround; 1 for a cosmetic or internal-only problem, such as an internal metric off its bar or work delivered late and whole with no user report.
 3. **Cost.** The production lines you expect, the new concepts (a column, state, queue, counter, retry, flag, env var, or config key), and whether it runs on a hot path.
-4. **Verdict.** **Build** when one of these holds, else **park**:
+4. **Verdict.** Harm 1 parks unless an always-build class applies. Otherwise **build** when one of these holds, else **park**:
    - failures were observed;
    - exposure is above zero and harm is 3, or the fix adds no new concept;
    - it is an **always-build** class: an auth or access bypass, a send to a suppressed or opted-out recipient, a duplicate or wrong-recipient send, a billing or quota leak, or data loss. It still needs a path a real input can take, and the smallest fix.
 
    A regression the current PR introduces is no new fix: fix it in that PR.
+5. **Re-check.** When a review finding needs new code before the change can switch on or merge, such as a follow-up ticket or a redesign, run Worth again for the whole change with the added cost. A park verdict parks the change with its follow-ups.
 
-Write the worth line to the **worth log** that the user's agent instructions name: the failure, the reach with its source and window, the harm, the cost, the verdict, and the evidence class (an incident, a user report, measured numbers, or code reading alone). Then run **Start**, which parks the fix or starts it. The PR gets one line without numbers: `Worth: <log id>`, and a launched side fix's handoff carries the log id. Over 150 authored lines, a side-fix PR needs measured numbers, or it goes to the user as a decision.
+Write the worth line to the **worth log** that the user's agent instructions name: the failure, the reach with its source and window, the harm, the cost, the verdict, and the evidence class (see **Start**). Then run **Start**, which parks the fix or starts it. The PR gets one line without numbers: `Worth: <log id>`, and a launched side fix's handoff carries the log id. Over 150 authored lines, a side-fix PR needs a count or better, or it goes to the user as a decision.
 
-Done when every fix has a worth line with its evidence class, and its **Start** verdict.
+Done when every fix and performance change has a worth line with its evidence class, a re-check for each review finding that added code, and its **Start** verdict.
 
 ## Ask
 

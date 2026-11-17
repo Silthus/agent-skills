@@ -22,9 +22,10 @@ Pick the items for each lane's kinds of work, merge them across lanes, and
 ask each item once. Leave out what the map, the ticket, or the user's agent
 instructions already answer.
 
-- **All work**: the proof plan, with each proof the user names; the tier
-  forecast (`merge-risk` **Tier**); the mode and merge route; the StampHog
-  forecast, when the user's agent instructions name an approval bot.
+- **All work**: the `impact` **Start** verdict line; the proof plan, with
+  each proof the user names; the tier forecast (`merge-risk` **Tier**); the
+  mode and merge route; the StampHog forecast, when the user's agent
+  instructions name an approval bot.
 - **Mode**: **full send** once the gate passes, or **proof first**: the lane
   comes back once with the proof before the merge decision. Recommend full
   send for a non-critical tier forecast and proof first for a critical one.
