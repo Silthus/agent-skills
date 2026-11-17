@@ -54,5 +54,25 @@ Read the file for the mode before you draft.
 - Never invent personal content: a reason, a feeling, or a check-in that is
   not in your input.
 
+## When Michael dictates the message
+
+Michael often speaks the message into the prompt: "tell her thanks for the
+review, then that the fix is up". Treat that speech as the draft.
+
+- Keep his points, their order, and his key phrases. Do not replace his
+  phrase with your own summary or a more exact term. Smooth a spoken clause
+  into a sentence he would type.
+- Keep "I" as the subject for what he did: "I slimmed down the PR", not
+  "slimmed down the PR". Speech drops it; his writing does not.
+- Take out what belongs to speech only: an "Okay" opener, "right?", "I don't
+  know", "and so on", "so to say", "pretty much", "kind of", a repeated word,
+  and an "I think" that is not his view.
+- Keep "please", "also", "just", "a bit", and "a lot". He writes them too.
+- Back his points with the facts the task produced: numbers, links, the
+  reason. Add no new point.
+- Speech-to-text mishears names of people, tools, and products. Fix a name
+  when the context makes it clear. Ask when it does not.
+- Then apply the mode file for form: greeting, lists, links, and emoji.
+
 The draft is done when it matches its mode file and a final read finds no em
 dash.
