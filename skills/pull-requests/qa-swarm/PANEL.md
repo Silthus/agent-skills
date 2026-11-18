@@ -6,7 +6,7 @@ agent instructions, or with the runtime defaults when there is no policy:
 
 - **Review lane**: the policy's **Review** model for the change's author, or
   a strong model from the other family. It runs Correctness, Risk, Design,
-  Anti-Overengineering, Systems, and Sweep.
+  Anti-Overengineering, Systems, and Sweep when asked for.
 - **Fresh-eyes lane**: the policy's **fresh-eyes** model, or a strong model
   from the author's family. It runs Fresh eyes and UI, with UI cast by the
   policy's UI defaults when it has them.
@@ -18,7 +18,8 @@ agent instructions, or with the runtime defaults when there is no policy:
   runtime can pick one; otherwise run it on the Review lane's model and report
   the substitution as a gap.
 - **Team lane**: the Review lane's model. It runs one lens per PostHog Review
-  perspective of the area's owners and the author, see [Team](#team).
+  perspective of the area's owners, see [Team](#team). The author's own
+  perspective stays out: the brief already carries the user's rubric.
 
 ## Lanes
 
@@ -183,15 +184,30 @@ files, with `git diff`.
   Decision row to the PR body with the count, the estimate, and the lines the
   kept hunks cite.
 
+## Tiers
+
+Round one runs the lenses of the PR's tier. With the `fleet` CLI, the CLI picks
+the tier from the merge-risk grade and the authored production lines, the
+lines outside tests, docs, lockfiles, and generated files. Without it, pick the
+tier by the same rule and name it in the ledger.
+
+| Tier | When | Round one | Budget |
+| --- | --- | --- | --- |
+| Read | Grade low or no grade, and under 50 authored lines, test-only and docs-only included | One combined Correctness and Risk lens on the Review lane | 2 |
+| Pair | Any other grade but high, or a grade you cannot read | Correctness and Risk on the Review lane, Fresh eyes on the Fresh-eyes lane | 3 |
+| Panel | Grade high | Fresh eyes, Correctness, Risk, Design, and Anti-Overengineering | 3 |
+
+Every tier adds Security, UI, Systems, and Team when their triggers hold.
+Sweep runs only when the user asks for it.
+
 ## Lenses
 
-Round one runs every lens, and Sweep last. UI and Systems run only when their trigger holds.
 **UI** runs when the diff changes a user interface. **Systems** runs when the
 diff changes a boundary that many callers pass through: a shared helper, an
 executor, a serializer, a default resolved in one place. In round two,
 Systems runs when a round-one finding named the same cause at more than one
-site. **Team** runs one lens per perspective of the area's owners and the
-author. **Sweep** runs in round one only.
+site. **Team** runs one lens per perspective of the area's owners.
+**Sweep**, when asked for, runs in round one only and last.
 
 ### Fresh eyes
 
@@ -453,7 +469,7 @@ An empty sweep is a good outcome. Padding is not.
 
 ### Team
 
-The review perspectives of the people who own the code the PR touches, plus
+The review perspectives of the people who own the code the PR touches, not
 the author's own. These are the `review-hog-perspective-*` skills in the
 team's PostHog project. Select them before dispatch:
 
@@ -467,7 +483,7 @@ team's PostHog project. Select them before dispatch:
    active project differs from the team's project that the user's agent
    instructions name, switch to it first. An empty list from another project
    is not an empty lane.
-3. Keep a perspective when one of its `owners` is the author, has a GitHub
+3. Keep a perspective when one of its `owners` is not the author and has a GitHub
    login in the owner set per `org-member-get-github-login`, or has a name in
    the maintainer set. A perspective with no owners is a canonical one and
    stays out, because the other lanes already cover its ground.
