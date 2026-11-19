@@ -17,8 +17,9 @@ Two registers share this mode:
 - Tell the story in order: the problem, the naive fix, why it fails, the better
   fix. Always include the failure mode or gotcha.
 - Put the strongest metric in the title and give before-and-after numbers.
-- Carry information in lists. Use a table for a comparison or decision matrix,
-  followed by a "When to use which?" summary.
+- Carry reference information in lists. Use a table for a comparison or
+  decision matrix, followed by a "When to use which?" summary. Write Michael's
+  own argument, such as an RFC's problem or design, as plain paragraphs.
 - Use a rhetorical question to move from the problem to the solution.
 
 ## Details
@@ -27,7 +28,8 @@ Two registers share this mode:
   placeholders (`{project}-{env}`, `<CHANGE-ME>`). Use real version numbers and
   file paths.
 - Put every command, path, variable, and tool in `code`. Bold the key term or
-  the winning option.
+  the winning option in a how-to or a comparison. Never open a paragraph or a
+  bullet of his argument with a bold label.
 - Use callouts: 🎯 for a goal, ℹ️ for info or a tip, 🚨 or ⚠️ for a danger.
   Other emoji are accents: 👇🏻 for a call to action.
 - Keep step-by-step instructions strictly functional, with no jokes, emoji, or
