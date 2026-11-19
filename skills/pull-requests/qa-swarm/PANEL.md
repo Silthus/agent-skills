@@ -120,6 +120,13 @@ Style counts only when it breaks a named standard: the repo's documented rules
 or the coding preferences in the user's agent instructions. Structure is not
 style.
 
+Give each finding a severity. A **blocker** breaks behavior users or callers
+rely on, loses or corrupts data, or opens a security hole on a path a real
+input takes. A **major** is a real bug or a contract break with a narrower
+reach. A **minor** or a **nit** is noted and needs no answer. Report a test
+that breaks the outside-in test rule in the `TESTS:` block, without a
+severity: its fix is to rewrite or delete it.
+
 End with:
 
 FINDINGS:
@@ -128,6 +135,9 @@ FINDINGS:
 - Anti-Overengineering form: <file>:<line> | <severity> | Anti-Overengineering | <rung>: <what the diff builds> -> <replacement, and why it still meets the goal> | <cut> | sites: <file:line, ...> | anchor: <the line at file:line>
 (or "(none)")
 COVERED: <every changed file you cleared or flagged>
+TESTS:
+- <test file>:<line> <how it breaks the outside-in rule> | rewrite|delete
+(leave the block out when no test breaks the rule)
 
 You are done when every changed file is cleared or flagged against every
 hunting ground of your lens.
