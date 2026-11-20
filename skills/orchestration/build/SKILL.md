@@ -15,7 +15,7 @@ Read the request, the thread so far, and the code it touches. Take the first siz
 | --- | --- | --- |
 | `none` | A question, a status check, a lookup, an explanation, or a review of someone else's work. Also more work inside an open pull request or a lane that another skill started, such as a review fix, a map ticket, or a loop lane: that skill carries it. A running build judges again instead. | Answer it, or go on with that skill. The build ends. |
 | `one-off` | One session finishes it in one pull request of at most about 400 changed production lines, or in a change with no pull request, and the human has no decision to make first. | [ONE-OFF.md](ONE-OFF.md) |
-| `issue` | One stack of at most 3 pull requests in one repository, and the destination is clear: it needs a second pull request, or a decision the human must make before the code. | [ISSUE.md](ISSUE.md) |
+| `issue` | Bigger than a one-off, such as a second pull request, more than about 400 production lines, or a decision the human must make before the code, and still one stack of at most 3 pull requests in one repository with a clear destination. | [ISSUE.md](ISSUE.md) |
 | `map` | More than 3 pull requests, several repositories, or a destination still in fog: you cannot yet list the decisions. | [MAP.md](MAP.md) |
 
 Then add each **first step** whose test holds. A first step other than `research` makes the size at least `issue`.
