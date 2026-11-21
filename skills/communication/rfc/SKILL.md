@@ -17,9 +17,16 @@ A round starts when the user dictates and ends with your reply.
 
 1. **Sort.** A sentence that tells you what to do with the draft ("move Success criteria below Design", "replace the plan", "take your defaults", an answer to a gap) is an instruction: carry it out and keep it out of the RFC. The rest is RFC text.
 2. **Place.** When the user names an existing RFC, read it first. Put each passage in the first section it speaks to and keep spoken order within a section. A passage on a point already in the draft revises it, and the newer statement wins everywhere the point shows up: title, design, success criteria, plan. A new point adds to the end of its section. A passage that fits no section goes under Notes, with a gap asking where it belongs.
-3. **Line-edit.** Rewrite each passage into the sentences the user would type: same points, same order, their key phrases. Cut filler, restarts and repetition, and fix words the speech-to-text misheard ("RC" for "RFC"). Add no point, reason or example of your own: a missing one is a gap. Write plain paragraphs, and a list only where they spoke one. Follow the user's voice skill when they have one. When a fix to a misheard word is a guess, make it and ask about it as a gap.
-4. **Write** the draft to its file.
-5. **Evidence.** Start agents for the round's new claims, as **Evidence** says, and wait for all of them. Where you can show text mid-turn, show the draft before you wait.
+3. **Line-edit.** Rewrite each passage into the sentences the user would type: same points, same order, their key phrases. Cut filler, restarts and repetition, and fix words the speech-to-text misheard ("RC" for "RFC"). Add no point, reason or example of your own: a missing one is a gap. Write plain paragraphs, and a list only where they spoke one. Every paragraph and list item outside Context and the note in step 4 starts straight on its sentence in plain text, with no bold label in front. That covers every paragraph you write or change, including a fix the user asked for and a change they accepted. Follow the user's voice skill when they have one. When a fix to a misheard word is a guess, make it and ask about it as a gap.
+4. **Write** the draft to its file. On the first round, put this note right under the title:
+
+   ```markdown
+   > **How this was written:** the idea, the direction and the decisions are mine. I dictated them, and an AI agent polished the wording and gathered the data in Context from <sources, such as our site, Slack, support tickets and product data>.
+   ```
+
+   Until Context holds data, end the note at "polished the wording."
+
+5. **Evidence.** Start agents for the round's new claims, as **Evidence** says, and wait for all of them. Where you can show text mid-turn, show the draft before you wait. Then set the note's source list to the sources the findings in Context cite, named as a reader knows them.
 6. **Reply** once: the changed sections in full (the whole draft on the first round), the file's path, then the changes and gaps as **Changes and gaps** says.
 
 Done when every RFC passage of the dictation is in the file, line-edited, every agent of the round has reported, and the reply ends with the changes and gaps.
@@ -47,4 +54,4 @@ While the user dictates in this thread, ask in plain text at the end of the repl
 
 ## Done
 
-When the user says the RFC is done, read every sentence outside Context: each states a point the user made or accepted, in a plain paragraph, with no customer name they did not place. Fix what fails and list the fixes. When the title changed, rename the file and branch to match. Publish only when the user says to, as the `rfc` settings say.
+When the user says the RFC is done, read every sentence outside Context and the note under the title: each states a point the user made or accepted, in a plain paragraph or list item with no bold label, with no customer name they did not place. Check that the note keeps its wording from **Each round** and names the sources the evidence used. Fix what fails and list the fixes. When the title changed, rename the file and branch to match. Publish only when the user says to, as the `rfc` settings say.
