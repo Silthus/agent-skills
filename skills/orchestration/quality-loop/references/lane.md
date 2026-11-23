@@ -1,11 +1,11 @@
 # Lane contract
 
-A lane is one T3 thread that ships one PR for the quality loop or the signal loop. Both coordinators start lanes as this file says, and every lane follows it.
+A lane is one coordinator subthread (`delegate_task` with `isolation: "worktree"`) that ships one PR for the quality loop or the signal loop. Both coordinators start every lane — normal and critical — as a subthread under their lineage, and every lane follows this contract.
 
 There are two kinds of lane:
 
-- A **normal lane** touches no critical path. It runs `full-send` with the approval bot, in its own worktree, and ends merged and deployed.
-- A **critical lane** touches a critical path. It runs `full-stop` on the coordinator's machine and ends with a reviewed, proven, green PR. In the quality loop, it never asks the user: its PR goes on the user's daily merge card as its own row, and the lane rolls it out once that merge lands. In the signal loop, the user reads it in the T3 sidebar, and the lane ships it with `full-send` on their word.
+- A **normal lane** touches no critical path. It runs `full-send` with the approval bot, in its own worktree, and ends merged and deployed (or `stamped`, when the user's merge card handles the enqueue).
+- A **critical lane** touches a critical path. It runs `full-stop` as a coordinator subthread in its own worktree and ends with a reviewed, proven, green PR (`outcome ready`). It never asks the user directly: its PR goes on the user's daily merge card as its own row (and the coordinator holds `watch_pull_request` on it while it waits), and when the merge lands the coordinator wakes the subthread via `t3_thread_send` to run rollout.
 
 ## Start a lane
 
@@ -14,12 +14,9 @@ Write the **lane brief** first. It holds:
 - the loop, the ledger row or signal with its evidence, the class, and the PR type;
 - the path of this file, `quality-loop/references/lane.md`;
 - for a signal with an Inbox report: the report id and the coordinator's `claim_id`;
-- for a normal lane, and for every quality-loop lane: "You cannot reach the user. When you need them, end your turn with a last line `NEEDS_HUMAN: <what, from whom>`."
+- "You are a delegated subthread and cannot reach the user or call `watch_pull_request`. When you need the user, end your turn with a last line `NEEDS_HUMAN: <what, from whom>`."
 
-Then start the lane:
-
-- **Normal lane.** Start the lane with `delegate_task` on the coordinator's machine, with `isolation: "worktree"`, the code repository's project, the model and effort that the user's model table gives implementation, `runtimeMode: "full-access"`, and the brief as the task. The lane runs its heavy tests and typechecks where the user's agent instructions say, such as a per-worktree box.
-- **Critical lane.** Start a top-level thread with `t3_thread_launch` on the coordinator's machine, in the code repository's project, with a new worktree from the default branch, and the brief as its message. A top-level thread stays in the user's sidebar, and the machine stays up while the PR waits for them.
+Then start the lane — both normal and critical — with `delegate_task` on the coordinator's machine, with `mode: "async"`, `isolation: "worktree"`, a clear `title` (`<loop> <id>: <short description>`), `target` set to the model and effort that the user's model table gives implementation, `runtimeMode: "full-access"`, and the brief as `task`. The lane runs its heavy tests and typechecks where the user's agent instructions say, such as a per-worktree box. Keep every lane under the coordinator's lineage instead of launching top-level sidebar threads.
 
 ## PR types
 
@@ -36,7 +33,7 @@ A change that needs two types becomes two lanes. Every PR stays inside the line 
 
 ## Steps
 
-1. **Branch.** Create a branch from the latest default branch. Read the module from its callers inward, and write its seam into the PR body, one line per entry point. For a `fix`, reproduce the signal first. When you cannot reproduce it, end with outcome `abandoned: cannot reproduce` and list what you tried.
+1. **Branch.** Fetch `origin` and create a branch from `origin/<default>` (`delegate_task` worktrees start from the parent commit). Read the module from its callers inward, and write its seam into the PR body, one line per entry point. For a `fix`, reproduce the signal first. When you cannot reproduce it, end with outcome `abandoned: cannot reproduce` and list what you tried.
 2. **Change.** Make the change. Done when `git diff --stat` shows only the files the type allows and the type's proof passes.
 3. **Prove.** Prove the change as `full-send` defines proof, and record it with `fleet proof` when the Fleet CLI is installed. Each type adds its own proof:
    - `test` and `refactor`: the output of the same test command on the base and on the head;
@@ -46,8 +43,8 @@ A change that needs two types becomes two lanes. Every PR stays inside the line 
    A UI change also needs a walk through the running app, with screenshots.
 4. **Review.** Get reviews from the other model family until a review finds nothing new. Add `qa-swarm` when `merge-risk` grades the PR medium or higher, and for every critical lane.
 5. **Ship.** Write the PR with `pr-description`, without production numbers. A `fix` links its signal's metric in an Impact section, as the `impact` skill says. When the brief names an Inbox report, attach the PR to it as soon as the PR exists: `inbox-reports-claim` with the report id, the `claim_id`, and `pull_requests`. Then append a `note` artefact with the same `claim_id` that names the PR's type, its proof, and its review rounds. A merged PR resolves the report.
-   - **Normal lane:** `stamp-pr`. The user gave "stamp it" for every normal lane. When the approval bot refuses twice, convert the PR to a draft and end with outcome `stamp-refused` and the bot's reason.
-   - **Critical lane:** `full-stop`. Babysit the draft until its checks are green and every bot finding is fixed or answered. Then end the turn with outcome `ready` and a final reply the user can decide from: the problem, the change, the proof, the review rounds, the merge-risk grade, and what a teammate's review should check. In the quality loop, keep the watch; when the thread that ran the merge card sends `merged <PR> <merge sha>`, run step 6 from Deploy. In the signal loop, when the user answers "full send" in this thread, continue with `full-send`.
+   - **Normal lane:** `stamp-pr` (without calling `watch_pull_request`; link the PR and let the coordinator own any open-PR watch). The user gave "stamp it" for every normal lane. When the approval bot refuses twice, convert the PR to a draft and end with outcome `stamp-refused` and the bot's reason.
+   - **Critical lane:** `full-stop`. Link the PR (`link_pull_request`), run proofs and reviews, and end the turn once checks are green and every bot finding is fixed or answered, with `outcome ready` and a final reply the coordinator can put in its report: the problem, the change, the proof, the review rounds, the merge-risk grade, and what a teammate's review should check. Never call `watch_pull_request` in the subthread: the coordinator watches the PR, wakes this subthread via `t3_thread_send` if CI fails or a review arrives, and sends `merged <PR> <merge sha>` once the merge lands so this subthread runs step 6 from Deploy.
 6. **Roll out.** Merge and roll out with `rollout`, and watch the module's errors and latency through the deploy. When the rollout needs later stages, schedule them on the coordinator's machine before you end, because the lane's worktree goes away.
 7. **End.** Put the lane's record line for `runs.jsonl` in the final reply, in the format of `ledger.md`, with a ❌ line for each thing that did not work. The last line is `PR <url>, head <sha>, outcome <outcome>`.
 

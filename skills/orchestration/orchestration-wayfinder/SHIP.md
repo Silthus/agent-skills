@@ -8,13 +8,13 @@ When several of a spec's tickets need the same exploration, one research worker 
 
 ## Stack thread
 
-One top-level thread builds one stack, a standalone pull request included, in the order its checklist gives. It owns every pull request of the stack: it links each one to itself and is the one thread that watches them.
+One lane builds one stack, a standalone pull request included, in the order its checklist gives. In T3 Code, the lane is a `delegate_task` subthread in its own worktree under the conductor's lineage (per [`T3.md`](T3.md)): the subthread links each pull request, never calls `watch_pull_request`, and ends its turn so the conductor holds the watch and wakes the subthread via `t3_thread_send` on CI, review, conflict, or merge events. Outside T3 subthreads, the lane links and watches every pull request of the stack itself.
 
-1. Work in your own worktree off the default branch. A successor first finds the pull request or pushed branch of each unticked item with `gh pr list --search "<ticket ref>"`, ticks each opened one, and resumes at the first unticked item.
+1. Work in your own worktree off the default branch. For a T3 `delegate_task` worktree (which starts from the parent commit), fetch `origin` first and create your branch from `origin/<default>`. A successor first finds the pull request or pushed branch of each unticked item with `gh pr list --search "<ticket ref>"`, ticks each opened one, and resumes at the first unticked item.
 2. Run `full-stop` for each pull request in order: build its slice test-first with the proof bundle below, open it as a draft with the `pr-description` skill, review it, and babysit it until CI is green and every bot finding is handled. The first branches off the default branch; each later one stacks on the previous one's branch and names it as merge-first. Each pull request links its ticket, per **Map tracker** in [`SKILL.md`](SKILL.md). Tick its item with its link.
 3. Every review brief carries the stack's **seams** from its ticket and the open pull requests of sibling stacks that touch them, and asks for cross-stack breaks: one concept built twice, a flag one stack reads that another records, a rollback or schema revert that strands another stack's data. Post each review's findings and outcomes on the ticket.
-4. Wait on GitHub with `watch_pull_request` and end the turn; outside T3 Code, use the watcher of the `babysit-pr` skill.
-5. On each change of the stack's state, send the conductor a state notice, per **Stacks board** in [`SKILL.md`](SKILL.md).
+4. Wait on GitHub: as a T3 `delegate_task` subthread, link each pull request with `link_pull_request`, report each open pull request's URL, head SHA, and status on your last line, and end your turn so the conductor watches and wakes you via `t3_thread_send`; as a standalone top-level T3 thread, call `watch_pull_request` and end your turn; outside T3 Code, use the watcher of the `babysit-pr` skill.
+5. On each change of the stack's state, report `stack <name>: <state> (<mode>)` to the conductor (in your final reply as a T3 subthread, or via `t3_thread_send` as a top-level thread), per **Stacks board** in [`SKILL.md`](SKILL.md).
 6. Hand over per **Handoff**.
 
 ## Proof bundle
@@ -34,7 +34,7 @@ A review that leaves a decision open is a park: decisions locked plus the one pe
 
 ## Handoff
 
-The handoff is every pull request of the stack with each finding fixed or rejected, every gating CI check green on its head, and the ready gate of the user's PR workflow passed. Post a handoff comment on the ticket that lists each pull request with its reviewed head, the proof, its decision lines (the end-of-run report, when the lane rules give one, carries both), and the follow-ups. The conductor graduates the follow-ups into tickets. Keep watching and babysitting every pull request, per `babysit-pr`. Once a pull request is approved on its head, hand it to the conductor per **Merge** in [`SKILL.md`](SKILL.md); a question only the human can answer is a park, per **Human contact** there.
+The handoff is every pull request of the stack with each finding fixed or rejected, every gating CI check green on its head, and the ready gate of the user's PR workflow passed. Post a handoff comment on the ticket that lists each pull request with its reviewed head, the proof, its decision lines (the end-of-run report, when the lane rules give one, carries both), and the follow-ups. The conductor graduates the follow-ups into tickets. In T3 Code, the conductor keeps `watch_pull_request` on the stack's pull requests and wakes this subthread via `t3_thread_send` whenever a check, review, or conflict arrives; outside T3 subthreads, keep watching and babysitting every pull request, per `babysit-pr`. Once a pull request is approved on its head, hand it to the conductor per **Merge** in [`SKILL.md`](SKILL.md); a question only the human can answer is a park, per **Human contact** there.
 
 ## Modes
 

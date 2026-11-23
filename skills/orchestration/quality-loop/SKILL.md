@@ -5,7 +5,7 @@ description: Coordinate the quality loop, which improves one area of a codebase 
 
 # Quality loop
 
-The quality loop improves one area of a codebase while nobody watches. A scheduled task starts a **coordinator** run. The coordinator finds the work, ranks it, keeps the items above a fixed bar, and starts one **lane** per kept item. A lane is a T3 thread that ships exactly one PR. The coordinator settles each lane when it ends, and once a week it runs the ritual that tunes the loop.
+The quality loop improves one area of a codebase while nobody watches. A scheduled task starts a **coordinator** run. The coordinator finds the work, ranks it, keeps the items above a fixed bar, and starts one **lane** per kept item. A lane is a subthread (`delegate_task`) under the coordinator that ships exactly one PR. The coordinator settles each lane when it ends, and once a week it runs the ritual that tunes the loop.
 
 The `signal-loop` skill runs the same coordinator over production signals. Its lanes follow the same contract.
 
@@ -37,7 +37,7 @@ Each module in scope moves through these stages in order, one at a time:
    - confidence is high when the seam is clear, the tests run without services a fresh box lacks, the change fits the line limits, and the PR can name its worth as its type in [lane.md](references/lane.md) asks, and low otherwise;
    - the class is `critical` when the PR touches a critical path, and `normal` otherwise.
 5. **Cut.** The free slots are this loop's WIP limit minus its running lanes. Keep high-confidence rows in score order until the slots are full. Slots may stay empty: a run that starts no lane because nothing earned one is a good run. At most one `critical` lane is open at a time. Done when `lanes.md` lists the kept rows as `planned` and `backlog.md` gives each skipped row its reason.
-6. **Start lanes.** Start one lane per kept row, as [lane.md](references/lane.md) says. Record each lane's machine, thread, and task in `lanes.md`, then end the turn. The end of a normal lane wakes this thread.
+6. **Start lanes.** Start one lane per kept row, as [lane.md](references/lane.md) says. Record each lane's machine, child thread, and task in `lanes.md`, then end the turn. The end of every lane wakes this coordinator thread.
 
 ## Settle
 
@@ -45,11 +45,11 @@ Settle a lane when it ends, or when a later run finds that it ended.
 
 1. Read the last line of its final reply: `PR <url>, head <sha>, outcome <outcome>`, or `NEEDS_HUMAN: <what>`.
 2. For `NEEDS_HUMAN`, ask the user with the question tool, in one card with every other lane that waits on them, send each answer to its lane's thread, and leave the lanes running.
-3. For a critical lane with outcome `ready`, set its state to `ready` and stop there. Its PR goes on the user's daily merge card as its own row, per their agent instructions, and the lane rolls it out once that merge lands.
+3. For a critical lane with outcome `ready`, link and call `watch_pull_request` on its PR in this coordinator thread, set its state to `ready` in `lanes.md`, and stop there. Its PR goes on the user's daily merge card as its own row, per their agent instructions; when a CI failure, review comment, conflict, or merge (`merged <owner/repo#n> <merge sha>`) arrives, wake the lane's `childThreadId` via `t3_thread_send`.
 4. For every other outcome, check it against GitHub and append the lane's record to `runs.jsonl`. Move the backlog row to its next stage when the stage's done criterion holds. Mark the lane `settled` in `lanes.md`.
 5. When the lane holds an Inbox claim, settle the claim too. A lane with a PR: check that the report lists the PR, and attach it with `inbox-reports-claim` when it does not. A lane without a PR: release the claim with `release: true`, and set its signal back to `candidate`.
 6. A bug the lane found and left out of its PR, a Follow-up from its reviews, and a side fix it proposed each become a `candidate` row in `signals.md`, with source `lane <id>`. The next signal-loop run verifies it and runs Worth like any other collected signal.
-7. Archive the lane's thread once its PR merged or closed. While the PR is open, it keeps an owning thread that watches it, per `babysit-pr`: the lane, or this coordinator when the lane was a child task. Hand it over first when this thread will end before the PR does.
+7. Every lane runs as a subthread under this coordinator, so this coordinator owns and watches every open PR its lanes created until the PR merges or closes. Hand any still-open PR over to another open thread before this coordinator settles, per `babysit-pr`.
 
 When the user's agent instructions let the coordinator enqueue a lane's PR, it enters the queue through the **Merge** step of `rollout`, the deploy-order check included. Exit 1 or 2 leaves the PR out of the queue: record the PR it names in `lanes.md`, and try again at the next run.
 
