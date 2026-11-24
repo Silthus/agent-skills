@@ -6,53 +6,56 @@ description skill nor a PR template. Then add the inserts from the
 
 ## Steps
 
-1. Write the prose with the `writing-voice` skill when it is installed.
-2. State the user problem and the resulting behavior in one or two
-   sentences. Describe the final implementation. Use the domain terms from
-   `GLOSSARY.md` when it exists.
-3. Prove the change works, and put each proof beside the behavior it
-   demonstrates:
-   - **Screenshots**: one per changed feature, view, and state. For a change
-     without a UI, show the observed command or API output.
-   - **Recording**: a short video of the main journey when a larger feature
-     has several steps. When the runtime cannot record, name the missing
-     video as a gap.
-   - **Flow diagram**: only when the change alters how calls or data flow
-     between modules.
-
-   For UI changes, read [UI evidence](ui-evidence.md) to capture, caption,
-   and refresh media. For a flow diagram, read
-   [implementation views](implementation-views.md).
-4. Name the test seams, the checks you ran, and the material gaps. Add a
-   verification command and its expected result when it helps a reviewer
-   reproduce the behavior. Put long output and process history in a
-   collapsed block or in proof storage.
+1. Write the prose with the `writing-voice` skill when it is installed. Use
+   the domain terms from `GLOSSARY.md` when it exists.
+2. Fill the headings below as the reviewer sections of the `pr-description`
+   skill say.
+3. Put each proof beside the behavior it demonstrates: for a change without
+   a UI, the observed command or API output; for a larger UI feature with
+   several steps, a short video of the main journey, or a gap when the
+   runtime cannot record. Capture UI media as
+   [UI evidence](ui-evidence.md) says.
+4. Add a verification command and its expected result when it helps a
+   reviewer reproduce the behavior. Put long output and process history in
+   a collapsed block or in proof storage.
 
 ## Default structure
 
 ```markdown
 ## Problem
 
-<the user problem and the issue it closes>
+- <who met it and what they saw, and the issue it closes>
 
 ## Impact
 
 <the impact line, per the `impact` skill; drop the section when it says so>
 
+## Changes
+
+<the new behavior, the shape, and its Rejected: line>
+
+<the picture slot>
+
+- <other changes a person can notice>
+
+**Read yourself:** <one to three links with their questions, or No code reading needed: <reason>.>
+
 ## Merge Danger
 
-<merge-risk block>
+<merge-risk block, and its Rollout section>
 
-## Summary
+## How did you test this code?
 
-<the resulting behavior, with captioned media for UI changes>
+**What was proven, and what not**
 
-## Evidence
+- ✅ <a run beyond CI and what it showed>
+- ❌ <what no run showed>
 
-- <what was exercised and the observed result>
-- Test seams: <the public behavior the tests drive>
-- Verify: <command and expected result, when useful>
-- Gaps: <material behavior not verified, when any>
+<test rationale, then the receipt, or the owed proofs with their evidence links or gaps>
+
+## Known issues
+
+- <one bullet each>
 
 ## Decisions
 
