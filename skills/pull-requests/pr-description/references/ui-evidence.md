@@ -87,7 +87,7 @@ confirm its behavior and appearance still match. Record its tested commit
 and why it still applies in the proof notes.
 
 Order and keep evidence per the
-[preservation rule](../SKILL.md#preserve-evidence). When fresh rendering is
+[preservation rule](full-body.md#preserve-evidence). When fresh rendering is
 blocked, label the older evidence and name the current verification gap
 beside it.
 

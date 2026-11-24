@@ -35,7 +35,8 @@ problem, changes, test, and known-issues sections answer, and adds four
 2. Collect every **author fact** below.
 3. Write the reviewer sections below into the repository's own headings,
    with its description skill when it has one. Edit the live body, and keep
-   every image, link, ticked box, and note it already holds.
+   every image, link, and ticked box it already holds, and the fact of each
+   note, shortened as the word budget says.
 4. Add each insert in the place it names.
 5. Push the body. With the `fleet` CLI, once `fleet proof gate` has run on
    HEAD, run `fleet proof receipt` as Proof says. Read the body back. Done
@@ -43,7 +44,7 @@ problem, changes, test, and known-issues sections answer, and adds four
    merge-risk block, the Impact section unless `impact` leaves it out, the
    proof receipt of HEAD when the gate has run on HEAD (or, without the
    `fleet` CLI, a line for each owed proof), and the latest decision line
-   for every decided question.
+   for every decided question, within the word budget.
 
 Each time work continues on the PR, refresh the sections and the inserts in
 the same edit as the rest of the body.
@@ -54,7 +55,10 @@ A reviewer reads every sentence of the body as a checked fact. Supply each
 fact below from the thread, the ticket, the map, or the receipt. When they
 do not hold it, ask the person who drove the work. When nobody knows it,
 write `unknown` where the fact belongs, such as
-`Blocks: the enforcement PR, number unknown.`
+`Blocks: the enforcement PR, number unknown.` `unknown` is for these facts,
+which a reviewer needs. Leave out a line that would hold only `unknown` and
+that no reviewer needs, such as a Decisions row with no record or an
+Involvement count.
 
 - **Who met the problem** and what they saw, or that nobody has met it yet.
 - **The PRs it depends on, and the PRs that wait on it**, by number.
@@ -69,11 +73,7 @@ write `unknown` where the fact belongs, such as
 ## Reviewer sections
 
 Map each section to the repository's own heading, such as "Motivation and
-Context" for Problem. Keep the whole body at 400 to 800 words, every block
-counted; a small config change may be shorter. When the callout or the
-receipt pushes it past 800, keep the callout at four to six bullets and each
-"What ran" cell to one clause, and move the detail to Known issues or the
-full receipt.
+Context" for Problem, and keep the body inside the word budget below.
 
 - **Problem**: one or two bullets on who met the problem and what they saw
   or could not do. The mechanism belongs in Changes. When nobody has met it
@@ -99,6 +99,41 @@ full receipt.
   template's agent-context block, or in this list when the template has none.
 - **Known issues**: their own heading, after the test section, one bullet
   each, outside any collapsed block.
+
+### Word budget
+
+Keep the words you write at 400 to 800; a small change may be shorter.
+Count them with `bun scripts/word-count.ts <body file>` from this skill's
+folder, which exits 1 over 800. Every block counts, the callout, Known
+issues, tables, and collapsed blocks included. Only what nobody writes by
+hand is left out: the receipt block, fenced code and diagrams, template
+checklist and release-status lines, and HTML comments. Without Bun, run
+`wc -w` on the body with those parts removed. A template's tighter aim, such as 150 words of
+prose, never removes a section or an insert; the 800-word cap is the one
+that holds.
+
+Write every block within its cap, and say each fact once: a fact in the
+callout is not repeated in the ❌ list or Known issues.
+
+| Block | Cap | The rest goes to |
+| --- | --- | --- |
+| Merge-risk callout | four to six one-sentence bullets, Switch-off and Tier included; one line per Rollout entry | Known issues |
+| Receipt | each "What ran" and "Result" cell one clause of at most twelve words, saved as Proof says | the evidence file |
+| What was proven | no ✅ bullet that repeats a receipt row; every ❌ bullet stays | the receipt |
+| Test rationale | two sentences | the tests |
+| Decisions | the rows Decisions names | the decisions comment |
+
+When the body still passes 800, fold in this order until it fits:
+
+1. **Decisions**: replace the table with one line,
+   `**Decisions:** <n> lines in [the decisions comment](<link>).`
+2. **Known issues**: one sentence each, without a file and line prefix.
+3. **Changes**: the `(mechanical)` bullets merge into one line.
+
+Never cut an element to fit: the picture, Read yourself, a ❌ bullet, the
+callout's Switch-off and Tier, and the receipt block stay. When every block
+is folded and the body still passes 800, the PR is too large to review from
+its description: say so in the handoff and propose a stack.
 
 ## Merge risk
 
@@ -133,7 +168,13 @@ It writes the receipt into the template's testing section, between its
 rows, what was not checked, the gaps, and the link to the full receipt.
 Above the markers, write only the "What was proven, and what not" list and
 your own reason for this test approach (the template's rationale line when it
-has one), and never edit between the markers. The receipt goes under a "How did you test this code?" heading, and
+has one). Never edit between the markers, and never remove the block, an
+older one included: run the receipt again at HEAD. The receipt prints each
+kind's `--ran` and `--result` in its cells as they were saved, so save each
+as one clause. When a cell is longer, save the kind again with
+`fleet proof save --kind <kind> --ran '<clause>' --result '<clause>'`: it
+replaces both lines, which the gate and the judge never read. Then run the
+receipt again. The receipt goes under a "How did you test this code?" heading, and
 adds that heading at the end of the body when the body has none. Name what the proofs did not check with
 `--not-checked '<item>'`, once per item; a later run without the flag keeps
 the list. The command edits the live body itself, so run it after your own
@@ -159,8 +200,8 @@ body edit, never before.
 
 Without the `fleet` CLI, put each owed proof in the "What was proven, and
 what not" list: a ✅ bullet with its evidence link, or a ❌ bullet with its
-gap. Report CI the way the repository's
-skill says.
+gap. A receipt block already in the body stays as it is and counts toward
+the word budget. Report CI the way the repository's skill says.
 
 Store proof files outside the checkout, so they outlive the worktree. When
 the `fleet` CLI is available (on `PATH` or at `~/dev/fleet/fleet`), save
@@ -174,8 +215,11 @@ use [Upload media](references/ui-evidence.md#upload-media).
 Add a Decisions table: one row per decision a reviewer or a future reader
 needs. That is each load-bearing decision or call that
 [qa-swarm triage](../qa-swarm/TRIAGE.md) defines, and each decision that
-changes an earlier decision line. Mechanical choices and rows per ticket or
-slice stay out. The table has the columns Question, Answer, Who, and Where,
+changes an earlier decision line. Each row is a decision on record: a
+decision line, a ledger entry, or a comment. Never restate the change as a
+decision. Mechanical choices, rows per ticket or slice, and process calls,
+such as another review round or how a gate ran, stay out; the decisions
+comment and the receipt hold them. The table has the columns Question, Answer, Who, and Where,
 sorted 👤, 👍, 🤖:
 
 - **Question**: the question the decision settled, in a few words.
@@ -212,15 +256,16 @@ When the `fleet` CLI is available, `fleet decisions <map URL>` collects a
 Wayfinder map's decision lines into the table, and
 `fleet decision list --pr <owner/repo#n>` prints the PR's decisions from the
 decision ledger as decision lines; add the rows for the PR comment's lines. A decision without a line gets one in the PR comment,
-classified from its transcript. A PR with no row keeps one line instead:
-`No load-bearing decisions.`
+classified from its transcript. With no row, leave the table out, and the
+`No load-bearing decisions.` line that `fleet decisions` prints for it.
 
 Put the table and one **Involvement** line under it inside the template's
 collapsed agent-context block when it has one; otherwise in a Decisions
 section after the evidence. The Involvement line names the grilling rounds
 answered, the prototypes iterated with their round counts, the reviews run
 (panel lanes and bots), and whether proof was captured. It carries no
-numbers beyond those counts.
+numbers beyond those counts. Name only what happened: leave out each part
+with nothing on record, and the whole line when nothing is.
 
 A question put to the user without an answer is open, not a decision. List
 it on an **Open** line with the recommendation, outside any collapsed
