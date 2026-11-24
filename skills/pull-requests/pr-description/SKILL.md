@@ -64,10 +64,13 @@ Involvement count.
 - **The PRs it depends on, and the PRs that wait on it**, by number.
 - **The lines a person must read**, and the question each one settles.
 - **What the driver checked**: the design, the code, or neither.
-- **The rejected option** and its reason.
+- **The rejected option** and its reason. A config or copy change has one
+  only when someone weighed another value or wording.
 - **Whether the receipt covers HEAD**, and whether the proof judge ran there.
 - **A judge or risk grade that disagrees** with the description.
 - **Whether each owed check ran**, such as a dev send before production.
+- **CI at HEAD**: each run that failed, was cancelled, was skipped, or still
+  runs, read with the commit and the time.
 - **Why each chosen number is that number**, such as a cap or a batch size.
 
 ## Reviewer sections
@@ -80,7 +83,10 @@ Context" for Problem, and keep the body inside the word budget below.
   yet, say so and why it matters now.
 - **Changes**: the new behavior from the person's side in two to four
   sentences, then the shape of the change and one
-  `Rejected: <option>, because <reason>.` line. Then the **picture slot**,
+  `Rejected: <option>, because <reason>.` line. A config or copy change
+  has the line only when another value or wording was weighed, such as a
+  staged list of teams in place of all of them; otherwise leave the line
+  out, and never write `Rejected: unknown`. Then the **picture slot**,
   filled as [picture](references/picture.md) says. Then one bullet per
   other change a person can notice; mark the rest `(mechanical)`. Then a
   `Depends on:` line and a `Blocks:` line naming the PRs by number, when
@@ -94,53 +100,93 @@ Context" for Problem, and keep the body inside the word budget below.
 - **Test section**: open it with `**What was proven, and what not**`: a ✅
   bullet per run or read beyond CI and what it showed, and a ❌ bullet per
   thing nothing showed. A receipt or judge that is missing, older than
-  HEAD, or failed at HEAD gets one ❌ bullet. The test rationale
-  and the receipt follow as Proof says. What the driver checked goes in the
-  template's agent-context block, or in this list when the template has none.
+  HEAD, or failed at HEAD gets one ❌ bullet. State CI as CI below says.
+  The test rationale and the receipt follow as Proof says. What the driver
+  checked goes in the template's agent-context block, or in this list when
+  the template has none.
 - **Known issues**: their own heading, after the test section, one bullet
   each, outside any collapsed block.
 
+### CI
+
+CI changes within minutes, so a CI fact names its commit and the time it
+was read: `CI at <short SHA>, read <YYYY-MM-DD HH:MM> UTC: <state>.` Read it
+with `gh pr checks <n>` or the check runs of HEAD right before you push the
+body, and read it again on each later push. The state names every run that
+failed, was cancelled, or still runs, and the skipped runs: by name when a
+required check or a job that this change should run was skipped, else as
+one phrase, such as `the rest skipped by path filters`. A cancelled or
+skipped run is not a pass: write `all pass` only when no run failed, was
+cancelled, or still runs. When the commit is not HEAD, the line says so.
+The repository's own CI rule, such as no pass counts, still holds.
+
 ### Word budget
 
-Keep the words you write at 400 to 800; a small change may be shorter.
-Count them with `bun scripts/word-count.ts <body file>` from this skill's
-folder, which exits 1 over 800. Every block counts, the callout, Known
-issues, tables, and collapsed blocks included. Only what nobody writes by
+Keep the words you write at 400 to 800. A **small change** aims lower: at
+most 350 words. A change is small when the diff, without tests and
+generated files, changes about 50 lines or fewer, and `merge-risk` grades it
+low or medium with a two-way door. Read both from the diff stat and the
+callout before you write. A small change gets one or two bullets per
+section and may give the new behavior in one sentence, though every ❌
+bullet still stays. It says each fact in one place: a dependency in
+`Depends on:`, which a Rollout line points at without naming the PRs
+again.
+
+Count the words with `bun scripts/word-count.ts <body file>` from this
+skill's folder, which exits 1 over 800, or over 350 with `--small`. Every
+block counts, the callout, Known issues, tables, and collapsed blocks
+included. Only what nobody writes by
 hand is left out: the receipt block, fenced code and diagrams, template
 checklist and release-status lines, and HTML comments. Without Bun, run
 `wc -w` on the body with those parts removed. A template's tighter aim, such as 150 words of
-prose, never removes a section or an insert; the 800-word cap is the one
-that holds.
+prose, never removes a section or an insert; the 800-word cap, or 350
+for a small change, is the one that holds.
 
 Write every block within its cap, and say each fact once: a fact in the
-callout is not repeated in the ❌ list or Known issues.
+callout or Rollout is not repeated in the ❌ list or Known issues.
 
 | Block | Cap | The rest goes to |
 | --- | --- | --- |
-| Merge-risk callout | four to six one-sentence bullets, Switch-off and Tier included; one line per Rollout entry | Known issues |
+| Merge-risk callout | four to six one-sentence bullets, Switch-off and Tier included, plus the floor below; one line per Rollout entry | Known issues |
 | Receipt | each "What ran" and "Result" cell one clause of at most twelve words, saved as Proof says | the evidence file |
 | What was proven | no ✅ bullet that repeats a receipt row; every ❌ bullet stays | the receipt |
 | Test rationale | two sentences | the tests |
 | Decisions | the rows Decisions names | the decisions comment |
 
-When the body still passes 800, fold in this order until it fits:
+The callout has a **floor**: a bullet stays in the callout, one sentence
+long, when `merge-risk` requires it or a judge verdict at HEAD says the
+callout must name its effect. `merge-risk` requires the bullet for each
+uncovered row with its residual incident, the Switch-off, and the Tier.
+The floor counts toward the six; when it holds more than six bullets, the
+callout is longer than six: `merge-risk` wins over the cap. Each Rollout line it writes stays too, one
+line each. Shorten the other bullets, or move them to Known issues. A floor
+effect stays out of Known issues, since the callout says it.
+
+When the body still passes its cap, fold in this order until it fits:
 
 1. **Decisions**: replace the table with one line,
-   `**Decisions:** <n> lines in [the decisions comment](<link>).`
+   `**Decisions:** <n> lines in [<target>](<link>).` The target is the
+   first that holds every row: the PR's decisions comment, posted first
+   as Decisions says when you may post it; the full receipt, when its
+   decision ledger holds the rows; the map's or the ticket's decision
+   lines. Count `<n>` at the target. With no target, the table stays.
 2. **Known issues**: one sentence each, without a file and line prefix.
 3. **Changes**: the `(mechanical)` bullets merge into one line.
 
-Never cut an element to fit: the picture, Read yourself, a ❌ bullet, the
-callout's Switch-off and Tier, and the receipt block stay. When every block
+Never cut an element to fit: the picture, Read yourself, a ❌ bullet, a
+callout bullet on the floor, and the receipt block stay. When every block
 is folded and the body still passes 800, the PR is too large to review from
-its description: say so in the handoff and propose a stack.
+its description: say so in the handoff and propose a stack. A small change
+over 350 has a block that repeats a fact or the diff: cut it.
 
 ## Merge risk
 
 Grade the PR with the `merge-risk` skill. It writes the callout, and its
 Rollout section when the grade calls for one, in the place it names. The
 block stays when the repository's skill sets a word budget: a reviewer reads
-it first. Its `<!-- merge-risk -->` markers are not
+it first. Where this skill and `merge-risk` disagree on what the callout
+holds, `merge-risk` wins: the word budget never moves a bullet it requires
+out of the callout. Its `<!-- merge-risk -->` markers are not
 template comments; keep them.
 
 ## Impact
@@ -200,8 +246,8 @@ body edit, never before.
 
 Without the `fleet` CLI, put each owed proof in the "What was proven, and
 what not" list: a ✅ bullet with its evidence link, or a ❌ bullet with its
-gap. A receipt block already in the body stays as it is and counts toward
-the word budget. Report CI the way the repository's skill says.
+gap. A receipt block already in the body stays as it is; the word count
+leaves it out. State CI as CI says.
 
 Store proof files outside the checkout, so they outlive the worktree. When
 the `fleet` CLI is available (on `PATH` or at `~/dev/fleet/fleet`), save

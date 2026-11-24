@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { countWords, report } from "./word-count";
+import { capFor, countWords, report, smallChangeCap, wordCap } from "./word-count";
 
 const receipt = [
   "<!-- hedge-proof-receipt head=abc hash=def -->",
@@ -69,5 +69,18 @@ describe("report", () => {
     const line = report({ counted: 801, total: 1000, receipt: 150, code: 40, comments: 4, templateLines: 5 });
     expect(line).toStartWith("801 words counted, over the 800-word cap.");
     expect(line).toContain("receipt 150");
+  });
+
+  test("names the small-change cap when given it", () => {
+    const line = report({ counted: 351, total: 400, receipt: 0, code: 40, comments: 4, templateLines: 5 }, smallChangeCap);
+    expect(line).toStartWith("351 words counted, over the 350-word cap for a small change.");
+  });
+});
+
+describe("capFor", () => {
+  test("uses the small-change cap only with --small", () => {
+    expect(capFor(["body.md"])).toBe(wordCap);
+    expect(capFor(["--small", "body.md"])).toBe(smallChangeCap);
+    expect(capFor(["body.md", "--small"])).toBe(smallChangeCap);
   });
 });

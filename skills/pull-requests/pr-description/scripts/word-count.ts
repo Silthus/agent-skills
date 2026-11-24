@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 
 export const wordCap = 800;
+export const smallChangeCap = 350;
 
 export type WordCount = {
   counted: number;
@@ -31,18 +32,25 @@ export function countWords(body: string): WordCount {
   return { counted: words(prose), total, receipt, code, comments, templateLines };
 }
 
-export function report(count: WordCount): string {
-  const verdict = count.counted > wordCap ? `over the ${wordCap}-word cap` : `within the ${wordCap}-word cap`;
+export function capFor(args: string[]): number {
+  return args.includes("--small") ? smallChangeCap : wordCap;
+}
+
+export function report(count: WordCount, cap = wordCap): string {
+  const capName = cap === smallChangeCap ? `${cap}-word cap for a small change` : `${cap}-word cap`;
+  const verdict = `${count.counted > cap ? "over" : "within"} the ${capName}`;
   return `${count.counted} words counted, ${verdict}. Not counted: receipt ${count.receipt}, code and diagrams ${count.code}, template lines ${count.templateLines}, comments ${count.comments} (${count.total} in the file).`;
 }
 
 if (import.meta.main) {
-  const path = process.argv[2];
+  const args = process.argv.slice(2);
+  const path = args.find((arg) => arg !== "--small");
   if (!path) {
-    console.error("Usage: bun scripts/word-count.ts <body.md>");
+    console.error("Usage: bun scripts/word-count.ts [--small] <body.md>");
     process.exit(2);
   }
+  const cap = capFor(args);
   const count = countWords(readFileSync(path, "utf8"));
-  console.log(report(count));
-  process.exit(count.counted > wordCap ? 1 : 0);
+  console.log(report(count, cap));
+  process.exit(count.counted > cap ? 1 : 0);
 }
