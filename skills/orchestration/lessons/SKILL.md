@@ -32,7 +32,7 @@ Source: <map or PR link> · Outcome: <done, abandoned, or rolled back> · <stack
 
 ### Rules to respect
 
-- <the rule, as an order to an agent>. Because: <evidence link>. Encoded: <the check, `REVIEW.md` line, or skill edit that enforces it, or `to-do: <parked to-do title>`, or `log only (route: <route>)`>.
+- <the rule, as an order to an agent>. Because: <evidence link>. Encoded: <link to the check, test, hook, command, `REVIEW.md` line, or skill edit that enforces it, merged or in its open PR>, or `log only: <why no check or doc can hold it>`.
 ```
 
 Every lesson and every rule links its evidence: a comment, a run, a commit, a
@@ -97,7 +97,8 @@ start, so you read what other machines wrote.
    say why in one line.
 3. **Match.** Search the log for the same cause in earlier entries, for the
    same code repo and across repos. A cause the log already has is a
-   **repeat**. Also search the parked to-dos for a rule on the same cause.
+   **repeat**. Also search the open PRs, the checks, and the parked to-dos
+   for a rule on the same cause.
 4. **Rule.** Turn each lesson that a future agent can avoid into a rule to
    respect. A repeat always becomes a rule. Route each rule to where it is
    enforced, strongest first:
@@ -108,23 +109,37 @@ start, so you read what other machines wrote.
      `TRIAGE.md`;
    - a rule about how agents work becomes an edit to the skill or the agent
      instructions it concerns;
-   - a one-off stays in the log, marked `log only` with no route.
+   - a one-off stays in the log, marked `log only` with its reason.
 
-   The harvest changes no check, `REVIEW.md`, skill, or agent instruction
-   itself. Park each routed rule of a repeat, a rollback, or a data, security,
-   or delivery problem as one to-do with the `parked-todos` skill. The to-do
-   names the rule, its route, and its entry, and says to set the entry's
-   `Encoded:` to the change that lands it. When a to-do for the rule is
-   already open, add the new entry to it instead of parking a second one.
-   Mark the other routed rules `log only (route: <route>)` until they repeat.
-5. **Write.** Add the entry to the log and push it. Post one map comment,
+   Prefer code to prose: a rule that a check, test, hook, or command can
+   enforce is encoded as that code, and not as a skill line, an agent
+   instruction, or a memory note.
+5. **Ratchet.** Each rule leaves the harvest in one of three states, settled
+   in the same pass:
+   - **encoded**: the change that enforces it is merged or open as a PR, and
+     `Encoded:` links it. The harvest dispatches one implementation worker per
+     rule, or per group of rules that share one change, cast with the model
+     selection policy, to open that PR. A repeat, a rollback, and a data,
+     security, or delivery problem are always encoded.
+   - **log only**: no check or doc can hold it, such as a one-off or a
+     judgement no check can make. `Encoded:` says `log only:` and the reason.
+   - **deleted**: it restates a rule that is already encoded, or no longer
+     applies. Drop it from the entry, and link the rule that covers it from
+     the lesson.
+
+   A parked to-do is no state: never write `to-do:` without the PR or the
+   check that owns it. When a match in step 3 finds an older rule that says
+   `to-do:`, settle it in this pass too. When the code for a rule lands,
+   delete or trim the prose that carried it until then, such as a memory
+   trap note or a skill line, so each rule lives in one place.
+6. **Write.** Add the entry to the log and push it. Post one map comment,
    `Lessons: <link to the entry>`, or `Lessons: none` when nothing qualified.
    Write no entry when nothing qualified. For a single PR, post nothing on the
    PR: the entry lives only in the log.
 
 The harvest is done when every collected item is in the entry or dropped with
-its reason, every rule names where it is enforced, any entry is pushed, and
-on a map, the map comment is posted.
+its reason, every rule is encoded with its link, log only with its reason, or
+deleted, any entry is pushed, and on a map, the map comment is posted.
 
 ## Read
 

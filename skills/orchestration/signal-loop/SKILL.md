@@ -17,12 +17,12 @@ Read the `quality-loop` settings in the user's agent instructions. This loop use
 
 ## Coordinator run
 
-1. **Load.** Pull the ledger and read `limits.md`. When `Paused` is `yes`, record a `no-op` run and end. Settle the lanes that ended, as the **Settle** section of the `quality-loop` skill says. As in that skill, `Paused: no` is the loop's start, so its lanes skip **Start** in `impact`.
+1. **Load.** Pull the ledger and run `hedge loop check-pause --ledger <ledger directory>`, as the `quality-loop` skill's **Load** says: exit 1 or 3 means paused, so record a `no-op` run and end, and a `loop-pause` denial of `delegate_task` is the same pause. Settle the lanes that ended either way, as the **Settle** section of the `quality-loop` skill says. As in that skill, `Paused: no` is the loop's start, so its lanes skip **Start** in `impact`.
 2. **Intake.** Read the Inbox first:
    - `inbox-reports-list` with the scouts and source products the settings name, `created_after` set to the window start, and `unclaimed=true`;
    - `inbox-reports-list` with `assignee=mine`, for the reports this user's agents still hold.
 
-   Read each report's work log with `inbox-report-artefacts-list` before you act on it. Each report becomes a signal row keyed by its report id.
+   Read each report's work log with `inbox-report-artefacts-list` before you act on it. Each report becomes a signal row keyed by its report id. Take each new row's id from `hedge loop next-id --ledger <ledger directory> --kind signal`, and push the row before you take the next; when the command is missing, pull first and take one past the highest id.
 3. **Collect.** Read every collector source for the window since the last run:
    - new and rising error tracking issues in the scope's code or pages;
    - slow or failing spans, endpoints, and consumers in APM, logs, and metrics, against the same window one week earlier;
@@ -48,7 +48,7 @@ Read the `quality-loop` settings in the user's agent instructions. This loop use
 
    A signal with confidence 0 becomes `needs decision`, with one line for the ritual report. Mark each signal `critical` or `normal` by the critical paths.
 8. **Cut.** The free slots are this loop's WIP limit minus its running lanes. Keep signals with a build verdict in score order until the slots are full. Slots may stay empty: a run that starts no lane because nothing earned one is a good run. At most one `critical` lane is open at a time. The rest stay `candidate` for the next run. Done when every collected signal has a status and a `Report` value in `signals.md`, and `lanes.md` lists the kept ones as `planned`.
-9. **Claim and start lanes.** For each kept signal with a report, claim the report with `inbox-reports-claim` before its lane starts. When another person holds the claim, the signal is covered by them: never pass `takeover`. Start one lane per kept signal, as `quality-loop/references/lane.md` says, with PR type `fix`, the signal's evidence and metric, and the report id and `claim_id` in the brief. Record each lane, its child thread, its report id, and its `claim_id` in `lanes.md`, then end the turn. The end of every lane wakes this coordinator thread.
+9. **Claim and start lanes.** For each kept signal with a report, claim the report with `inbox-reports-claim` before its lane starts. When another person holds the claim, the signal is covered by them: never pass `takeover`. Start one lane per kept signal, as `quality-loop/references/lane.md` says, with PR type `fix`, the signal's evidence and metric, and the report id and `claim_id` in the brief. Mark each code fact in the brief you did not read at the current base as `predicted:`, and take lane ids from `hedge loop next-id --kind lane`, as the `quality-loop` skill's **Cut** says. Record each lane, its child thread, its report id, and its `claim_id` in `lanes.md`, then end the turn. The end of every lane wakes this coordinator thread.
 
 The run is done when every collected signal has a status, every kept signal has a lane, and every kept signal with a report has a claim.
 

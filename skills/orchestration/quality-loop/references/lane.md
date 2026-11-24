@@ -14,6 +14,7 @@ Write the **lane brief** first. It holds:
 - the loop, the ledger row or signal with its evidence, the class, and the PR type;
 - the path of this file, `quality-loop/references/lane.md`;
 - for a signal with an Inbox report: the report id and the coordinator's `claim_id`;
+- each code fact the coordinator did not read at the current base, such as a path, a symbol, a line count, or where a bug lives, marked `predicted:`;
 - "You are a delegated subthread and cannot reach the user or call `watch_pull_request`. When you need the user, end your turn with a last line `NEEDS_HUMAN: <what, from whom>`."
 
 Then start the lane — both normal and critical — with `delegate_task` on the coordinator's machine, with `mode: "async"`, `isolation: "worktree"`, a clear `title` (`<loop> <id>: <short description>`), `target` set to the model and effort that the user's model table gives implementation, `runtimeMode: "full-access"`, and the brief as `task`. The lane runs its heavy tests and typechecks where the user's agent instructions say, such as a per-worktree box. Keep every lane under the coordinator's lineage instead of launching top-level sidebar threads.
@@ -33,7 +34,7 @@ A change that needs two types becomes two lanes. Every PR stays inside the line 
 
 ## Steps
 
-1. **Branch.** Fetch `origin` and create a branch from `origin/<default>` (`delegate_task` worktrees start from the parent commit). Read the module from its callers inward, and write its seam into the PR body, one line per entry point. For a `fix`, reproduce the signal first. When you cannot reproduce it, end with outcome `abandoned: cannot reproduce` and list what you tried.
+1. **Branch.** Fetch `origin` and create a branch from `origin/<default>` (`delegate_task` worktrees start from the parent commit). Before the first test, check each `predicted:` line of the brief with grep or a read on that branch, and list in your final reply each one that was wrong and what is true. When the work rests on a wrong one, re-plan from what you found, or end with outcome `abandoned: brief claim wrong`. Read the module from its callers inward, and write its seam into the PR body, one line per entry point. For a `fix`, reproduce the signal first. When you cannot reproduce it, end with outcome `abandoned: cannot reproduce` and list what you tried.
 2. **Change.** Make the change. Done when `git diff --stat` shows only the files the type allows and the type's proof passes.
 3. **Prove.** Prove the change as `full-send` defines proof, and record it with `fleet proof` when the Fleet CLI is installed. Each type adds its own proof:
    - `test` and `refactor`: the output of the same test command on the base and on the head;

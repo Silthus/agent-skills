@@ -9,7 +9,7 @@ Write one template per ticket type at `$(git rev-parse --git-common-dir)/wayfind
 - the map URL, the code repo, and the ticket, as context pointers per **Shared notes** in [`SHIP.md`](SHIP.md);
 - the `Lessons:` line of the map's **Notes**, verbatim, or `Lessons: none`;
 - the wall-time cap, the ticket claim, the durable park and resolution protocol, the report before idle, and that downstream dispatch belongs to the conductor;
-- decision lines in the shape of the lane rules below. A template written before 2026-11-13 shows ✅ decision lines: rewrite them in that shape. A template whose `fleet decision report` rule lacks `--lane`: add it. A template whose lane rules still let a lane merge or ask the human: render it again from the lane rules below;
+- decision lines in the shape of the lane rules below. A template written before 2026-11-13 shows ✅ decision lines: rewrite them in that shape. A template whose `fleet decision report` rule lacks `--lane`: add it. A template whose lane rules still let a lane merge or ask the human, or lack the `predicted:` rule: render it again from the lane rules below;
 - the prescribed skill, and the order to read its `SKILL.md` directly when the Skill tool refuses it, as it does `to-spec`;
 - **Casting** from [`SKILL.md`](SKILL.md), and the `fleet` CLI's resolved path;
 - for an `implement` ticket, [`SHIP.md`](SHIP.md) from **Stack thread** on;
@@ -31,6 +31,7 @@ bun <this skill's directory>/scripts/lane-prompt.ts <template> <ticket> --allow 
 ```md
 - Wait for an event that wakes you, then end your turn. In T3 Code, a top-level thread that owns a pull request waits with `watch_pull_request`; a `delegate_task` subthread never calls `watch_pull_request` — it links each pull request, reports the pull request URL, head SHA, and status on its last line, and ends its turn so the conductor watches and wakes it via `t3_thread_send`. Outside T3 Code, use the watcher of the `babysit-pr` skill. A delegated task you started wakes you when it ends. Any other wait is one blocking command that ends on the event. Each turn reads your whole context again, so never poll and never `sleep` across turns.
 - Leave nothing running: before any turn that ends waiting on the human, a park included, and before your last turn, stop everything you started, such as a background `kickoff wait`, a monitor, a subagent, or a child task. Anything left live keeps your thread, and the conductor's, off the human's inbox. A top-level thread keeps its watch on each pull request it owns until the pull request merges or closes, per `babysit-pr`; a `delegate_task` subthread holds no PR watch.
+- Treat each code fact in your prompt or ticket that is marked `predicted:` as a guess: before your first test, check it with grep or a read on your branch, and name each wrong one, with what is true, in your first ticket comment.
 - Run the lane gate the repo's agent docs name, or its full local gate when they name none; CI runs the full gate on the pull request. The repo's docs own its commands and settings, such as worker counts.
 - Run every gate and check unpiped, or start the same command with `set -o pipefail;`, and read its exit code before you push or merge.
 - `rm` takes literal paths.

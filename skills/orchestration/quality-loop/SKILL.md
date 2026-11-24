@@ -29,15 +29,15 @@ Each module in scope moves through these stages in order, one at a time:
 
 ## Coordinator run
 
-1. **Load.** Pull the ledger and read `limits.md`. When `Paused` is `yes`, settle the lanes that ended, record a `no-op` run, and end. `Paused: no` is the user's start for the loop as a whole, so its lanes skip the **Start** step of the `impact` skill.
+1. **Load.** Pull the ledger and run `hedge loop check-pause --ledger <ledger directory>`. Exit 1 means `Paused: yes`; exit 3 means `limits.md` cannot be read or says neither `yes` nor `no`, which counts as paused too. On either, settle the lanes that ended, keep every watch and post-deploy check, record a `no-op` run, and end. Any other exit, such as `unknown command loop` from an older Hedge, means the command is missing: read `limits.md` by the same rule. Hedge's `loop-pause` hook also denies `delegate_task` to a paused coordinator: the denial is the pause, never a reason to start the lane another way. `Paused: no` is the user's start for the loop as a whole, so its lanes skip the **Start** step of the `impact` skill.
 2. **Settle.** Settle each lane in `lanes.md` that ended since the last run, as **Settle** below says.
 3. **Find.** Read `backlog.md`. On the first run, or when `hotpaths.md` is older than seven days, rebuild the ranking first, as step 6 of [learn.md](references/learn.md) says. Done when every module in scope has a row with its stage and **hot-path score**.
 4. **Triage.** For each row, name the next PR its stage needs and grade it:
    - reach is the module's hot-path score;
    - confidence is high when the seam is clear, the tests run without services a fresh box lacks, the change fits the line limits, and the PR can name its worth as its type in [lane.md](references/lane.md) asks, and low otherwise;
    - the class is `critical` when the PR touches a critical path, and `normal` otherwise.
-5. **Cut.** The free slots are this loop's WIP limit minus its running lanes. Keep high-confidence rows in score order until the slots are full. Slots may stay empty: a run that starts no lane because nothing earned one is a good run. At most one `critical` lane is open at a time. Done when `lanes.md` lists the kept rows as `planned` and `backlog.md` gives each skipped row its reason.
-6. **Start lanes.** Start one lane per kept row, as [lane.md](references/lane.md) says. Record each lane's machine, child thread, and task in `lanes.md`, then end the turn. The end of every lane wakes this coordinator thread.
+5. **Cut.** The free slots are this loop's WIP limit minus its running lanes. Keep high-confidence rows in score order until the slots are full. Slots may stay empty: a run that starts no lane because nothing earned one is a good run. At most one `critical` lane is open at a time. Done when `lanes.md` lists the kept rows as `planned` and `backlog.md` gives each skipped row its reason. Take each new lane's id from `hedge loop next-id --ledger <ledger directory> --kind lane`, which reserves it on this machine, and push its `lanes.md` row before you take the next. When the command is missing, pull the ledger first and take one past the highest id.
+6. **Start lanes.** Start one lane per kept row, as [lane.md](references/lane.md) says. In each brief, mark every code fact you did not read at the current base, such as a path, a symbol, or where a bug lives, as `predicted:`, as [lane.md](references/lane.md) says. Record each lane's machine, child thread, and task in `lanes.md`, then end the turn. The end of every lane wakes this coordinator thread.
 
 ## Settle
 
