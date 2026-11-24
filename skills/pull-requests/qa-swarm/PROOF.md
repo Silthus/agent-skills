@@ -44,7 +44,9 @@ Done when every stage, both sides of every state-dependent stage, and every
 ### Prod shape
 
 Owed when the changed path reads persisted inputs: stored rows,
-customer-written code or config, queued jobs, cached values.
+customer-written code or config, queued jobs, cached values. Also owed by
+each flag-off hunk, as `merge-risk` defines it, that changes a database
+query, whatever the flag guards.
 
 List each persisted input. For each one, measure in production which share of
 the stored records takes each branch the change touches, through read-only
@@ -54,7 +56,13 @@ conclusion, such as "every stored config takes the new branch", unless the
 numbers are already public. Write test fixtures from the list of properties
 the shape needs, with invented values.
 
-Done when every persisted input has its measured branch shares, or a gap.
+For each flag-off hunk that changes a query, save the plain `EXPLAIN` of the
+query at HEAD and of its base query on production data, and compare their
+plans and costs. Never run `EXPLAIN ANALYZE` on production: it runs the
+query. A worse plan or cost is a finding.
+
+Done when every persisted input has its measured branch shares, and every
+flag-off query its compared plans, or a gap.
 
 ### Cross-version
 
@@ -102,6 +110,9 @@ line of its `merge-risk` callout:
   you rejected, except a `panel` gap.
 - **Critical**: accept only `judge` and `post-deploy-watch` gaps yourself.
 - **Ungraded**: grade the PR with `merge-risk` first.
+
+A diff of only tests and fixtures that no production code imports is not
+critical by a critical path alone, as Tier (a) in `merge-risk` says.
 
 Every other gap is a Decision for the user, and the handoff stays Blocked
 until the user accepts it in answer to that gap. Fix a failing required CI

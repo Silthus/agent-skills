@@ -46,7 +46,10 @@ with no switch-off: live on deploy, fix forward. It reaches every request
 that runs it, even where its results match the base, and its outcome
 includes latency, query count, and the query plan. Only a proof against the
 base covers it, since a flag-on against flag-off comparison runs HEAD on both
-sides and never the base.
+sides and never the base. A flag-off hunk that changes a database query owes
+the Prod shape proof of `PROOF.md` in `qa-swarm`: the query plans of HEAD and
+of the base, compared. Its row stays uncovered until that proof shows no
+worse plan or cost.
 
 ## Hot paths
 
@@ -164,7 +167,8 @@ The **tier** says who decides the PR's asks, under the user's agent
 instructions. A PR is **critical** when any criterion holds:
 
 - (a) the diff touches a critical path that the user's agent instructions
-  list for the repo;
+  list for the repo. A diff whose every file is a test or fixture that no
+  production code imports does not touch one by its path alone;
 - (b) the grade at merge is high;
 - (c) the door is one-way;
 - (d) it adds a migration;
