@@ -110,7 +110,11 @@ this agent runs, a Fleet box included.
    Confirm that the port is private:
    `curl -s -o /dev/null -w '%{http_code}\n' <link>/` returns 303, a
    redirect to Coder sign-in. Any other code means the port is shared:
-   stop and tell the user. If no token or headless browser is
+   stop and tell the user. When this machine cannot reach the link (the
+   request times out), run the same `curl`, without a token, from a
+   machine that can, such as the hub over ssh, and run the browser checks
+   on the same build at `http://127.0.0.1:<port>`. The port check reads
+   and sends no session token. If no token or headless browser is
    available, tell the user which check was skipped. Then give the user
    the link in the final reply of the turn.
 
