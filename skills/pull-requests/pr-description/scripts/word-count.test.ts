@@ -59,6 +59,11 @@ describe("countWords", () => {
     expect(countWords(receipt.replaceAll("hedge-proof-receipt", "fleet-proof-receipt")).counted).toBe(0);
   });
 
+  test("leaves out a fence closed by a longer run, and a fence inside a quote", () => {
+    expect(countWords("```\nlog line\n`````\nafter").counted).toBe(1);
+    expect(countWords("> ~~~\n> log line\n> ~~~\nafter").counted).toBe(1);
+  });
+
   test("keeps counting after a fence that a longer fence closes", () => {
     expect(countWords("````markdown\n```\ninner\n```\n````\nafter").counted).toBe(1);
   });

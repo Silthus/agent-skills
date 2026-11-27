@@ -23,10 +23,34 @@ function take(text: string, pattern: RegExp): [string, number] {
   return [rest, removed];
 }
 
+const quotePrefix = /^(?: {0,3}>[ \t]?)*/;
+
+function takeFences(text: string): [string, number] {
+  const kept: string[] = [];
+  let removed = 0;
+  let open: { marker: string; length: number } | undefined;
+  for (const line of text.split("\n")) {
+    const inner = line.replace(quotePrefix, "");
+    if (open) {
+      removed += words(inner);
+      if (new RegExp(`^ {0,3}${open.marker === "`" ? "`" : "~"}{${open.length},}[ \\t]*$`).test(inner)) open = undefined;
+      continue;
+    }
+    const fence = /^ {0,3}(`{3,}|~{3,})(.*)$/.exec(inner);
+    if (fence && !(fence[1]!.startsWith("`") && fence[2]!.includes("`"))) {
+      open = { marker: fence[1]![0]!, length: fence[1]!.length };
+      removed += words(inner);
+      continue;
+    }
+    kept.push(line);
+  }
+  return [kept.join("\n"), removed];
+}
+
 export function countWords(body: string): WordCount {
   const total = words(body);
   const [withoutReceipt, receipt] = take(body, /<!-- (fleet|hedge)-proof-receipt\b[\s\S]*?<!-- \/(fleet|hedge)-proof-receipt -->/g);
-  const [withoutCode, code] = take(withoutReceipt, /^ {0,3}(`{3,}|~{3,})[^\n]*\n[\s\S]*?^ {0,3}\1[ \t]*$/gm);
+  const [withoutCode, code] = takeFences(withoutReceipt);
   const [withoutTemplateLines, templateLines] = take(withoutCode, /^[ \t]*[-*] (\[[ xX]\] .*|.*<!-- release-status:.*)$/gm);
   const [prose, comments] = take(withoutTemplateLines, /<!--[\s\S]*?-->/g);
   return { counted: words(prose), total, receipt, code, comments, templateLines };
