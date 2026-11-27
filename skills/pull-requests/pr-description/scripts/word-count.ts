@@ -19,7 +19,8 @@ const templateLine = /^[ \t]*[-*] (\[[ xX]\] .*|.*<!-- release-status:.*)$/gm;
 const preformatted = /<pre\b[\s\S]*?<\/pre>/g;
 const comment = /<!--[\s\S]*?-->/g;
 
-const written = (html: string) => html.replace(/<[^>]*>/g, " ").replace(/&[#\w]+;/g, " & ").split(/\s+/).filter((word) => /[\p{L}\p{N}]/u.test(word)).length;
+const inline = /<\/?(a|b|code|del|em|i|s|span|strong|sub|sup)\b[^>]*>/g;
+const written = (html: string) => html.replace(inline, "").replace(/<[^>]*>/g, " ").replace(/&[#\w]+;/g, "&").split(/\s+/).filter((word) => /[\p{L}\p{N}]/u.test(word)).length;
 const matched = (text: string, pattern: RegExp) => [...text.matchAll(pattern)].reduce((sum, [match]) => sum + words(match), 0);
 
 export function countWords(body: string): WordCount {

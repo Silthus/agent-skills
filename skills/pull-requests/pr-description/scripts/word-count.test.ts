@@ -67,6 +67,10 @@ describe("countWords", () => {
     expect(countWords("<!--\n```\n-->\nafter").counted).toBe(1);
   });
 
+  test("counts R&D in bold or in a link as one word, as hedge proof gate does", () => {
+    expect(countWords("**R**&D and [R&D](https://example.com)").counted).toBe(3);
+  });
+
   test("keeps counting after a fence that a longer fence closes", () => {
     expect(countWords("````markdown\n```\ninner\n```\n````\nafter").counted).toBe(1);
   });
