@@ -11,7 +11,7 @@ const receipt = [
 ].join("\n");
 
 describe("countWords", () => {
-  test("counts prose, the callout, tables and collapsed blocks", () => {
+  test("counts the words of prose, the callout, tables and collapsed blocks, not their Markdown syntax", () => {
     const body = [
       "## Problem",
       "",
@@ -28,7 +28,7 @@ describe("countWords", () => {
       "</details>",
     ].join("\n");
     const count = countWords(body);
-    expect(count.counted).toBe(count.total - count.comments);
+    expect(count.counted).toBe(10);
     expect(count.comments).toBe(6);
   });
 
@@ -59,9 +59,12 @@ describe("countWords", () => {
     expect(countWords(receipt.replaceAll("hedge-proof-receipt", "fleet-proof-receipt")).counted).toBe(0);
   });
 
-  test("leaves out a fence closed by a longer run, and a fence inside a quote", () => {
+  test("leaves out code as GitHub renders it: a longer closing run, a quoted fence, a fence that its quote ends, CRLF", () => {
     expect(countWords("```\nlog line\n`````\nafter").counted).toBe(1);
     expect(countWords("> ~~~\n> log line\n> ~~~\nafter").counted).toBe(1);
+    expect(countWords("> ```\n> log line\n\nafter").counted).toBe(1);
+    expect(countWords("```\r\nlog line\r\n```\r\nafter").counted).toBe(1);
+    expect(countWords("<!--\n```\n-->\nafter").counted).toBe(1);
   });
 
   test("keeps counting after a fence that a longer fence closes", () => {

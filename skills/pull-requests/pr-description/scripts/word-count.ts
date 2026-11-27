@@ -14,46 +14,26 @@ export type WordCount = {
 
 const words = (text: string) => text.split(/\s+/).filter(Boolean).length;
 
-function take(text: string, pattern: RegExp): [string, number] {
-  let removed = 0;
-  const rest = text.replace(pattern, (match) => {
-    removed += words(match);
-    return "\n";
-  });
-  return [rest, removed];
-}
+const receiptBlock = /<!-- (fleet|hedge)-proof-receipt\b[\s\S]*?<!-- \/(fleet|hedge)-proof-receipt -->/g;
+const templateLine = /^[ \t]*[-*] (\[[ xX]\] .*|.*<!-- release-status:.*)$/gm;
+const preformatted = /<pre\b[\s\S]*?<\/pre>/g;
+const comment = /<!--[\s\S]*?-->/g;
 
-const quotePrefix = /^(?: {0,3}>[ \t]?)*/;
-
-function takeFences(text: string): [string, number] {
-  const kept: string[] = [];
-  let removed = 0;
-  let open: { marker: string; length: number } | undefined;
-  for (const line of text.split("\n")) {
-    const inner = line.replace(quotePrefix, "");
-    if (open) {
-      removed += words(inner);
-      if (new RegExp(`^ {0,3}${open.marker === "`" ? "`" : "~"}{${open.length},}[ \\t]*$`).test(inner)) open = undefined;
-      continue;
-    }
-    const fence = /^ {0,3}(`{3,}|~{3,})(.*)$/.exec(inner);
-    if (fence && !(fence[1]!.startsWith("`") && fence[2]!.includes("`"))) {
-      open = { marker: fence[1]![0]!, length: fence[1]!.length };
-      removed += words(inner);
-      continue;
-    }
-    kept.push(line);
-  }
-  return [kept.join("\n"), removed];
-}
+const written = (html: string) => html.replace(/<[^>]*>/g, " ").replace(/&[#\w]+;/g, " & ").split(/\s+/).filter((word) => /[\p{L}\p{N}]/u.test(word)).length;
+const matched = (text: string, pattern: RegExp) => [...text.matchAll(pattern)].reduce((sum, [match]) => sum + words(match), 0);
 
 export function countWords(body: string): WordCount {
   const total = words(body);
-  const [withoutReceipt, receipt] = take(body, /<!-- (fleet|hedge)-proof-receipt\b[\s\S]*?<!-- \/(fleet|hedge)-proof-receipt -->/g);
-  const [withoutCode, code] = takeFences(withoutReceipt);
-  const [withoutTemplateLines, templateLines] = take(withoutCode, /^[ \t]*[-*] (\[[ xX]\] .*|.*<!-- release-status:.*)$/gm);
-  const [prose, comments] = take(withoutTemplateLines, /<!--[\s\S]*?-->/g);
-  return { counted: words(prose), total, receipt, code, comments, templateLines };
+  const withoutReceipt = body.replace(receiptBlock, "\n");
+  const html = Bun.markdown.html(withoutReceipt.replace(templateLine, "\n"));
+  return {
+    counted: written(html.replace(comment, "\n").replace(preformatted, "\n")),
+    total,
+    receipt: matched(body, receiptBlock),
+    code: matched(html.replace(comment, "\n"), preformatted),
+    comments: matched(html, comment),
+    templateLines: matched(withoutReceipt, templateLine),
+  };
 }
 
 export function capFor(args: string[]): number {
