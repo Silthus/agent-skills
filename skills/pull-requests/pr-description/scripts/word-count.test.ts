@@ -71,6 +71,11 @@ describe("countWords", () => {
     expect(countWords("**R**&D and [R&D](https://example.com)").counted).toBe(3);
   });
 
+  test("counts a standard risk callout as hedge proof gate does: its words, not its markers", () => {
+    const callout = "<!-- merge-risk -->\n> [!WARNING]\n> 🟡 **Merge risk: medium** · two-way door\n> - **Switch-off:** none.\n> - **Tier:** non-critical\n<!-- /merge-risk -->\n";
+    expect(countWords(`No picture: copy.\n\n${Array.from({ length: 785 }, () => "word").join(" ")}\n\n${callout}`).counted).toBe(798);
+  });
+
   test("keeps counting after a fence that a longer fence closes", () => {
     expect(countWords("````markdown\n```\ninner\n```\n````\nafter").counted).toBe(1);
   });
