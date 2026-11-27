@@ -4,6 +4,9 @@ Every Changes section has one picture slot. The kind of change fills it.
 Put it after the shape and its `Rejected:` line, open, never in a collapsed
 block. Show only the modules, calls, and states a reader needs.
 
+`hedge proof gate` fails a description with a merge-risk callout and no
+picture: no Mermaid block, image, video, or `No picture:` line.
+
 | Kind of change | The slot holds |
 | --- | --- |
 | Calls over time, such as a retry, a queue, or a request across services | A Mermaid `sequenceDiagram` |

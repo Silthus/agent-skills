@@ -147,20 +147,17 @@ callout or Rollout is not repeated in the ❌ list or Known issues.
 
 | Block | Cap | The rest goes to |
 | --- | --- | --- |
-| Merge-risk callout | four to six one-sentence bullets, Switch-off and Tier included, plus the floor below; one line per Rollout entry | Known issues |
+| Merge-risk callout | at most six one-sentence bullets, Switch-off and Tier included; one line per Rollout entry | Known issues |
 | Receipt | each "What ran" and "Result" cell one clause of at most twelve words, saved as Proof says | the evidence file |
 | What was proven | no ✅ bullet that repeats a receipt row; every ❌ bullet stays | the receipt |
 | Test rationale | two sentences | the tests |
 | Decisions | the rows Decisions names | the decisions comment |
 
-The callout has a **floor**: a bullet stays in the callout, one sentence
-long, when `merge-risk` requires it or a judge verdict at HEAD says the
-callout must name its effect. `merge-risk` requires the bullet for each
-uncovered row with its residual incident, the Switch-off, and the Tier.
-The floor counts toward the six; when it holds more than six bullets, the
-callout is longer than six: `merge-risk` wins over the cap. Each Rollout line it writes stays too, one
-line each. Shorten the other bullets, or move them to Known issues. A floor
-effect stays out of Known issues, since the callout says it.
+The callout cap is hard: `hedge proof gate` fails a callout with more than
+six bullets. Keep the bullets `merge-risk` requires, the Switch-off, the Tier,
+and the uncovered rows with the worst residual incident. List each other
+uncovered row under Known issues, one sentence each; the proof judge accepts
+a row named there. Each Rollout line stays, one line each.
 
 When the body still passes its cap, fold in this order until it fits:
 
@@ -173,8 +170,8 @@ When the body still passes its cap, fold in this order until it fits:
 2. **Known issues**: one sentence each, without a file and line prefix.
 3. **Changes**: the `(mechanical)` bullets merge into one line.
 
-Never cut an element to fit: the picture, Read yourself, a ❌ bullet, a
-callout bullet on the floor, and the receipt block stay. When every block
+Never cut an element to fit: the picture, Read yourself, a ❌ bullet, the
+Switch-off and Tier bullets, and the receipt block stay. When every block
 is folded and the body still passes 800, the PR is too large to review from
 its description: say so in the handoff and propose a stack. A small change
 over 350 has a block that repeats a fact or the diff: cut it.
@@ -184,9 +181,8 @@ over 350 has a block that repeats a fact or the diff: cut it.
 Grade the PR with the `merge-risk` skill. It writes the callout, and its
 Rollout section when the grade calls for one, in the place it names. The
 block stays when the repository's skill sets a word budget: a reviewer reads
-it first. Where this skill and `merge-risk` disagree on what the callout
-holds, `merge-risk` wins: the word budget never moves a bullet it requires
-out of the callout. Its `<!-- merge-risk -->` markers are not
+it first. The callout holds at most six bullets, as Word budget says, and
+an uncovered row past the six goes to Known issues. Its `<!-- merge-risk -->` markers are not
 template comments; keep them.
 
 ## Impact

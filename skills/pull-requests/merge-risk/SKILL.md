@@ -123,13 +123,24 @@ otherwise band it by who can make that write.
 
 ## Door
 
-Judge the door against the switch-off, never against `git revert`. A
-**two-way door** leaves nothing behind once the switch is off. A **one-way
-door** leaves something that stays and that the base did not leave: data or
-schema, a sent message, a public contract that SDKs, docs, or callers build
-on, or a design on a core path that other code comes to depend on. Name what
-we commit to, on which row. A door that is two-way at merge and turns one-way
-on a later event, such as an SDK release or a docs publish, names that event.
+Judge the door by the **cost to undo**: what it takes, after the switch-off,
+to get back to where the base was. Never judge it against `git revert`. A
+**two-way door** leaves nothing that harms or binds anyone once the switch is
+off; a follow-up PR can remove what stays. A **one-way door** leaves something
+that no later PR can take back without harm:
+
+- data that is lost, or rewritten in place;
+- a message sent to people, such as an email or a notification;
+- a contract that callers outside this repository already use, such as an
+  SDK, published docs, or a customer's integration;
+- a stored format that the code at base cannot read.
+
+An additive schema change is two-way: a new nullable column, a new empty
+table, a new index, a new event name, a new optional field or filter. Name
+what stays and the follow-up that removes it, such as "two-way: the column
+stays; a later migration drops it". Name what we commit to on a one-way
+door, on which row. A door that is two-way at merge and turns one-way on a
+later event, such as an SDK release or a docs publish, names that event.
 
 ## Grade
 
@@ -137,7 +148,8 @@ The grade is the true risk: the incidents of the rows and the residual risk,
 weighed by reach. Apply every rule below; the highest grade any rule gives
 wins.
 
-- A door that is one-way at merge is high.
+- A one-way door is graded by the harm of what it commits to: high when
+  that harm is silent or reaches some or most, medium otherwise.
 - A design on a core path is graded by what it does at full use, even when
   the merge exposes no one yet. A new table in a shared queue database that
   can bloat and stall every job is high.
@@ -191,6 +203,11 @@ put measured numbers in it: the repo may be public. The bullets say:
 - who is unchanged, naming the proof that covers them, such as the shadow
   diff, the live run, or the tests;
 - each uncovered row and its residual incident.
+
+The callout holds at most 6 bullets, Switch-off and Tier included. When more
+uncovered rows remain, keep the ones with the worst residual incident, and
+list the rest under Known issues, one bullet each. `hedge proof gate` fails a
+callout with more than 6 bullets.
 
 Each bullet names a row. A bullet that predicts a bug names the uncovered row
 it sits on.
