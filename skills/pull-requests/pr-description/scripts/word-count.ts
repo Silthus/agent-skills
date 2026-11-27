@@ -27,7 +27,8 @@ const markers = /[\u0001-\u0005]/g;
 
 function rawBlock(raw: string) {
   const shown = raw.split(/<!--[\s\S]*?-->/).join(" ");
-  return `${media.test(shown) ? pictureMark : ""} ${shown.split(/<[^>]*>/).join(" ")}\n\n`;
+  const text = shown.split(/<\/?(?:a|b|code|del|em|i|s|span|strong|sub|sup)\b[^>]*>/).join("").split(/<[^>]*>/).join(" ");
+  return `${media.test(shown) ? pictureMark : ""} ${text}\n\n`;
 }
 
 type Shape = { text: string; visible: string; topLevelItems: number };
