@@ -22,8 +22,8 @@ not hold the stamp for its grade, its door, its size, or its shape. Under
 "stamp it", full-send's question before merging a high or one-way PR does not
 apply.
 
-Refuse a stamp only for a hunk in a danger area: the sensitive areas that
-the Impact category of [merge-risk](../merge-risk/SKILL.md) lists, with the
+Refuse a stamp only for a hunk in a danger area: the
+[danger areas of the merge-risk rules](../pr-description/references/merge-risk-rules.md#danger-areas), with the
 areas the user's agent instructions add to them or keep for teammates. A
 person approves those.
 

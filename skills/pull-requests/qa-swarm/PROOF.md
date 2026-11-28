@@ -112,7 +112,8 @@ line of its merge-risk block:
 - **Ungraded**: grade the PR with `merge-risk` first.
 
 A diff of only tests and fixtures that no production code imports is not
-critical by a critical path alone, as Tier (a) in `pr-description` says.
+critical by a critical path alone, as Tier (a) of the merge-risk rules in
+`pr-description` says.
 
 Every other gap is a Decision for the user, and the handoff stays Blocked
 until the user accepts it in answer to that gap. Fix a failing required CI

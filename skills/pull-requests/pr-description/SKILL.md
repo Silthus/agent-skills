@@ -178,7 +178,8 @@ over 350 has a block that repeats a fact or the diff: cut it.
 
 ## Merge risk
 
-Grade the PR with the `merge-risk` skill on every PR. Put its output in the
+Grade every PR with the `merge-risk` skill and the
+[merge-risk rules](references/merge-risk-rules.md). Put its output in the
 body as [merge-risk block](references/merge-risk-block.md) says: between its
 markers, with the Tier line, and with the Rollout section when the grade
 calls for one. The block stays when the repository's skill sets a word
