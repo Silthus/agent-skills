@@ -103,7 +103,7 @@ Stack: <linked layers in dependency order, selected layer marked, root base and 
 
 - <three or four bullets: the behaviour change and the seams that carry it, with code links>
 
-<stack merge-risk callout; each layer's risk separately>
+<stack merge-risk output; each layer's risk separately>
 **Lean**: <ack, ask first, or hold>, <the one reason; distinguish selected-layer readiness from stack blockers>
 
 Background review running. Ask next: "<prompt>", "<prompt>", or "swarm" for the full panel.
@@ -138,7 +138,7 @@ posting stay in force.
 ## Post to GitHub
 
 Post only what the reviewer asks for: a comment, a review, an approval, or the
-merge-risk callout, which the `merge-risk` skill posts. Keep each posted risk
+merge-risk block, which `pr-description` posts. Keep each posted risk
 scoped to that PR's increment; keep the combined assessment in the reviewer
 brief. Show the target and the
 exact text, and post after the reviewer approves it. Put inline comments in one review at the

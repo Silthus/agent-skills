@@ -23,7 +23,7 @@ ask each item once. Leave out what the map, the ticket, or the user's agent
 instructions already answer.
 
 - **All work**: the `impact` **Start** verdict line; the proof plan, with
-  each proof the user names; the tier forecast (`merge-risk` **Tier**); the
+  each proof the user names; the tier forecast (**Tier** of the merge-risk block, per `pr-description`); the
   mode and merge route; the StampHog forecast, when the user's agent
   instructions name an approval bot.
 - **Mode**: **full send** once the gate passes, or **proof first**: the lane

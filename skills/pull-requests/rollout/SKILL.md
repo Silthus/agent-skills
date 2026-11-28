@@ -142,7 +142,7 @@ The default cadence, unless the user names another:
    dashboard. The impact retro reads the metric on both sides of this mark.
    Keep it off the whole project, where every chart would show it.
 2. **Sandbox**, only when `merge-risk` grades the PR high, calls it a one-way
-   door, or names silent harm: enable the flag for the sandbox project and its
+   door, or names harm that nobody would see: enable the flag for the sandbox project and its
    test user. Walk the changed journey in production as that user with the
    `agent-browser` skill, and save the walk as proof. The walk is part of the
    rollout grant.
@@ -187,7 +187,7 @@ sources, and metrics that carry it. Every path gets at least one signal, or the
 report names it unmonitored. Compare the window since the last check with the
 flag on against the flag off, using the `$feature/<key>` event property, or
 without a flag, with the 24 hours before the deploy. A **flag-off hunk**
-(`merge-risk` **Switch-off**) changes the flag-off side too, so that side is
+(the **Switch-off** line of the merge-risk block, per `pr-description`) changes the flag-off side too, so that side is
 no baseline: compare its paths with the 24 hours before the deploy, the
 errors and latency of each endpoint it touches. Read:
 

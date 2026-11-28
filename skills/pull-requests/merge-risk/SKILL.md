@@ -1,271 +1,55 @@
 ---
-name: merge-risk
-description: >-
-  Grade a PR's merge risk, its blast radius, as low, medium, or high, call
-  its door one-way or two-way, and post the risk callout to its description.
-  Use when pr-description, qa-swarm, or review-pr reach their risk step, or
-  when the user asks how risky a PR is.
+name: "merge-risk"
+description: "Use when assessing the risk of merging a PR"
+metadata:
+  credits:
+    skill: pr
+    author: Matt Pocock
+    url: "https://github.com/mattpocock/skills/blob/main/skills/engineering/pr/SKILL.md"
 ---
+Output format:
 
-# Merge risk
+```
+**Merge risk: <low-medium-high>**
 
-The **merge risk** is the incident a merge can cause: what breaks, for whom,
-in which regions, and what limits it. Grade the PR's own increment, together
-with the design it commits us to. In a stack, the increment is the diff
-against its parent PR.
+**<category>:** <verdict>
+<list gaps that increase risk. Use bullets, keep succinct. Include links to relevant files as needed>
 
-Grade from the **behavior delta**: what real traffic gets at HEAD that it did
-not get on the base. Grade afresh from the current diff and evidence on every
-run. An earlier grade, from a panel, a lens, an old body, or a thread, is a
-claim to check, never evidence.
-
-## Danger areas
-
-Hunks that touch authentication, permissions, secrets or crypto, billing or
-real sends to customers, migrations or schema, destructive writes, data
-ingestion, locking or concurrency, public API contracts, dependencies, or
-deploy and CI configuration. Read each danger hunk first, with its callers.
-A danger area marks where to look; the grade comes from what the change does
-there, so it sets no grade of its own.
-
-## Switch-off
-
-The **switch-off** is how we stop the change in production: a feature flag,
-or an env allowlist where the code has no flags. It limits risk only when its
-check runs before the changed code; shared code that runs before the check is
-live on deploy. Without a switch, the change is live on deploy and we fix
-forward. A rollback or a revert is the last resort for a disaster, so the
-callout never plans one.
-
-A flag switches off only its on side. A **flag-off hunk** is changed code
-that runs with the flag off: an else branch, a filter or guard applied to
-everyone without the feature, shared code the flagged work changed. It is
-live on deploy for everyone the flag excludes. Give each flag-off hunk its
-own row on every hot path it reaches. Grade it and judge its door as code
-with no switch-off: live on deploy, fix forward. It reaches every request
-that runs it, even where its results match the base, and its outcome
-includes latency, query count, and the query plan. Only a proof against the
-base covers it, since a flag-on against flag-off comparison runs HEAD on both
-sides and never the base. A flag-off hunk that changes a database query owes
-the Prod shape proof of `PROOF.md` in `qa-swarm`: the query plans of HEAD and
-of the base, compared. Its row stays uncovered until that proof shows no
-worse plan or cost.
-
-## Hot paths
-
-A **hot path** is a route that live traffic takes into the diff. Trace each
-one from its entry point in the product, such as a route, a job, a consumer,
-or a UI action, down to the changed code it runs. Shared code that the diff
-changes is on every path that calls it, including paths outside the diff.
-A new entry point is a path of its own, and existing traffic reaches only
-the shared code it calls.
-
-## Behavior delta
-
-Write one **row** for each branch the diff changes on each hot path, and one
-for each change that acts without a branch: a migration's lock and run time,
-a dependency, config, or the query count and load on a hot path. A row holds:
-
-- **Who takes it**: the traffic that reaches it, banded as in Reach.
-- **Base**: what that traffic gets on the base.
-- **HEAD**: what it gets at HEAD. Write "same as base" only when a proof
-  covers the row; otherwise the row is uncovered.
-
-The **incident** of a row is the harm in its HEAD outcome that its base
-outcome lacks:
-
-- **Silent harm**: nobody sees it happen. Messages are dropped, sent twice, or
-  sent to the wrong person, scheduled work does not run, data is lost or
-  wrong.
-- **Broken core action**: a user sees that the product's main task fails,
-  such as saving or sending.
-- **Cosmetic**: a user sees it, and nothing they need is blocked.
-
-Harm the base already caused is no incident. A send the base dropped while
-it logged success, and that HEAD fails visibly on that send alone, loses
-nothing that worked: cosmetic at most. When the new failure stops other work,
-such as the rest of a batch, a retry loop, or the user's save, that work is
-a row of its own. When no row has an incident, say so in one bullet.
-
-**Residual risk** is the bug a reviewer has not found yet. It sits on the
-uncovered rows: the worst incident a missed bug there causes, at that row's
-reach, graded with the rules below as an incident HEAD adds. A proof covers a
-row when it runs inputs that select the row on the base and at HEAD and gets
-the same outcome:
-
-- a shadow diff or a live run over those inputs;
-- tests that run the changed code with its real collaborators up to the
-  boundary the diff touches, such as the provider client, the queue, or the
-  database, and that pass unchanged on the base. A test that mocks the
-  changed code covers nothing.
-
-On a hot path that reaches most, the outcome includes latency, query count,
-and locks; a proof that does not measure them leaves that part uncovered.
-Locking and concurrency are covered only by a proof that runs them
-concurrently.
-
-## Reach
-
-Measure each row's reach from data: the share of active teams or users who
-take it, in the last 30 days, from the product analytics project the user's
-agent instructions name, or from a prod-shape read of the stored rows that
-select it. A new entry point reaches the teams that can call it and are
-likely to, such as the users of the feature it extends. Without a
-measurement, band the row as widely as the code lets traffic reach it. Band
-each row as none, few, some, or most.
-
-Reach counts the traffic whose behavior changes. Code that every request
-runs through reaches most only where its outcome changes for most: a check
-that every send passes, and that changes the outcome only for one stored
-setting, reaches the teams with that setting. Band a row none only when no
-stored row selects it and no write the product allows can create one;
-otherwise band it by who can make that write.
-
-## Door
-
-Judge the door by the **cost to undo**: what it takes, after the switch-off,
-to get back to where the base was. Never judge it against `git revert`. A
-**two-way door** leaves nothing that harms or binds anyone once the switch is
-off; a follow-up PR can remove what stays. A **one-way door** leaves something
-that no later PR can take back without harm:
-
-- data that is lost, or rewritten in place;
-- a message sent to people, such as an email or a notification;
-- a contract that callers outside this repository already use, such as an
-  SDK, published docs, or a customer's integration;
-- a stored format that the code at base cannot read.
-
-An additive schema change is two-way: a new nullable column, a new empty
-table, a new index, a new event name, a new optional field or filter. Name
-what stays and the follow-up that removes it, such as "two-way: the column
-stays; a later migration drops it". Name what we commit to on a one-way
-door, on which row. A door that is two-way at merge and turns one-way on a
-later event, such as an SDK release or a docs publish, names that event.
-
-## Grade
-
-The grade is the true risk: the incidents of the rows and the residual risk,
-weighed by reach. Apply every rule below; the highest grade any rule gives
-wins.
-
-- A one-way door is graded by the harm of what it commits to: high when
-  that harm is silent or reaches some or most, medium otherwise.
-- A design on a core path is graded by what it does at full use, even when
-  the merge exposes no one yet. A new table in a shared queue database that
-  can bloat and stall every job is high.
-- A migration that adds or changes a column, in one PR with code in another
-  deploy unit that reads it, is high: the reader can go live first and fail
-  until the migration runs. Ask for the split in full-send step 1.
-- Silent harm is never low. It is high when its row reaches some or most,
-  and medium otherwise. The critical paths in the user's agent instructions
-  say what can go wrong there; the incident is still one a row names.
-- A broken core action is medium. It is low only behind a switch-off on a
-  row that reaches few.
-- Cosmetic is low, even when most users see it.
-- Rows that all reach none or are covered with no incident are low.
-
-Behind a default-off switch-off, grade what the merge exposes with the switch
-off, every flag-off hunk included, and add the grade at full rollout when it
-is higher. More than about 400 changed production lines raise the grade one
-step while any row is uncovered.
-
-Done when every hot path is traced, every change on it has a row with its
-reach, every uncovered row is named, every commitment is named, and the
-grade follows from them.
-
-## Tier
-
-The **tier** says who decides the PR's asks, under the user's agent
-instructions. A PR is **critical** when any criterion holds:
-
-- (a) the diff touches a critical path that the user's agent instructions
-  list for the repo. A diff whose every file is a test or fixture that no
-  production code imports does not touch one by its path alone;
-- (b) the grade at merge is high;
-- (c) the door is one-way;
-- (d) it adds a migration;
-- (e) it changes auth, permissions, or infra;
-- (f) it makes an irreversible public release, such as an SDK publish;
-- (g) it sends something to people outside the team.
-
-A repo with no critical-path list uses (b) to (g). Every other PR is
-**non-critical**. Set the tier afresh with the grade on every run. Write it as
-the callout's last bullet: `**Tier:** critical (<letters>: <what holds>)`,
-such as `**Tier:** critical (a: <path>; d)`, or `**Tier:** non-critical`.
-
-## Callout
-
-The callout stays short: the headline, the delta, the switch-off, and the
-tier. Never
-put measured numbers in it: the repo may be public. The bullets say:
-
-- who changes, from what to what, and in which regions;
-- who is unchanged, naming the proof that covers them, such as the shadow
-  diff, the live run, or the tests;
-- each uncovered row and its residual incident.
-
-The callout holds at most 6 bullets, Switch-off and Tier included. When more
-uncovered rows remain, keep the ones with the worst residual incident, and
-list the rest under Known issues, one bullet each. `hedge proof gate` fails a
-callout with more than 6 bullets.
-
-Each bullet names a row. A bullet that predicts a bug names the uncovered row
-it sits on.
-
-The grade sets the circle and the callout color:
-
-| Grade  | Circle | Callout       |
-| ------ | ------ | ------------- |
-| low    | 🔵     | `[!NOTE]`     |
-| medium | 🟡     | `[!WARNING]`  |
-| high   | 🔴     | `[!CAUTION]`  |
-
-A **Rollout** section follows the callout when the grade is medium or high,
-or when a decision from the PR or its thread shapes the risk. Each line
-appears only when it has content:
-
-- **Stages:** deploy order and the switch-off's stages, per the `rollout`
-  skill and the user's agent instructions.
-- **Decided:** the user's calls that set the risk, such as an accepted limit
-  or a design choice.
-- **Watch:** the alert that pages on the incident, else the metric to watch.
-  Name a missing alert.
-
-```markdown
-<!-- merge-risk -->
-> [!WARNING]
-> 🟡 **Merge risk: medium**, 🔴 at full rollout · one-way door once <event>: <what we commit to>
-> - <who changes: the branch, from what to what, for whom, in which regions>
-> - <who is unchanged and the proof that covers them, or an uncovered row and its residual incident>
-> - **Switch-off:** `<flag or allowlist>`, or none: live on deploy, fix forward.
-> - **Tier:** <critical (<letters>: <what holds>), or non-critical>
-
-## Rollout
-
-- **Stages:** <deploy order, then the switch-off's stages>
-- **Decided:** <the call that sets the risk>
-- **Watch:** <the alert that pages, or the metric; a missing alert>
-<!-- /merge-risk -->
+<...list all categories>
 ```
 
-Drop the full-rollout grade when it matches the merge grade, and the "once
-<event>" when the door is already one-way or stays two-way. GitHub fixes the
-callout title and strips `class` and `style` from HTML, so the circle and the
-bold grade carry the risk.
+These are the **categories** and **verdicts** that affect risk, with descriptions of what "low risk" means:
 
-## Post
+- **Alignment (poor ⚠️ / decent 👀 / good ✅):** Code aligns with the description and source issue, when present. Behavior assumptions and drive-bys must be documented.
+- **Impact (large ⚠️ / medium 👀 / small ✅):** Scope is contained and away from sensitive code paths.
+  - Consider blast radius: potential impact or scope of the changes introduced by this PR. Consider all possibilities. Examples are layout shift, breakages for consumers, mobile responsiveness, etc.
+  - Sensitive areas carry outsized risk regardless of diff size: auth, permissions, payments, PII, secrets, data migrations, dependency bumps, and infra or config changes. Flag any that are touched, and call out anything that widens access, weakens validation, or logs sensitive data.
+- **Verification (poor ⚠️ / decent 👀 / good ✅):** Behavior is verified, where applicable.
+  - Changes to the user experience **need** end-to-end proof as screenshots or recordings. Changes that could meaningfully affect performance **need** profiling. Prefer before-and-after evidence to standalone proof. When this coverage is lacking, it's a failure.
+  - Edge cases must be tested, or documented when they aren't; review the code closely and link the user to relevant code when only documentation is present.
+- **Rollback cost (high ⚠️ / medium 👀 / low ✅):** The code is reversible once merged. Consider one-way vs. two-way doors. You can walk back through two-way doors, but not one-way doors. A PR that is cheap to roll back is lower risk. Changes that involve destructive actions or hard-to-reverse decisions are one-way doors.
+- **Error detection (poor ⚠️ / decent 👀 / good ✅ / N/A ✅):** If applicable, critical flows should be monitored; If this breaks in production, someone should find out before users report it. Look for swallowed errors or fallbacks that hide breakage.
 
-On someone else's PR, show the user the proposed body change and post it
-after they approve.
+Generate a risk score for merging this PR on a scale of low - medium - high.
 
-1. Read the body with `gh pr view <n> --json body -q .body`.
-2. Remove every `merge-risk` and `line-count` marker block from the body.
-3. Put the block under the `Merge Danger` heading when the body has one,
-   else right after the Impact section, else right after the problem
-   section, else first. Keep the rest of the body byte for byte.
-4. Write it back with `gh pr edit <n> --body-file <file>`.
+Verdicts:
 
-Done when the description carries one merge-risk block with the current grade
-and tier. With the `fleet` CLI, the judge in `fleet proof gate` fails a grade or
-door that does not follow from the diff and the saved proofs, and a Tier line
-that says non-critical while the diff touches a listed critical path.
+- ⚠️ = 3
+- 👀 = 2
+- ✅ = 1
+
+Weights:
+
+- Impact = 2x
+- Verification = 2x
+- Rollback cost = 1.5x
+- Error detection = 1x
+- Alignment = 1x
+
+Score = Σ(score × weight) / Σ(weights).
+
+- low: < 1.5
+- medium: 1.5 – < 2.25
+- high: ≥ 2.25
+
+Keep the numerical score and its calculations internal; do not include them in the output.

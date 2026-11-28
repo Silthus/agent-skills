@@ -3,7 +3,7 @@ name: qa-swarm
 description: >-
   Take a PR to review-ready with a cross-model reviewer panel, and review
   draft specs for overengineering. Use when the user asks for a QA swarm,
-  when the diff touches a merge-risk danger area, or before a spec is
+  when the diff touches a merge-risk sensitive area, or before a spec is
   published.
 metadata:
   credits:
@@ -75,7 +75,8 @@ Fetch the base branch, then write down:
   it adds or changes and where the logic lives. It is a claim for the panel to
   judge, never a part of the goal.
 - **Base** and the diff, `git diff origin/<base>...HEAD`.
-- **Danger areas**: the hunks in the danger areas of the `merge-risk` skill.
+- **Danger areas**: the hunks in the sensitive areas that the Impact
+  category of the `merge-risk` skill lists.
 - **Split**: the PR is one slice, cut before the build by step 1 of
   `full-send` or by the map's stack ticket. A PR with mixed concerns or more
   than about 400 changed production lines, or a migration together with a
@@ -134,7 +135,7 @@ A round works on one HEAD. Run its steps in order.
    The CLI picks the [tier](PANEL.md#tiers) from the merge-risk grade in the
    PR body and the authored production lines, prints `tier: <name> (<reason>)`,
    and runs the tier's lenses. Add `--lens security` when the diff has a hunk
-   in a security danger area, and `--lens ui`, `--lens systems`, or a Team
+   in a security sensitive area, and `--lens ui`, `--lens systems`, or a Team
    perspective when its trigger in [`PANEL.md`](PANEL.md) holds; never pick the
    tier's lenses yourself. Round two and later add
    `--scope fixes --base <previous round's SHA>` and the lenses whose findings

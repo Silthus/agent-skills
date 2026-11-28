@@ -21,7 +21,7 @@ function markdownFiles(path: string): string[] {
 
 function frontmatterField(content: string, field: string): string | undefined {
   const frontmatter = /^---\n([\s\S]*?)\n---\n/.exec(content)?.[1];
-  return frontmatter?.match(new RegExp(`^${field}:\\s*(.+)$`, "m"))?.[1]?.trim();
+  return frontmatter?.match(new RegExp(`^${field}:\\s*(.+)$`, "m"))?.[1]?.trim().replace(/^(["'])(.*)\1$/, "$2");
 }
 
 function checkSkill(skill: Skill): void {

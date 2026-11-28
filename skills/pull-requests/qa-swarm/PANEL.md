@@ -12,8 +12,8 @@ agent instructions, or with the runtime defaults when there is no policy:
   policy's UI defaults when it has them.
 - **Security lane**: the policy's **Deep security review** model, or the
   Review lane's model when the policy has none. It runs Security, and only
-  when the diff has a hunk in a security danger area of the `merge-risk`
-  skill: authentication, permissions, secrets or crypto, or a sandbox, a
+  when the diff has a hunk in a security sensitive area of the `merge-risk`
+  skill, or in crypto: authentication, permissions, secrets, or a sandbox, a
   guard, or machine access. Without the CLI, start it on that model where the
   runtime can pick one; otherwise run it on the Review lane's model and report
   the substitution as a gap.
@@ -154,7 +154,7 @@ as usual.
 Context (every lens except Design and Anti-Overengineering):
 Approach: <approach, or none>
 Danger areas: <hunks>
-PR description: <current body, without its merge-risk callout>
+PR description: <current body, without its merge-risk block>
 Owed proofs: <the owed kinds>
 Evidence: <accessible capture links or proof paths, tested commits, and gaps>
 
@@ -296,8 +296,8 @@ Production:
 Grade:
 
 - Grade the diff with the `merge-risk` rubric from the hunks and the saved
-  proofs, without the callout. End with a
-  `GRADE: <low|medium|high> | <the branch that sets it: who takes it, base outcome, HEAD outcome>`
+  proofs, without the merge-risk block. End with a
+  `GRADE: <low|medium|high> | <the category verdict that sets it, and its gap>`
   line after `COVERED`.
 - Check the owed proofs against [`PROOF.md`](PROOF.md). A persisted input, a
   boundary format, or a high grade with no owed proof is a finding.

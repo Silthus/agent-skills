@@ -2,7 +2,7 @@
 name: pr-description
 description: >-
   Write a PR description a cold teammate can review from, in the
-  repository's own sections, and add the merge-risk callout, the Impact
+  repository's own sections, and add the merge-risk block, the Impact
   section, owed proofs, and decision lines. Use alongside a repository's own
   description skill, such as `writing-pr-descriptions`, before
   `gh pr create` or `gh pr edit --body`, and when work continues on a PR: a
@@ -126,7 +126,7 @@ Keep the words you write at 400 to 800. A **small change** aims lower: at
 most 350 words. A change is small when the diff, without tests and
 generated files, changes about 50 lines or fewer, and `merge-risk` grades it
 low or medium with a two-way door. Read both from the diff stat and the
-callout before you write. A small change gets one or two bullets per
+merge-risk block before you write. A small change gets one or two bullets per
 section and may give the new behavior in one sentence, though every ❌
 bullet still stays. It says each fact in one place: a dependency in
 `Depends on:`, which a Rollout line points at without naming the PRs
@@ -134,7 +134,7 @@ again.
 
 Count the words with `bun scripts/word-count.ts <body file>` from this
 skill's folder, which exits 1 over 800, or over 350 with `--small`. Every
-block counts, the callout, Known issues, tables, and collapsed blocks
+block counts, the merge-risk block, Known issues, tables, and collapsed blocks
 included. Only what nobody writes by
 hand is left out: the receipt block, fenced code and diagrams, template
 checklist and release-status lines, and HTML comments. Without Bun, run
@@ -143,21 +143,20 @@ prose, never removes a section or an insert; the 800-word cap, or 350
 for a small change, is the one that holds.
 
 Write every block within its cap, and say each fact once: a fact in the
-callout or Rollout is not repeated in the ❌ list or Known issues.
+merge-risk block or Rollout is not repeated in the ❌ list or Known issues.
 
 | Block | Cap | The rest goes to |
 | --- | --- | --- |
-| Merge-risk callout | at most six one-sentence bullets, Switch-off and Tier included; one line per Rollout entry | Known issues |
+| Merge-risk block | one line per category, at most two one-sentence gap bullets each, and the Tier line; one line per Rollout entry | Known issues |
 | Receipt | each "What ran" and "Result" cell one clause of at most twelve words, saved as Proof says | the evidence file |
 | What was proven | no ✅ bullet that repeats a receipt row; every ❌ bullet stays | the receipt |
 | Test rationale | two sentences | the tests |
 | Decisions | the rows Decisions names | the decisions comment |
 
-The callout cap is hard: `hedge proof gate` fails a callout with more than
-six bullets. Keep the bullets `merge-risk` requires, the Switch-off, the Tier,
-and the uncovered rows with the worst residual incident. List each other
-uncovered row under Known issues, one sentence each; the proof judge accepts
-a row named there. Each Rollout line stays, one line each.
+The block cap is hard: the proof judge in `hedge proof gate` fails a
+category with more than two gap bullets. Keep the gaps that raise the risk
+most. List each other gap under Known issues, one sentence each; the proof
+judge accepts a gap named there. Each Rollout line stays, one line each.
 
 When the body still passes its cap, fold in this order until it fits:
 
@@ -171,19 +170,21 @@ When the body still passes its cap, fold in this order until it fits:
 3. **Changes**: the `(mechanical)` bullets merge into one line.
 
 Never cut an element to fit: the picture, Read yourself, a ❌ bullet, the
-Switch-off and Tier bullets, and the receipt block stay. When every block
+merge-risk categories, the Tier and Switch-off lines, and the receipt block
+stay. When every block
 is folded and the body still passes 800, the PR is too large to review from
 its description: say so in the handoff and propose a stack. A small change
 over 350 has a block that repeats a fact or the diff: cut it.
 
 ## Merge risk
 
-Grade the PR with the `merge-risk` skill. It writes the callout, and its
-Rollout section when the grade calls for one, in the place it names. The
-block stays when the repository's skill sets a word budget: a reviewer reads
-it first. The callout holds at most six bullets, as Word budget says, and
-an uncovered row past the six goes to Known issues. Its `<!-- merge-risk -->` markers are not
-template comments; keep them.
+Grade the PR with the `merge-risk` skill on every PR. Put its output in the
+body as [merge-risk block](references/merge-risk-block.md) says: between its
+markers, with the Tier line, and with the Rollout section when the grade
+calls for one. The block stays when the repository's skill sets a word
+budget: a reviewer reads it first. Each category holds at most two gap
+bullets, as Word budget says, and the other gaps go to Known issues. Its
+`<!-- merge-risk -->` markers are not template comments; keep them.
 
 ## Impact
 

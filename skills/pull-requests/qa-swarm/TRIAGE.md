@@ -39,10 +39,10 @@ before you bucket it, and Reject it when no such code exists.
   standard, such as a documented repo rule, is a Fix: it is cheap and it
   shortens the user's review. Copy that contradicts the decided design or its
   own heading is a Fix, though users see it: the design already decided it.
-  A Risk lens `GRADE` that differs from the merge-risk callout's grade is a
-  Fix toward the grade its row supports. A higher grade holds when real
-  traffic takes the row and either HEAD adds harm there or no proof covers
-  it. Otherwise reject it and cite the proof or the reach read.
+  A Risk lens `GRADE` that differs from the merge-risk block's grade is a
+  Fix toward the grade its category verdicts support. A higher grade holds
+  when the lens names a gap that the diff or a missing proof shows.
+  Otherwise reject it and cite the proof or the code.
 - **Call**: the problem is real and has more than one defensible fix. Pick
   one, fix it, and record it for the handoff as a 🤖 decision line per
   `pr-description`, with its class and the alternative you rejected.
@@ -54,7 +54,7 @@ before you bucket it, and Reject it when no such code exists.
   the failure: the input, what broke, and the saved evidence, so the user
   weighs an observed failure, not a predicted one. When the user's agent
   instructions let you decide two-way-door choices on a non-critical PR
-  (its `merge-risk` Tier line), such a choice is a Call, unless it adds a
+  (its merge-risk block's Tier line, per `pr-description`), such a choice is a Call, unless it adds a
   public contract or a user-visible choice on a shipped surface.
 - **Follow-up**: the problem is real but outside the goal or in code the PR
   does not touch, and it earns a build verdict under **Worth**. A final-read

@@ -83,7 +83,7 @@ or an open PR. Skip the steps that are already done, and check them.
 2. **Prove it.** Get proof for every change you made. See "Proof".
 3. **Get feedback.** Review the change as the user's PR workflow says, in its
    order, and
-   with `qa-swarm` when the diff touches a danger area of `merge-risk`.
+   with `qa-swarm` when the diff touches a sensitive area of `merge-risk`.
 4. **File the PR** as a draft with the `pr-description` skill. Rebase onto
    the latest default branch first. Add the review and preview labels the
    user's agent instructions name.

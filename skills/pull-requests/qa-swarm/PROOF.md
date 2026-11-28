@@ -45,7 +45,7 @@ Done when every stage, both sides of every state-dependent stage, and every
 
 Owed when the changed path reads persisted inputs: stored rows,
 customer-written code or config, queued jobs, cached values. Also owed by
-each flag-off hunk, as `merge-risk` defines it, that changes a database
+each flag-off hunk, as `pr-description` defines it, that changes a database
 query, whatever the flag guards.
 
 List each persisted input. For each one, measure in production which share of
@@ -104,7 +104,7 @@ Done when the checks `rollout` schedules ran and their results are saved.
 
 A **gap** is an owed proof that could not run. It names the proof, the reason,
 and what stays unknown. Who accepts it follows the PR's tier, from the `Tier:`
-line of its `merge-risk` callout:
+line of its merge-risk block:
 
 - **Non-critical**: accept the gap yourself, with your reason and the option
   you rejected, except a `panel` gap.
@@ -112,7 +112,7 @@ line of its `merge-risk` callout:
 - **Ungraded**: grade the PR with `merge-risk` first.
 
 A diff of only tests and fixtures that no production code imports is not
-critical by a critical path alone, as Tier (a) in `merge-risk` says.
+critical by a critical path alone, as Tier (a) in `pr-description` says.
 
 Every other gap is a Decision for the user, and the handoff stays Blocked
 until the user accepts it in answer to that gap. Fix a failing required CI
