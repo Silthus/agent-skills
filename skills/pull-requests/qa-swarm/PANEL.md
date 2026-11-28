@@ -295,8 +295,9 @@ Production:
 
 Grade:
 
-- Grade the diff with the `merge-risk` rubric from the hunks and the saved
-  proofs, without the merge-risk block. End with a
+- Grade the diff with the `merge-risk` rubric and the Evidence and Door
+  rules of the merge-risk block in `pr-description`, from the hunks and the
+  saved proofs, without the block in the body. End with a
   `GRADE: <low|medium|high> | <the category verdict that sets it, and its gap>`
   line after `COVERED`.
 - Check the owed proofs against [`PROOF.md`](PROOF.md). A persisted input, a
