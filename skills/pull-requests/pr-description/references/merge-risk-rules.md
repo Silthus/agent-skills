@@ -1,8 +1,7 @@
 # Merge-risk rules
 
 Grade the PR with the `merge-risk` skill and with these rules. Where a rule
-here is stricter than `merge-risk`, the rule here sets the verdict or the
-grade. The proof judge of `hedge proof gate` grades with both files.
+here differs from `merge-risk`, the rule here sets the verdict or the grade. The proof judge of `hedge proof gate` grades with both files.
 
 ## Evidence
 
@@ -32,9 +31,10 @@ Verification good ✅ needs step 4 or higher, from a run whose output is
 saved, such as a proof the receipt holds. A test that mocks the changed code
 proves nothing. To claim that behavior or cost is unchanged, run the same
 input on the base and at HEAD. Write the fact as the first Verification
-bullet, `Safe because: <fact> (step <n>)`. It is not a gap bullet. When the
-fact stays below its step, the verdict is 👀 at best, and the bullet reads
-`Unproven: <fact>; check: <cheapest check>`. Each gap names a path that real
+bullet, `Safe because: <fact> (step <n>)`. When the fact stays below its
+step, the verdict is 👀 at best, and the bullet reads
+`Unproven: <fact> (step <n>); check: <cheapest check>`. Neither is a gap
+bullet. Each gap names a path that real
 input reaches. Leave cleared risks out.
 
 ## Grade floors
@@ -56,7 +56,8 @@ that: a change that is costly but reversible is medium 👀. Name what we commit
 to in the Rollback cost bullet `one-way door: <what we commit to>`. An
 additive schema change is two-way: name what stays and the follow-up that
 removes it. A door that is two-way at merge and turns one-way on a later
-event, such as an SDK release, names that event in a Rollback cost bullet.
+event, such as an SDK release, keeps its verdict and names the event in the
+bullet `two-way until <event>: <what we commit to then>`.
 
 ## Tier
 
@@ -82,6 +83,6 @@ as `**Tier:** critical (a: <path>; d)` or `**Tier:** non-critical`.
 Hunks that touch authentication, permissions, secrets or crypto, billing or
 real sends to customers, PII, migrations or schema, destructive writes, data
 ingestion, locking or concurrency, public API contracts, dependencies, or
-deploy, infra, and CI configuration. Read each danger hunk first, with its
+deploy, infra, CI, and application configuration. Read each danger hunk first, with its
 callers. A danger area marks where to look and what a person approves; it
 sets no grade of its own.

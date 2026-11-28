@@ -47,8 +47,9 @@ data.
    diff from the root base to each stack tip, including interactions between
    layers. Done when every changed file from every layer sits on the diagram
    or in the skimmed list (generated, vendored, lock files).
-5. **Grade** each layer's own increment with the `merge-risk` skill. Also
-   grade the combined change with that rubric, including risks between layers.
+5. **Grade** each layer's own increment with the `merge-risk` skill and the
+   merge-risk rules in `pr-description`. Also grade the combined change with
+   them, including risks between layers.
    A hit on a profile hard line makes the lean `hold`.
 6. **Brief** in the format below and end your turn.
 7. **Follow up.** Answer from the code with code links, and say what you did
